@@ -1,0 +1,66 @@
+plugin {
+    tx_tagpack_pi1 = USER
+    tx_tagpack_pi1 {
+        userFunc = tx_tagpack_pi1->main
+	userFunc {
+	    tagcloudElements {
+    		enabledContent = {$tx_tagpack_pi1.enabledContent}
+    		enabledRecords = {$tx_tagpack_pi1.enabledRecords}
+    	    }
+	    renderObj = COA_INT
+    	    renderObj {
+    		10 = USER
+    		10 {
+            	    userFunc = tx_tagpack_pi1->makeTagCloud
+            	    startingpoint = {$tx_tagpack_pi1.startingpoint}
+            	    targetPid = {$tx_tagpack_pi1.targetPid}
+            	    minFontSize = {$tx_tagpack_pi1.minFontSize}
+            	    maxFontSize = {$tx_tagpack_pi1.maxFontSize}
+            	    maxNumberOfSizes = {$tx_tagpack_pi1.maxNumberOfSizes}
+            	    modeSwitch = {$tx_tagpack_pi1.modeSwitch}
+            	    searchBox = {$tx_tagpack_pi1.searchBox}
+            	    calendar = {$tx_tagpack_pi1.calendar}
+            	    fontColor = {$tx_tagpack_pi1.fontColor}
+		    generalStdWrap {
+            		wrap = <div class="tagpack-tagcloud">|</div>		    
+		    }
+		    linkBoxStdWrap {
+			wrap = {$tx_tagpack_pi1.label.tagCloud}<div class="tagpack-linkbox">|</div>
+		    }
+		    linkStdWrap {
+			wrap = <span>|</span>
+		    }
+		    modeSwitchStdWrap {
+			wrap = {$tx_tagpack_pi1.label.modeSwitch}<div class="tagpack-modeswitch">|</div>
+		    }
+		    keepGetVars {
+			###################################
+			#   parametername {
+			#	keyname = 1
+			#   }
+			###################################			
+		    }
+		    searchBoxStdWrap {
+			wrap = {$tx_tagpack_pi1.label.searchBox}<div class="tagpack-searchbox">|</div>
+		    }
+		    calendarStdWrap {
+			wrap = {$tx_tagpack_pi1.label.calendar}<div class="tagpack-calendar">|</div>
+		    }
+		    calendarFrom = {$tx_tagpack_pi1.label.calendarFrom}
+		    calendarTo = {$tx_tagpack_pi1.label.calendarTo}
+		}
+	    }
+        }
+    }
+}
+
+tt_content.tagpack_pi1 = COA
+tt_content.tagpack_pi1 {
+  wrap = <div class="cloudcontainer">|</div>
+  10 < plugin.tx_tagpack_pi1
+}
+
+tt_content.stdWrap.preUserFunc < plugin.tx_tagpack_pi1.userFunc
+tt_content.stdWrap.preUserFunc {
+    renderObj.10.singleItemCloud = 1
+}
