@@ -117,15 +117,15 @@
 			 
 			if ($tagUid) {
 				$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				$table.'.*,COUNT(mm.uid_local) AS counter',
-					'tx_tagpack_tags_relations_mm AS mm JOIN '.$table,
+				$table.'.*,COUNT(mm.uid_foreign) AS counter',
+					$table.' JOIN tx_tagpack_tags_relations_mm AS mm',
 					'mm.uid_foreign='.$table.'.uid
 					AND mm.tablenames=\''.$table.'\'
 					AND '.$table.'.pid>0
 					'.$this->cObj->enableFields($table).'
 					'.$calendarSettings.$searchSettings.$tagsSelected,
-					$table.'.uid',
-					$table.'.'.$sortingTime.' DESC',
+					'mm.uid_foreign',
+					$table.'.uid,'.$table.'.'.$sortingTime.' DESC',
 					$conf['taggedElements.']['maxItems'] );
 			} else {
 				if (count($this->pi1Vars)) {
