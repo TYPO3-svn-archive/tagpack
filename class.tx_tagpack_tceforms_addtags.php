@@ -54,12 +54,12 @@
 				$TSCpid = $row['pid'];
 			}
 			 
-			$TSconfig = t3lib_befunc::getPagesTSconfig($TSCpid);
-			$allowedPages = $TSconfig['tx_tagpack_tags.']['taggedTables'];
-			$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'];
+			$TSconfig = t3lib_befunc::getModTSconfig($TSCpid,'tx_tagpack_tags');			
+			$allowedTables = $TSconfig['properties']['taggedTables'];
+			$getTagsFromPid = $TSconfig['properties']['getTagsFromPid'] ? $TSconfig['properties']['getTagsFromPid'] : '0';
 			 
 			// if tagging is allowed set the appropriate TCA values
-			if (t3lib_div::inList($allowedPages, $table)) {
+			if (t3lib_div::inList($allowedTables, $table)) {
 				 
 				// first lets fetch the TCA of the tag table
 				t3lib_div::loadTCA('tx_tagpack_tags');
@@ -542,9 +542,9 @@
 			// because they didn exist as a tag before
 			if (count($selectedTagUids)) {
 				 
-				$TSconfig = t3lib_befunc::getPagesTSconfig($pid);
-				$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'] ? 'AND pid='.intval($TSconfig['tx_tagpack_tags.']['getTagsFromPid']) :
-				 '';
+				$TSconfig = t3lib_befunc::getModTSconfig($pid,'tx_tagpack_tags');
+				$getTagsFromPid = $TSconfig['properties']['getTagsFromPid'] ? 'AND pid='.intval($TSconfig['properties']['getTagsFromPid']) :
+				 '0';
 				 
 				foreach($selectedTagUids as $tagName => $switch) {
 					$tagName = mysql_real_escape_string(trim(stripslashes($tagName)));
@@ -608,7 +608,7 @@
 								'tstamp' => intval($timeNow),
 								'crdate' => intval($timeNow),
 								'cruser_id' => '0',
-								'pid' => intval($TSconfig['tx_tagpack_tags.']['getTagsFromPid']),
+								'pid' => $TSconfig['properties']['getTagsFromPid'] ? intval($TSconfig['properties']['getTagsFromPid']) : '0',
 								'sys_language_uid' => '0',
 								'deleted' => '0',
 								'hidden' => '0',

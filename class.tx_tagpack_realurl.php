@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005 Kasper Skårhøj
+*  (c) 2008 JoH asenau
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -26,7 +26,7 @@
 ***************************************************************/
 /**
  *
- * @coauthor	Kasper Skaarhoj <kasper@typo3.com>
+ * @coauthor	JoH asenau <info@cybercraft.de>
  */
 
 
@@ -35,9 +35,9 @@ require_once(PATH_t3lib.'class.t3lib_befunc.php');
 
 /**
  *
- * @author	Kasper Skaarhoj <kasper@typo3.com>
- * @package realurl
- * @subpackage tx_realurl
+ * @author	JoH asenau <info@cybercraft.de>
+ * @package tagpack
+ * @subpackage tx_tagpack_realurl
  */
 class tx_tagpack_realurl {	
 	function main($params, $ref)	{
