@@ -96,7 +96,7 @@
 			$fieldConfig['wizards']['ajax_search']['params']['client']['startLength'] = 2;
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
-			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['additionalWhere'] = 'tx_tagpack_tags.pid='.$request['pid'];
+			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['additionalWhere'] = 'tx_tagpack_tags.pid IN ('.$request['pid'].')';
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
 			 
 			 

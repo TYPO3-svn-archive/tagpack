@@ -65,9 +65,11 @@ class tx_tagpack_realurl {
 			    }
 			}
 		    }
+		    $valueList .= $valueList ? '_'.str_replace(',','-',$getTagsFromPid) : '';
+
 		}
 		if($valueList) {
-		    return strtolower(str_replace(' ','-',$valueList)).'_'.$getTagsFromPid;
+		    return strtolower(str_replace(' ','-',$valueList));
 		} else {
 		    return '';
 		}
@@ -75,7 +77,7 @@ class tx_tagpack_realurl {
 
 	function alias2id($value)	{
 		$valueArray = t3lib_div::trimExplode('_',$value);
-		$getTagsFromPid = array_pop($valueArray);
+		$getTagsFromPid = str_replace('-',',',array_pop($valueArray));
 		if(count($valueArray)) {
 		    foreach($valueArray as $name) {
 			if($name) {
