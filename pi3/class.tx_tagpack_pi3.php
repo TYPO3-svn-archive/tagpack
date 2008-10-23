@@ -21,30 +21,30 @@
 	*
 	*  This copyright notice MUST APPEAR in all copies of the script!
 	***************************************************************/
-	 
+
 	require_once(PATH_tslib.'class.tslib_pibase.php');
-	 
-	 
+
+
 	/**
-	* Plugin 'Tag Nominations' for the 'tagpack' extension.
-	*
-	* @author JoH asenau <info@cybercraft.de>
-	* @package TYPO3
-	* @subpackage tx_tagpack
-	*/
+	 * Plugin 'Tag Nominations' for the 'tagpack' extension.
+	 *
+	 * @author JoH asenau <info@cybercraft.de>
+	 * @package TYPO3
+	 * @subpackage tx_tagpack
+	 */
 	class tx_tagpack_pi3 extends tslib_pibase {
 		var $prefixId = 'tx_tagpack_pi3';
 		// Same as class name
 		var $scriptRelPath = 'pi3/class.tx_tagpack_pi3.php'; // Path to this script relative to the extension dir.
 		var $extKey = 'tagpack'; // The extension key.
-		 
+
 		/**
-		* The main method of the PlugIn
-		*
-		* @param string  $content: The PlugIn content
-		* @param array  $conf: The PlugIn configuration
-		* @return The content that is displayed on the website
-		*/
+ * The main method of the PlugIn
+ *
+ * @param	string		$content: The PlugIn content
+ * @param	array		$conf: The PlugIn configuration
+ * @return	The		content that is displayed on the website
+ */
 		function main($content, $conf) {
 			$this->pi_loadLL();
 			$this->pi1Vars = t3lib_div::_GP('tx_tagpack_pi1');
@@ -79,32 +79,34 @@
 			}
 			return $this->cObj->cObjGetSingle($conf['renderObj'], $conf['renderObj.']);
 		}
-		 
+
 		/**
-		* The main method of the PlugIn
-		*
-		* @param string  $content: The PlugIn content
-		* @param array  $conf: The PlugIn configuration
-		* @return The content that is displayed on the website
-		*/
+ * The main method of the PlugIn
+ *
+ * @param	string		$content: The PlugIn content
+ * @param	array		$conf: The PlugIn configuration
+ * @param	[type]		$tags: ...
+ * @param	[type]		$tagUid: ...
+ * @return	The		content that is displayed on the website
+ */
 		function makeElementList($table, $conf, $tags, $tagUid) {
-			 
+
 			$sortingTime = $conf['taggedElements.']['timeFields.'][$table] ? $conf['taggedElements.']['timeFields.'][$table] : 'tstamp';
-						
+
 			if ($tagUid) {
 				$tagsSelected = ' AND mm.uid_local IN('.$tagUid.')';
 			}
-			 
+
 			if ($this->pi1Vars['from'] && $conf['taggedElements.']['timeFields.'][$table]) {
 				$fromTime = ' BETWEEN '.(strtotime($this->pi1Vars['from'])).' AND '.(strtotime($this->pi1Vars['from'])+(3600 * 24)-1);
 				$calendarSettings = ' AND '.$table.'.'.$conf['taggedElements.']['timeFields.'][$table].$fromTime;
 			}
-			 
+
 			if ($this->pi1Vars['from'] && $this->pi1Vars['to'] && $conf['taggedElements.']['timeFields.'][$table]) {
 				$fromTime = ' BETWEEN '.(strtotime($this->pi1Vars['from'])).' AND '.(strtotime($this->pi1Vars['to'])+(3600 * 24)-1);
 				$calendarSettings = ' AND '.$table.'.'.$conf['taggedElements.']['timeFields.'][$table].$fromTime;
 			}
-			 
+
 			if ($this->pi1Vars['searchWord'] && $conf['taggedElements.']['searchFields.'][$table]) {
 				$searchFieldArray = t3lib_div::trimexplode(',', $conf['taggedElements.']['searchFields.'][$table]);
 				foreach($searchFieldArray as $searchField) {
@@ -114,7 +116,7 @@
 				$searchSettings = $searchSettings ? ' AND ('.$searchSettings.')' :
 				 '';
 			}
-			 
+
 			if ($tagUid) {
 				$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				$table.'.*,COUNT(mm.uid_foreign) AS counter',
@@ -224,7 +226,7 @@
 						$getVar = $getVar[$filterSettings['GETvar.']['key']];
 						$linkConf['additionalParams'] .= '&'.$filterSettings['GETvar'].'['.$filterSettings['GETvar.']['key'].']='.$getVar;
 					    } else {
-						$linkConf['additionalParams'] .= '&'.$filterSettings['GETvar'].'='.$getVar;							
+						$linkConf['additionalParams'] .= '&'.$filterSettings['GETvar'].'='.$getVar;
 					    }
 					    if($getVar) {
 						$headerAppendix[$fieldName] = $filterSettings['label'] ? ' '.$this->cObj->cObjgetSingle($filterSettings['label'],$filterSettings['label.']) : '';
@@ -265,11 +267,11 @@
 			}
 		}
 	}
-	 
-	 
-	 
+
+
+
 	if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi3/class.tx_tagpack_pi3.php']) {
 		include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi3/class.tx_tagpack_pi3.php']);
 	}
-	 
+
 ?>
