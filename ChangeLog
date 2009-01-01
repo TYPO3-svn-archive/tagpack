@@ -1,3 +1,8 @@
+2009-01-01  Benjamin Mack  <benni@typo3.org>
+
+	* Added API class to have a centralized way of working with the tags
+	* Simple code / indention cleanup
+
 0.3.2	13-09-12 JoH asenau  <info@cybercraft.de>
 	
 	* removed one intval check that prevented new connection of tags if there were no existing tags available	
