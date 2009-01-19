@@ -51,8 +51,8 @@
 			    $TSCpid = $PA['pid'];
 			}		
 		
-			$TSconfig = t3lib_befunc::getModTSConfig($TSCpid,'tx_tagpack_tags');
-			$getTagsFromPid = $TSconfig['properties']['getTagsFromPid'] ? $TSconfig['properties']['getTagsFromPid'] : 0;
+			$TSconfig = t3lib_befunc::getPagesTSConfig($TSCpid);
+			$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'] ? $TSconfig['tx_tagpack_tags.']['getTagsFromPid'] : 0;
 		
 			$this->init();
 			 

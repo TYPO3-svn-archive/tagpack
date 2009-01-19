@@ -1,11 +1,7 @@
-2009-01-02  Benjamin Mack  <benni@typo3.org>
-
-	* Simple code / indention cleanup
-
-2009-01-01  Benjamin Mack  <benni@typo3.org>
-
-	* Added API class to have a centralized way of working with the tags
-	* Simple code / indention cleanup
+0.3.3	07-10-12 JoH asenau  <info@cybercraft.de>
+	
+	added some icons
+	fixed a bug regarding selection of items with multiple tags	
 
 0.3.2	13-09-12 JoH asenau  <info@cybercraft.de>
 	

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008 JoH asenau
+*  (c) 2005 Kasper Skårhøj
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -26,7 +26,7 @@
 ***************************************************************/
 /**
  *
- * @coauthor	JoH asenau <info@cybercraft.de>
+ * @coauthor	Kasper Skaarhoj <kasper@typo3.com>
  */
 
 
@@ -35,12 +35,11 @@ require_once(PATH_t3lib.'class.t3lib_befunc.php');
 
 /**
  *
- * @author	JoH asenau <info@cybercraft.de>
- * @package tagpack
- * @subpackage tx_tagpack_realurl
+ * @author	Kasper Skaarhoj <kasper@typo3.com>
+ * @package realurl
+ * @subpackage tx_realurl
  */
 class tx_tagpack_realurl {	
-
 	function main($params, $ref)	{
 		$TSconfig = t3lib_BEfunc::getPagesTSConfig($GLOBALS['TSFE']->id);
 		$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'];
@@ -51,38 +50,34 @@ class tx_tagpack_realurl {
 		    return $this->id2alias($params['value'],$getTagsFromPid);
 		}
 	}
-
 	function id2alias($value,$getTagsFromPid)	{
 		$valueArray = t3lib_div::trimExplode(',',$value);
 		if(count($valueArray) && $value) {
 		    $valueList = '';
 		    foreach($valueArray as $uid) {
 			if($uid && $uid!=t3lib_div::_GP('tx_tagpack_pi3_removeItems')) {
-			    $name = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('name','tx_tagpack_tags','uid='.$uid.' AND pid IN ('.$getTagsFromPid.')');
+			    $name = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('name','tx_tagpack_tags','uid='.$uid.' AND pid='.$getTagsFromPid);
 			    if(!$valueArray[$name[0]['name']]) {
 				$valueArray[$name[0]['name']]=1;
 				$valueList .= $valueList ? '_'.$name[0]['name'] : $name[0]['name'];
 			    }
 			}
 		    }
-		    $valueList .= $valueList ? '_'.str_replace(',','-',$getTagsFromPid) : '';
-
 		}
 		if($valueList) {
-		    return strtolower(str_replace(' ','-',$valueList));
+		    return strtolower(str_replace(' ','-',$valueList)).'_'.$getTagsFromPid;
 		} else {
 		    return '';
 		}
 	}
-
 	function alias2id($value)	{
 		$valueArray = t3lib_div::trimExplode('_',$value);
-		$getTagsFromPid = str_replace('-',',',array_pop($valueArray));
+		$getTagsFromPid = array_pop($valueArray);
 		if(count($valueArray)) {
 		    foreach($valueArray as $name) {
 			if($name) {
 			    $name = str_replace('-',' ',$name);
-			    $uid = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid','tx_tagpack_tags','name LIKE \''.$name.'\' AND pid IN ('.$getTagsFromPid.')');
+			    $uid = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid','tx_tagpack_tags','name LIKE \''.$name.'\' AND pid='.$getTagsFromPid);
 			    $valueList .= $valueList ? ','.$uid[0]['uid'] : $uid[0]['uid'];
 			}
 		    }
