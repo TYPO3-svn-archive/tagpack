@@ -1,0 +1,9 @@
+plugin {
+    tx_tagpack_pi2 = COA_INT
+    tx_tagpack_pi2 {
+	10 = USER
+	10 {
+	    userFunc = tx_tagpack_pi2->main
+	}
+    }
+}
