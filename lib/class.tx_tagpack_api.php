@@ -31,6 +31,7 @@
  * @package TYPO3
  * @subpackage tx_tagpack
  */
+
 class tx_tagpack_api {
 	/* this is a constant that matches the table where the tags are stored */
 	const tagTable       = 'tx_tagpack_tags';
@@ -52,6 +53,7 @@ class tx_tagpack_api {
 		if (!$storagePID) {
 			if (is_object($GLOBALS['TSFE'])) {
 				// get the storage PID in the frontend
+				$GLOBALS['TSFE']->getPagesTSconfig();
 				$storagePID = $GLOBALS['TSFE']->pagesTSconfig['tx_tagpack_tags.']['getTagsFromPid'];
 			} else {
 				// get storage PID in the backend
@@ -91,12 +93,12 @@ class tx_tagpack_api {
 				'name'             => $tagName,
 				'tstamp'           => time(),
 				'crdate'           => time(),
-				'cruser_id'        => '0',
+				'cruser_id'        => 0,
 				'pid'              => $storagePID,
-				'sys_language_uid' => '0',
-				'deleted'          => '0',
-				'hidden'           => '0',
-				'relations'        => '0'
+				'sys_language_uid' => 0,
+				'deleted'          => 0,
+				'hidden'           => 0,
+				'relations'        => 0
 			);
 			$GLOBALS['TYPO3_DB']->exec_INSERTquery(tx_tagpack_api::tagTable, $newTagRow);
 			return $GLOBALS['TYPO3_DB']->sql_insert_id();
@@ -109,12 +111,23 @@ class tx_tagpack_api {
 	/**
 	 * Removes a tag from the DB
 	 * 
-	 * @param	$tagName	a string containing the name of the tag
+	 * @param	$tagName    a string containing the tag name
 	 * @param	$deleteRelations	a flag whether to delete the relations as well
-	 * @return	int			the uid of the newly added tag, or zero if the tagName was empty
+	 * @return	void
 	 */
-	function deleteTag($tagName, $deleteRelations = false) {
-		tx_tagpack_api::getAttachedElementsForTag($tagName);
+	function deleteTag($tagName, $deleteRelations = true) {
+		$tagData = tx_tagpack_api::getTagDataByTagName($tagName);
+		$tagUid = intval($tagData['uid']);
+		if ($tagUid) {
+            if ($deleteRelations) {
+		        $elements = tx_tagpack_api::getAttachedElementsForTag($tagUid);
+		        foreach ($elements as $element) {
+		            tx_tagpack_api::removeTagFromElement($tagName, $element['uid'], $element['table']);
+		        }
+		    }
+			$storagePID = tx_tagpack_api::getTagStoragePID();
+            $GLOBALS['TYPO3_DB']->exec_DELETEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid . ' AND pid = ' . $storagePID);
+		}
 	}
 
 
@@ -211,9 +224,9 @@ class tx_tagpack_api {
 	 * @param	$tagName		a string containing the name of the tag
 	 * @return	array			an array containing pairs of "uid" and "table"
 	 */
-	function getAttachedElementsForTagName($tagName) {
+	function getAttachedElementsForTagName($tagName, $limitToTable = '') {
 		$tagData = tx_tagpack_api::getTagDataByName($tagName);
-		return tx_tagpack_api::getAttachedElementsForTagId($tagData['uid']);
+		return tx_tagpack_api::getAttachedElementsForTagId($tagData['uid'], $limitToTable);
 	}
 
 
@@ -224,16 +237,24 @@ class tx_tagpack_api {
 	 * @param	$tagUid		an integer that uniquely identifies the tag in the DB table
 	 * @return	array		an array containing pairs of "uid" and "table"
 	 */
-	function getAttachedElementsForTagId($tagUid) {
-		$attachedElements = array();
+	function getAttachedElementsForTagId($tagUid, $limitToTable = '') {
+		$elements = array();
 		if ($tagUid > 0) {
-			$attachedElements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'uid_foreign AS uid, tablenames AS table',
 				tx_tagpack_api::relationsTable,
 				'AND hidden = 0 AND deleted = 0 AND uid_local = ' . intval($tagUid)
+			    . ($limitToTable ? ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($limitToTable, tx_tagpack_api::relationsTable) : '')
 			);
 		}
-		return $attachedElements;
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			if ($limitToTable) {
+				$elements[] = $row['uid_foreign'];
+			} else {
+				$elements[] = array('uid' => $row['uid_foreign'], 'table' => $row['tablenames']);
+			}
+ 		}
+		return $elements;
 	}
 
 
@@ -257,33 +278,35 @@ class tx_tagpack_api {
 		}
 		$tagUid = intval($tagUid);
 
-		// now we can count the number of records currently related to the tag
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'count(*) AS relations',
-				tx_tagpack_api::relationsTable,
-				'hidden = 0 AND deleted = 0 AND uid_local = ' . $tagUid
-		);
-		$relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		$relations['relations']++;
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+        if ($tagUid) {
+		    // now we can count the number of records currently related to the tag
+		    $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+				    'count(*) AS relations',
+				    tx_tagpack_api::relationsTable,
+				    'hidden = 0 AND deleted = 0 AND uid_local = ' . $tagUid
+		    );
+		    $relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		    $relations['relations']++;
+		    $GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-		// and write back the value to the relations field of the tag
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);
+		    // and write back the value to the relations field of the tag
+		    $GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);
 
-		// and insert the new record to the relation table
-		$newRelationRow = array(
-			'uid_local'        => $tagUid,
-			'uid_foreign'      => intval($elementUid),
-			'tstamp'           => time(),
-			'crdate'           => time(),
-			'cruser_id'        => 0,
-			'sys_language_uid' => 0,
-			'deleted'          => 0,
-			'hidden'           => 0,
-			'tablenames'       => $GLOBALS['TYPO3_DB']->quoteStr($elementTable, tx_tagpack_api::relationsTable),
-			'sorting'          => 1
-		);
-		$GLOBALS['TYPO3_DB']->exec_INSERTquery(tx_tagpack_api::relationsTable, $newRelationRow);
+		    // and insert the new record to the relation table
+		    $newRelationRow = array(
+			    'uid_local'        => $tagUid,
+			    'uid_foreign'      => intval($elementUid),
+			    'tstamp'           => time(),
+			    'crdate'           => time(),
+			    'cruser_id'        => 0,
+			    'sys_language_uid' => 0,
+			    'deleted'          => 0,
+			    'hidden'           => 0,
+			    'tablenames'       => $GLOBALS['TYPO3_DB']->quoteStr($elementTable, tx_tagpack_api::relationsTable),
+			    'sorting'          => 1
+		    );
+		    $GLOBALS['TYPO3_DB']->exec_INSERTquery(tx_tagpack_api::relationsTable, $newRelationRow);
+        }
 	}
 
 
@@ -300,24 +323,30 @@ class tx_tagpack_api {
 		$tagData = tx_tagpack_api::getTagDataByTagName($tagName);
 		$tagUid = intval($tagData['uid']);
 
-		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			tx_tagpack_api::relationsTable,
-			'uid_local = ' . $tagUid . ' AND uid_foreign = ' . intval($elementUid) .
-				' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
-		);
+        if ($tagUid) {
+		    $GLOBALS['TYPO3_DB']->exec_DELETEquery(
+			    tx_tagpack_api::relationsTable,
+			    'uid_local = ' . $tagUid . ' AND uid_foreign = ' . intval($elementUid) .
+				    ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
+		    );
 
-		// now we can count the number of records currently related to the tag
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'count(*) AS relations',
-			tx_tagpack_api::relationsTable,
-			'hidden = 0 AND deleted = 0 AND uid_local = ' . $tagUid
-		);
-		$relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		$relations['relations']++;
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		    // now we can count the number of records currently related to the tag
+		    $relations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			    'count(*) AS relations',
+			    tx_tagpack_api::relationsTable,
+			    'hidden = 0 AND deleted = 0 AND uid_local = ' . $tagUid
+		    );
+		    $relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		    $relations['relations']--;
+		    $GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-		// and write back the value to the relations field of the tag
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);
+            if ($relations['relations'] == 0) {
+                tx_tagpack_api::deleteTag($tagUid, true);
+            } else {
+		        // and write back the value to the relations field of the tag
+		        $GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);    
+    	    }
+        }
 	}
 }
 
