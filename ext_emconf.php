@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext: "tagpack"
 #
-# Auto generated 19-01-2009 11:34
+# Auto generated 02-02-2009 20:22
 #
 # Manual updates:
 # Only the data in the array - anything else is removed by next write.
