@@ -127,7 +127,7 @@
 					'.$this->cObj->enableFields($table).'
 					'.$calendarSettings.$searchSettings.$tagsSelected,
 					'mm.uid_foreign',
-					$table.'.uid,'.$table.'.'.$sortingTime.' DESC',
+					'counter DESC,'.$table.'.uid,'.$table.'.'.$sortingTime.' DESC',
 					$conf['taggedElements.']['maxItems'] );
 			} else {
 				if (count($this->pi1Vars)) {
