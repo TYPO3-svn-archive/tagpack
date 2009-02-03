@@ -1,0 +1,66 @@
+plugin {
+    tx_tagpack_pi3 = COA_INT
+    tx_tagpack_pi3 {
+        10 = USER
+	10 {
+    	    userFunc = tx_tagpack_pi3->main
+    	    taggedElements {
+        	enabledContent = {$tx_tagpack_pi1.enabledContent}
+		contentLabel = {$tx_tagpack_pi3.contentLabel}
+        	enabledRecords = {$tx_tagpack_pi1.enabledRecords}
+		recordLabels.tt_news = {$tx_tagpack_pi3.recordLabels.tt_news}
+		recordLabels.pages = {$tx_tagpack_pi3.recordLabels.pages}
+        	startingpoint = {$tx_tagpack_pi3.startingpoint}
+        	headerWrap = {$tx_tagpack_pi3.headerWrap}
+        	groupWrap = {$tx_tagpack_pi3.groupWrap}
+        	itemWrap = {$tx_tagpack_pi3.itemWrap}
+		breadcrumbWrap = {$tx_tagpack_pi3.breadcrumbWrap}
+		maxItems = 25
+		timeFields {
+#################################################
+#	    FIELD TO BE USED FOR THE TIMEFRAME
+#	    OF EACH TABLE
+#			tablename = fieldname
+#################################################
+		}
+		searchFields {
+#################################################
+#	    FIELD(S) TO BE USED FOR THE FULLLTEXT
+#	    SEARCH OF EACH TABLE
+#			tablename = fieldname
+#################################################
+		}
+		additionalFilters {
+#################################################
+#	    FIELD(S) TO BE USED FOR ADDITIONAL
+#	    FILTERING OF EACH TABLE
+#	    I.E. NEWS CATEGORIES
+#    			tablename {
+#		    	fieldname {
+#		    		GETvar = parametername
+#		        	GETvar {
+#		          		key = arrayKey if any
+#		        	}
+#		       	 	mm_table = tablename
+#		        	foreign_table = tablename
+#		    	}
+# 			}
+#################################################
+		}
+#################################################
+#	    FILL IN YOUR OWN TS FOR THE RENDERING
+#	    OF EACH TABLE'S RESULT LIST
+#	    	tablename = COA
+#	    	tablename {
+#			10 = TEXT
+#			10.data = {field:somefield}
+#	    	}
+#################################################
+    	    }
+    	    renderObj = COA
+    	    renderObj {
+        	wrap = {$tx_tagpack_pi3.allWrap}
+    	    }
+	}
+    }
+}
