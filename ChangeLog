@@ -1,3 +1,7 @@
+0.4.3	09-02-05 JoH asenau  <jh@eqony.com>
+	
+	fixed a bug with tags containing the Character - (minus) 
+
 0.4.1	09-02-03 JoH asenau  <jh@eqony.com>
 	
 	fixed a bug regarding listing of elements when in tagcrumb-mode

@@ -69,7 +69,7 @@ class tx_tagpack_realurl {
 
 		}
 		if($valueList) {
-		    return strtolower(str_replace(' ','-',$valueList));
+		    return strtolower(str_replace(' ','--',$valueList));
 		} else {
 		    return '';
 		}
@@ -81,7 +81,7 @@ class tx_tagpack_realurl {
 		if(count($valueArray)) {
 		    foreach($valueArray as $name) {
 			if($name) {
-			    $name = str_replace('-',' ',$name);
+			    $name = str_replace('--',' ',$name);
 			    $uid = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid','tx_tagpack_tags','name LIKE \''.$name.'\' AND pid IN ('.$getTagsFromPid.')');
 			    $valueList .= $valueList ? ','.$uid[0]['uid'] : $uid[0]['uid'];
 			}
