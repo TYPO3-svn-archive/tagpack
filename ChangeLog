@@ -1,3 +1,7 @@
+0.5.2	09-02-06 JoH asenau  <jh@eqony.com>
+	
+	fixed a bug TS-Setup for result lists of tagged records of pages and tt_content using wrong constant names
+
 0.5.1	09-02-06 JoH asenau  <jh@eqony.com>
 	
 	added example TS-Setup for result lists of tagged records of pages and tt_content
