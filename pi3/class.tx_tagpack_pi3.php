@@ -70,11 +70,13 @@
 			if ($conf['taggedElements.']['enabledContent'] && count($tags)) {
 				$conf['renderObj.']['10.']['value'] .= $this->makeElementList('tt_content', $conf, $tags, $tagUid);
 			}
-			$enabledRecords = t3lib_div::trimexplode(',', $conf['taggedElements.']['enabledRecords']);
-			foreach($enabledRecords as $table) {
-				$tables = $GLOBALS['TYPO3_DB']->admin_get_tables();
-				if (($tables[$table]['Name'] == $table || $tables[$table] == $table)) {
-					$conf['renderObj.']['10.']['value'] .= $this->makeElementList($table, $conf, $tags, $tagUid);
+			if ($conf['taggedElements.']['enabledRecords'] && count($tags)) {
+				$enabledRecords = t3lib_div::trimexplode(',', $conf['taggedElements.']['enabledRecords']);
+				foreach($enabledRecords as $table) {
+					$tables = $GLOBALS['TYPO3_DB']->admin_get_tables();
+					if (($tables[$table]['Name'] == $table || $tables[$table] == $table)) {
+						$conf['renderObj.']['10.']['value'] .= $this->makeElementList($table, $conf, $tags, $tagUid);
+					}
 				}
 			}
 			return $this->cObj->cObjGetSingle($conf['renderObj'], $conf['renderObj.']);

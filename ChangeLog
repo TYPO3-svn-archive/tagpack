@@ -1,3 +1,7 @@
+0.5.5	09-02-06 JoH asenau  <jh@eqony.com>
+	
+	added a check for an empty enabledRecords section in result list configuration to avoid a TCA bug shown in the frontend
+
 0.5.4	09-02-06 JoH asenau  <jh@eqony.com>
 	
 	removed invalid character from static setup.txt of the tagcloud
