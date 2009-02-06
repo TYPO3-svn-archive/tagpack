@@ -20,7 +20,7 @@ plugin {
 					modeSwitch = {$plugin.tx_tagpack_pi1.modeSwitch}
 					searchBox = {$plugin.tx_tagpack_pi1.searchBox}
 					calendar = {$plugin.tx_tagpack_pi1.calendar}
-		^			fontColor = {$plugin.tx_tagpack_pi1.fontColor}
+					fontColor = {$plugin.tx_tagpack_pi1.fontColor}
 					generalStdWrap {
 						wrap = <div class="tx-tagpack-pi1-tagcloud">|</div>
 					}
