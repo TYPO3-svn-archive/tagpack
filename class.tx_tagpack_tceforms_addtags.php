@@ -641,7 +641,7 @@
 							$tagPidList = t3lib_div::trimexplode(',',($TSconfig['properties']['getTagsFromPid'] ? intval($TSconfig['properties']['getTagsFromPid']) : '0'));
 							$tagPid = count($tagPidList) ? $tagPidList[0] : 0;
 							$new_tag_Row = array (
-							'name' => $tagName,
+							'name' => preg_replace('/[^\w\d -]/si','',$tagName),
 								'tstamp' => intval($timeNow),
 								'crdate' => intval($timeNow),
 								'cruser_id' => '0',
@@ -650,7 +650,7 @@
 								'deleted' => '0',
 								'hidden' => '0',
 								'relations' => '1' );
-							// and insert the new record to the relation table
+							// and insert the new record to tag table
 							$GLOBALS['TYPO3_DB']->exec_INSERTquery(
 							'tx_tagpack_tags',
 								$new_tag_Row );

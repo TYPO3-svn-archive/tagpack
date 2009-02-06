@@ -159,7 +159,7 @@
 				$typolink['useCacheHash'] = 1;
 				if (count($tagArray)) {
 					foreach($tagArray as $tagValues) {
-						$text = $tagValues['name'];
+						$text = stripslashes($tagValues['name']);
 						if ($this->piVars['filtermode'] === 'on') {
 							$typolink['additionalParams'] = '&'.$this->prefixId.'[uid]='.($this->piVars['uid'] ? $this->piVars['uid'].','.$tagValues['uid'] : $tagValues['uid']);
 						} else {

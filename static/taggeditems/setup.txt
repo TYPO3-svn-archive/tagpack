@@ -5,16 +5,16 @@ plugin {
 	10 {
     	    userFunc = tx_tagpack_pi3->main
     	    taggedElements {
-        	enabledContent = {$tx_tagpack_pi1.enabledContent}
-		contentLabel = {$tx_tagpack_pi3.contentLabel}
-        	enabledRecords = {$tx_tagpack_pi1.enabledRecords}
-		recordLabels.tt_news = {$tx_tagpack_pi3.recordLabels.tt_news}
-		recordLabels.pages = {$tx_tagpack_pi3.recordLabels.pages}
-        	startingpoint = {$tx_tagpack_pi3.startingpoint}
-        	headerWrap = {$tx_tagpack_pi3.headerWrap}
-        	groupWrap = {$tx_tagpack_pi3.groupWrap}
-        	itemWrap = {$tx_tagpack_pi3.itemWrap}
-		breadcrumbWrap = {$tx_tagpack_pi3.breadcrumbWrap}
+        	enabledContent = {$plugin.tx_tagpack_pi1.enabledContent}
+		contentLabel = {$plugin.tx_tagpack_pi3.contentLabel}
+        	enabledRecords = {$plugin.tx_tagpack_pi1.enabledRecords}
+		recordLabels.tt_news = {$plugin.tx_tagpack_pi3.recordLabels.tt_news}
+		recordLabels.pages = {$plugin.tx_tagpack_pi3.recordLabels.pages}
+        	startingpoint = {$plugin.tx_tagpack_pi3.startingpoint}
+        	headerWrap = {$plugin.tx_tagpack_pi3.headerWrap}
+        	groupWrap = {$plugin.tx_tagpack_pi3.groupWrap}
+        	itemWrap = {$plugin.tx_tagpack_pi3.itemWrap}
+		breadcrumbWrap = {$plugin.tx_tagpack_pi3.breadcrumbWrap}
 		maxItems = 25
 		timeFields {
 #################################################
@@ -59,7 +59,7 @@ plugin {
     	    }
     	    renderObj = COA
     	    renderObj {
-        	wrap = {$tx_tagpack_pi3.allWrap}
+        	wrap = {$plugin.tx_tagpack_pi3.allWrap}
     	    }
 	}
     }

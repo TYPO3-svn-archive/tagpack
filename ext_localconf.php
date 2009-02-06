@@ -1,5 +1,12 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
+
+$lConf = unserialize($_EXTCONF);
+t3lib_extMgm::addPageTSConfig('
+	tx_tagpack_tags.taggedTables = '.$lConf['taggedTables'].'
+	tx_tagpack_tags.getTagsFromPid = '.$lConf['getTagsFromPid'].'
+');
+
 t3lib_extMgm::addUserTSConfig('
 	options.saveDocNew.tx_tagpack_tags=1
 ');

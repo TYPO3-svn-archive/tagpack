@@ -4,34 +4,34 @@ plugin {
         userFunc = tx_tagpack_pi1->main
 	userFunc {
 	    tagcloudElements {
-    		enabledContent = {$tx_tagpack_pi1.enabledContent}
-    		enabledRecords = {$tx_tagpack_pi1.enabledRecords}
+    		enabledContent = {$plugin.tx_tagpack_pi1.enabledContent}
+    		enabledRecords = {$plugin.tx_tagpack_pi1.enabledRecords}
     	    }
 	    renderObj = COA_INT
     	    renderObj {
     		10 = USER
     		10 {
             	    userFunc = tx_tagpack_pi1->makeTagCloud
-		    tagPidList = {$tx_tagpack_pi1.tagPidList}
-            	    targetPid = {$tx_tagpack_pi1.targetPid}
-            	    minFontSize = {$tx_tagpack_pi1.minFontSize}
-            	    maxFontSize = {$tx_tagpack_pi1.maxFontSize}
-            	    maxNumberOfSizes = {$tx_tagpack_pi1.maxNumberOfSizes}
-            	    modeSwitch = {$tx_tagpack_pi1.modeSwitch}
-            	    searchBox = {$tx_tagpack_pi1.searchBox}
-            	    calendar = {$tx_tagpack_pi1.calendar}
-            	    fontColor = {$tx_tagpack_pi1.fontColor}
+		    tagPidList = {$plugin.tx_tagpack_pi1.tagPidList}
+            	    targetPid = {$plugin.tx_tagpack_pi1.targetPid}
+            	    minFontSize = {$plugin.tx_tagpack_pi1.minFontSize}
+            	    maxFontSize = {$plugin.tx_tagpack_pi1.maxFontSize}
+            	    maxNumberOfSizes = {$plugin.tx_tagpack_pi1.maxNumberOfSizes}
+            	    modeSwitch = {$plugin.tx_tagpack_pi1.modeSwitch}
+            	    searchBox = {$plugin.tx_tagpack_pi1.searchBox}
+            	    calendar = {$plugin.tx_tagpack_pi1.calendar}
+            	    fontColor = {$plugin.tx_tagpack_pi1.fontColor}
 		    generalStdWrap {
             		wrap = <div class="tagpack-tagcloud">|</div>		    
 		    }
 		    linkBoxStdWrap {
-			wrap = {$tx_tagpack_pi1.label.tagCloud}<div class="tagpack-linkbox">|</div>
+			wrap = {$plugin.tx_tagpack_pi1.label.tagCloud}<div class="tagpack-linkbox">|</div>
 		    }
 		    linkStdWrap {
 			wrap = <span>|</span>
 		    }
 		    modeSwitchStdWrap {
-			wrap = {$tx_tagpack_pi1.label.modeSwitch}<div class="tagpack-modeswitch">|</div>
+			wrap = {$plugin.tx_tagpack_pi1.label.modeSwitch}<div class="tagpack-modeswitch">|</div>
 		    }
 		    keepGetVars {
 			###################################
@@ -41,13 +41,13 @@ plugin {
 			###################################			
 		    }
 		    searchBoxStdWrap {
-			wrap = {$tx_tagpack_pi1.label.searchBox}<div class="tagpack-searchbox">|</div>
+			wrap = {$plugin.tx_tagpack_pi1.label.searchBox}<div class="tagpack-searchbox">|</div>
 		    }
 		    calendarStdWrap {
-			wrap = {$tx_tagpack_pi1.label.calendar}<div class="tagpack-calendar">|</div>
+			wrap = {$plugin.tx_tagpack_pi1.label.calendar}<div class="tagpack-calendar">|</div>
 		    }
-		    calendarFrom = {$tx_tagpack_pi1.label.calendarFrom}
-		    calendarTo = {$tx_tagpack_pi1.label.calendarTo}
+		    calendarFrom = {$plugin.tx_tagpack_pi1.label.calendarFrom}
+		    calendarTo = {$plugin.tx_tagpack_pi1.label.calendarTo}
 		}
 	    }
         }
