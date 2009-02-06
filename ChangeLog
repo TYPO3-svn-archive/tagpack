@@ -1,3 +1,8 @@
+0.5.1	09-02-06 JoH asenau  <jh@eqony.com>
+	
+	added example TS-Setup for result lists of tagged records of pages and tt_content
+	changed CSS-classes (they contain the official extension name as a prefix now)
+
 0.5.0	09-02-06 JoH asenau  <jh@eqony.com>
 	
 	added basic settings for the installation with the extension manager
