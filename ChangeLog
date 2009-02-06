@@ -1,3 +1,7 @@
+0.5.3	09-02-06 JoH asenau  <jh@eqony.com>
+	
+	fixed a bug: TS-Setup for result lists using non existing constants
+
 0.5.2	09-02-06 JoH asenau  <jh@eqony.com>
 	
 	fixed a bug TS-Setup for result lists of tagged records of pages and tt_content using wrong constant names

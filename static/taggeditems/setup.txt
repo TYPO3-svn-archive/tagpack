@@ -8,7 +8,6 @@ plugin {
 				enabledContent = {$plugin.tx_tagpack_pi1.enabledContent}
 				contentLabel = {$plugin.tx_tagpack_pi3.contentLabel}
 				enabledRecords = {$plugin.tx_tagpack_pi1.enabledRecords}
-				recordLabels.tt_news = {$plugin.tx_tagpack_pi3.recordLabels.tt_news}
 				recordLabels.pages = {$plugin.tx_tagpack_pi3.recordLabels.pages}
 				startingpoint = {$plugin.tx_tagpack_pi3.startingpoint}
 				headerWrap = {$plugin.tx_tagpack_pi3.headerWrap}
