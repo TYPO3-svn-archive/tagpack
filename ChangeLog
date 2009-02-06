@@ -1,0 +1,54 @@
+0.4.3	09-02-05 JoH asenau  <jh@eqony.com>
+	
+	fixed a bug with tags containing the Character - (minus) 
+
+0.4.1	09-02-03 JoH asenau  <jh@eqony.com>
+	
+	fixed a bug regarding listing of elements when in tagcrumb-mode
+
+0.4.0	09-02-02 JoH asenau  <jh@eqony.com>
+	
+	added handler for version, inlineLocalizeSynchronize and hidden/unhidden elements with tags
+	fixed a bug regarding deleting and undeleting of tagged items
+
+0.3.3	08-10-12 JoH asenau  <info@cybercraft.de>
+	
+	added some icons
+	fixed a bug regarding selection of items with multiple tags	
+
+0.3.2	08-09-13 JoH asenau  <info@cybercraft.de>
+	
+	* removed one intval check that prevented new connection of tags if there were no existing tags available	
+
+0.3.1	08-09-12 JoH asenau  <info@cybercraft.de>
+	
+	* removed a debug output
+	* secured DB queries against possible attacks
+
+0.3.0	08-09-12 JoH asenau  <info@cybercraft.de>
+	
+	* fixed some bugs with empty datamap entries for the tag field
+	* database operations other than editing don't destroy the relations anymore
+
+0.2.0	08-07-14 JoH asenau  <info@cybercraft.de>
+	
+	* plugins for the tagcloud and a tagged items list are final
+	* the tagcloud can be pimped with
+	    a searchbox,
+	    a switch between filtermode and surfmode as well as 
+	    a calendar for time frame settings
+	* recognition for additional URL parameters can be enabled as well
+	* plugin for the nomination of tags still pending
+
+0.1.0	08-01-14 JoH asenau  <info@cybercraft.de>
+	
+	* Backend works as expected
+	* You can create Tags and assign them to tables listed in
+	  TSconfig 'tx_tagpack_tags.taggedTables'
+	* no modules or plugins available yet
+
+08-01-11 JoH asenau  <info@cybercraft.de>
+
+	* Initial release
+	
+	
