@@ -1,0 +1,38 @@
+tx_tagpack_pi1 {
+    # cat=Tagpack - Tagcloud; type=string; label=No info yet
+	enabledContent = 
+    # cat=Tagpack - Tagcloud; type=string; label=No info yet
+	enabledRecords =
+    # cat=Tagpack - Tagcloud; type=int+; label=No info yet
+	startingpoint =
+    # cat=Tagpack - Tagcloud; type=int+; label=No info yet
+	targetPid =
+    # cat=Tagpack - Tagcloud; type=int+; label=Minimal font size for the least used tag
+	minFontSize = 9
+    # cat=Tagpack - Tagcloud; type=int+; label=Maximum font size for the most used tag
+	maxFontSize = 16
+    # cat=Tagpack - Tagcloud; type=int+; label=Maximum number of different font sizes
+	maxNumberOfSizes = 5
+    # cat=Tagpack - Tagcloud; type=boolean; label=Display the Mode Switcher
+	modeSwitch = 0
+    # cat=Tagpack - Tagcloud; type=boolean; label=Display the Search Box
+	searchBox = 0
+    # cat=Tagpack - Tagcloud; type=boolean; label=Display the Calendar (requires rlmp_dateselectlib)
+	calendar = 0
+    # cat=Tagpack - Tagcloud; type=string; label=Color of the tags (applied as CSS)
+	fontColor = 
+	label {
+	    # cat=Tagpack - Tagcloud; type=string; label=Label for the headline of the plugin
+		tagCloud = Tagcloud
+	    # cat=Tagpack - Tagcloud; type=string; label=Label for the mode switcher
+		modeSwitch = Switch mode
+	    # cat=Tagpack - Tagcloud; type=string; label=Label for the search box
+		searchBox = Search
+	    # cat=Tagpack - Tagcloud; type=string; label=Label for the calendar
+		calendar = Calendar
+	    # cat=Tagpack - Tagcloud; type=string; label=Label for the calendar "From"
+		calendarFrom = From
+	    # cat=Tagpack - Tagcloud; type=string; label=Label for the calendar "To"
+		calendarTo = To
+	}
+}
