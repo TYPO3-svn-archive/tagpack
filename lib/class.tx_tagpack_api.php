@@ -126,7 +126,11 @@ class tx_tagpack_api {
 				}
 			}
 			$storagePID = tx_tagpack_api::getTagStoragePID();
-			$GLOBALS['TYPO3_DB']->exec_DELETEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid . ' AND pid = ' . $storagePID);
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+			    tx_tagpack_api::tagTable,
+			    'uid = ' . $tagUid . ' AND pid = ' . $storagePID,
+			    array('deleted' => 1)
+			);
 		}
 	}
 
@@ -197,12 +201,12 @@ class tx_tagpack_api {
 	 * @param	$elementTable	the table of the element
 	 * @return	array			an array containing all tag UIDs 
 	 */
-	function getAttachedTagsForElement($elementUid, $elementTable) {
+	function getAttachedTagIdsForElement($elementUid, $elementTable) {
 		$tagUids = array();
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid_local',
 			tx_tagpack_api::relationsTable,
-			'tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, 'tx_tagpack_tags_relations_mm')
+			'tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
 			 . ' AND hidden = 0 AND deleted = 0 AND uid_foreign = ' . intval($elementUid)
 		);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
@@ -210,6 +214,33 @@ class tx_tagpack_api {
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);	
 		return $tagUids;
+	}
+
+	/**
+	 * Returns an array with the all tags (and their data) that are attached
+	 * to any element (UID / table pair) found in the DB
+	 * The two parameters are basically something like
+	 * $elementUid = 12, $elementTable = 'tt_news'. This function then returns all
+	 * tags in form of an array that are attached to this element
+	 * 
+	 * @param	$elementUid		the UID of the element
+	 * @param	$elementTable	the table of the element
+	 * @return	array			a multi-dimensional array containing all tagdata infos 
+	 */
+	function getAttachedTagsForElement($elementUid, $elementTable) {
+		$tags = array();
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'tg.*',
+			tx_tagpack_api::relationsTable . ' AS mm, ' . tx_tagpack_api::tagTable . ' AS tg',
+			'mm.uid_local = tg.uid '
+			. ' AND mm.tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
+			. ' AND mm.hidden = 0 AND mm.deleted = 0 AND mm.uid_foreign = ' . intval($elementUid)
+		);
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$tags[] = $row;
+		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);	
+		return $tags;
 	}
 
 
@@ -221,7 +252,7 @@ class tx_tagpack_api {
 	 * @return	array			an array containing pairs of "uid" and "table"
 	 */
 	function getAttachedElementsForTagName($tagName, $limitToTable = '') {
-		$tagData = tx_tagpack_api::getTagDataByName($tagName);
+		$tagData = tx_tagpack_api::getTagDataByTagName($tagName);
 		return tx_tagpack_api::getAttachedElementsForTagId($tagData['uid'], $limitToTable);
 	}
 
@@ -236,18 +267,18 @@ class tx_tagpack_api {
 	function getAttachedElementsForTagId($tagUid, $limitToTable = '') {
 		$elements = array();
 		if ($tagUid > 0) {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				'uid_foreign AS uid, tablenames AS table',
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+				'uid_foreign, tablenames',
 				tx_tagpack_api::relationsTable,
 				'hidden = 0 AND deleted = 0 AND uid_local = ' . intval($tagUid)
 				. ($limitToTable ? ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($limitToTable, tx_tagpack_api::relationsTable) : '')
 			);
-		}
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			if ($limitToTable) {
-				$elements[] = $row['uid_foreign'];
-			} else {
-				$elements[] = array('uid' => $row['uid_foreign'], 'table' => $row['tablenames']);
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
+				if ($limitToTable) {
+					$elements[] = $row[0];
+				} else {
+					$elements[] = array('uid' => $row[0], 'table' => $row[1]);
+				}
 			}
 		}
 		return $elements;
@@ -307,7 +338,7 @@ class tx_tagpack_api {
 
 
 	/**
-	 * Removes a tag from an element pair (uid, tbale)
+	 * Removes a tag from an element pair (uid, table)
 	 * 
 	 * @param	$tagName		a string containing the name of the tag
 	 * @param	$elementUid		the UID of the element that will be used
@@ -320,10 +351,11 @@ class tx_tagpack_api {
 		$tagUid = intval($tagData['uid']);
 
 		if ($tagUid) {
-			$GLOBALS['TYPO3_DB']->exec_DELETEquery(
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 				tx_tagpack_api::relationsTable,
 				'uid_local = ' . $tagUid . ' AND uid_foreign = ' . intval($elementUid)
-				. ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
+				. ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable),
+				array('deleted' => 1)
 			);
 
 			// now we can count the number of records currently related to the tag
