@@ -21,30 +21,30 @@
 	*
 	*  This copyright notice MUST APPEAR in all copies of the script!
 	***************************************************************/
-	 
+
 	require_once(PATH_tslib.'class.tslib_pibase.php');
-	 
+
 	/**
-	* Plugin 'Tag Cloud' for the 'tagpack' extension.
-	*
-	* @author JoH asenau <info@cybercraft.de>
-	* @package TYPO3
-	* @subpackage tx_tagpack
-	*/
+	 * Plugin 'Tag Cloud' for the 'tagpack' extension.
+	 *
+	 * @author JoH asenau <info@cybercraft.de>
+	 * @package TYPO3
+	 * @subpackage tx_tagpack
+	 */
 	class tx_tagpack_pi1 extends tslib_pibase {
 		var $prefixId = 'tx_tagpack_pi1';
 		// Same as class name
 		var $scriptRelPath = 'pi1/class.tx_tagpack_pi1.php'; // Path to this script relative to the extension dir.
 		var $extKey = 'tagpack'; // The extension key.
 		var $pi_checkCHash = true;
-		 
+
 		/**
-		* The main method of the PlugIn
-		*
-		* @param string  $content: The PlugIn content
-		* @param array  $conf: The PlugIn configuration
-		* @return The content that is displayed on the website
-		*/
+ * The main method of the PlugIn
+ *
+ * @param	string		$content: The PlugIn content
+ * @param	array		$conf: The PlugIn configuration
+ * @return	The		content that is displayed on the website
+ */
 		function main($content, $conf) {
 			$conf = $conf['userFunc.']['renderObj'] ? $conf['userFunc.'] :
 			$conf;
@@ -53,16 +53,30 @@
 			$table = $record[0];
 			if (($table == 'tt_content' && t3lib_div::inList($elements['enabledContent'], $this->cObj->data['CType'])) || t3lib_div::inList($conf['enabledRecords'], $table) || $this->cObj->data['CType'] == 'tagpack_pi1') {
 				$tagcloud = $this->cObj->cObjGetSingle($conf['renderObj'], $conf['renderObj.']);
-				 
+
 				return $content.'
 					'.$tagcloud;
 			} else {
 				return $content;
 			}
 		}
-		 
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$content: ...
+	 * @param	[type]		$conf: ...
+	 * @return	[type]		...
+	 */
 		function makeTagCloud($content, $conf) {
+			$conf['maxFontSize'] = $conf['maxFontSize'] ? $conf['maxFontSize'] : 24;
+			$conf['minFontSize'] = $conf['minFontSize'] ? $conf['minFontSize'] : 9;
+			$conf['maxNumberOfSizes'] = $conf['maxNumberOfSizes'] ? $conf['maxNumberOfSizes'] : 10;
+			$conf['fontColor'] = $conf['fontColor'] ? $conf['fontColor'] : '#000000';
 			$record = t3lib_div::trimExplode(':', $this->cObj->currentRecord);
+			$getTagsFromPidList = $conf['tagPidList'] ? $conf['tagPidList'] : 0;
+			$getTagsFromPidList = implode(',',t3lib_div::trimExplode(',',$getTagsFromPidList));
+			$pid = 'tt.pid IN ('.$getTagsFromPidList.') AND ';
 			if ($conf['singleItemCloud']) {
 				$table = 'tablenames=\''.$conf['tableName'].'\' AND ';
 				$uid = 'mm.uid_foreign IN('.$this->cObj->data['uid'].') AND ';
@@ -75,7 +89,7 @@
 							$taggedItems = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 							'uid_foreign,tablenames',
 								'tx_tagpack_tags_relations_mm AS mm, tx_tagpack_tags AS tt',
-								$table.$uid.'mm.uid_local=tt.uid
+								$table.$uid.$pid.'mm.uid_local=tt.uid
 								AND mm.uid_local='.intval($selectedUid).'
 								AND NOT mm.deleted
 								AND NOT mm.hidden
@@ -106,12 +120,12 @@
 							$filteritems .= $uidItems.'))';
 						}
 					}
-					$filteritems .= ') AND ';
+					$filteritems .= $filteritems ? ') AND ' : '';
 				}
 				$tagRelations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'relations',
 					'tx_tagpack_tags_relations_mm AS mm,tx_tagpack_tags AS tt',
-					$table.$uid.$filteritems.'tt.uid=uid_local
+					$table.$uid.$pid.$filteritems.'tt.uid=uid_local
 					AND NOT mm.deleted
 					AND NOT mm.hidden
 					AND NOT tt.deleted
@@ -130,7 +144,7 @@
 				$tagArray = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'uid,name,relations',
 					'tx_tagpack_tags_relations_mm AS mm,tx_tagpack_tags AS tt',
-					$table.$uid.$filteritems.'tt.uid=mm.uid_local
+					$table.$uid.$pid.$filteritems.'tt.uid=mm.uid_local
 					AND NOT mm.deleted
 					AND NOT mm.hidden
 					AND NOT tt.deleted
@@ -145,7 +159,7 @@
 				$typolink['useCacheHash'] = 1;
 				if (count($tagArray)) {
 					foreach($tagArray as $tagValues) {
-						$text = $tagValues['name'];
+						$text = stripslashes($tagValues['name']);
 						if ($this->piVars['filtermode'] === 'on') {
 							$typolink['additionalParams'] = '&'.$this->prefixId.'[uid]='.($this->piVars['uid'] ? $this->piVars['uid'].','.$tagValues['uid'] : $tagValues['uid']);
 						} else {
@@ -180,27 +194,33 @@
 							'.$this->cObj->stdWrap($this->cObj->typolink($text, $typolink), $conf['linkStdWrap.']).' ';
 					}
 				}
-				 
+
 				$content = $content ? $this->cObj->stdWrap($content, $conf['linkBoxStdWrap.']) :
 				'';
-				 
+
 				if ($conf['modeSwitch'] && !$conf['singleItemCloud']) {
 					$content = $content.$this->makeModeSwitch($conf);
 				}
-				 
+
 				if ($conf['searchBox'] && !$conf['singleItemCloud']) {
 					$content = $this->makeSearchBox($conf).$content;
 				}
-				 
+
 				if ($conf['calendar'] && !$conf['singleItemCloud']) {
 					$content .= $this->makeCalendar($conf);
 				}
-				 
+
 				return $content ? $this->cObj->stdWrap($content, $conf['generalStdWrap.']) :
 				'';
 			}
 		}
-		 
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$conf: ...
+	 * @return	[type]		...
+	 */
 		function makeModeSwitch($conf) {
 			$firstUidArray = t3lib_div::intExplode(',', $this->piVars['uid']);
 			foreach($firstUidArray as $key => $val) {
@@ -245,7 +265,13 @@
 			$modeSwitch .= $this->cObj->typolink('RESET', $typolink);
 			return $this->cObj->stdWrap($modeSwitch, $conf['modeSwitchStdWrap.']);
 		}
-		 
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$conf: ...
+	 * @return	[type]		...
+	 */
 		function makeSearchBox($conf) {
 			$typolinkConf = array(
 			'parameter' => $GLOBALS['TSFE']->id,
@@ -279,7 +305,13 @@
 			$searchBox .= '</form><br />';
 			return $this->cObj->stdWrap($searchBox, $conf['searchBoxStdWrap.']);
 		}
-		 
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$conf: ...
+	 * @return	[type]		...
+	 */
 		function makeCalendar($conf) {
 			if (t3lib_extMgm::isLoaded('rlmp_dateselectlib')) {
 				require_once(t3lib_extMgm::extPath('rlmp_dateselectlib').'class.tx_rlmpdateselectlib.php');
@@ -322,11 +354,11 @@
 			return $this->cObj->stdWrap($calendar, $conf['calendarStdWrap.']);
 		}
 	}
-	 
-	 
-	 
+
+
+
 	if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi1/class.tx_tagpack_pi1.php']) {
 		include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi1/class.tx_tagpack_pi1.php']);
 	}
-	 
+
 ?>
