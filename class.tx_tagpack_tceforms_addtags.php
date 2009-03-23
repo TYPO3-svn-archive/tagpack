@@ -110,34 +110,18 @@ class tx_tagpack_tceforms_addtags {
 		if ($field == 'tx_tagpack_tags' && strpos($row['uid'], 'NEW') === false) {
 
 			// get the related records that are already assigned as tags to the current record
-			$mmRows = tx_tagpack_api::getAttachedTagsForElement($row['uid'], $table);
+			$itemRows = tx_tagpack_api::getAttachedTagsForElement($row['uid'], $table);
 
-			// if there are any records, create a list of their uids
-			if (count($mmRows)) {
-				foreach ($mmRows as $mmVal) {
-					$uidList .= ($uidList ? ',' : '') . intval($mmVal['uid_local']);
-				}
-			}
-
-			// fetch the real records just to make sure they are available
-			// and because we need their names as a label
-			if ($uidList) {
-				$itemRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-					'*',
-					'tx_tagpack_tags',
-					'uid IN (' . $uidList . ')',
-					'',
-					'name'
-				);
-			}
 			if (count($itemRows)) {
 				foreach ($itemRows as $key => $val) {
 					//create the option list
-					$optionList .= '<option value="' . $val['uid'] . '">' . $val['name'] . '</option>
+					$optionArray[$val['name']] = '<option value="' . $val['uid'] . '">' . $val['name'] . '</option>
 						';
 					// and create the list of uids for the hidden input field
 					$hiddenList .= ($hiddenList ? ','.$val['uid'] : $val['uid']);
 				}
+				ksort($optionArray);
+				$optionList = implode('',$optionArray);
 			}
 			 
 			// add both of the newly created lists to $out
