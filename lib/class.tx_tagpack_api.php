@@ -351,11 +351,10 @@ class tx_tagpack_api {
 		$tagUid = intval($tagData['uid']);
 
 		if ($tagUid) {
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+			$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 				tx_tagpack_api::relationsTable,
 				'uid_local = ' . $tagUid . ' AND uid_foreign = ' . intval($elementUid)
-				. ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable),
-				array('deleted' => 1)
+				. ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
 			);
 
 			// now we can count the number of records currently related to the tag
@@ -365,15 +364,10 @@ class tx_tagpack_api {
 				'hidden = 0 AND deleted = 0 AND uid_local = ' . $tagUid
 			);
 			$relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			$relations['relations']--;
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-			if ($relations['relations'] == 0) {
-				tx_tagpack_api::deleteTag($tagUid, true);
-			} else {
-				// and write back the value to the relations field of the tag
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);	 
-			}
+			// and write back the value to the relations field of the tag
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);	 
 		}
 	}
 }
