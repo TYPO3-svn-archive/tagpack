@@ -277,7 +277,9 @@ class tx_tagpack_api {
 			tx_tagpack_api::relationsTable . ' AS mm, ' . tx_tagpack_api::tagTable . ' AS tg',
 			'mm.uid_local = tg.uid '
 			. ' AND mm.tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
-			. ' AND mm.hidden = 0 AND mm.deleted = 0 AND mm.uid_foreign = ' . intval($elementUid)
+			. ' AND mm.hidden = 0 AND mm.deleted = 0 AND mm.uid_foreign = ' . intval($elementUid),
+			'',
+			'tg.name ASC'
 		);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$tags[] = $row;
