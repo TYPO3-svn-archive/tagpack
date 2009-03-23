@@ -349,18 +349,12 @@ class tx_tagpack_tceforms_addtags {
 				if (!$selectedTagUids[$valueArray['uid_local']]) {
 					 
 					// now we must get the number of relations of this tag and decrement it
-					$currentRelations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-					'count(*) AS relations',
-						'tx_tagpack_tags_relations_mm',
-						'NOT hidden
-						AND NOT deleted
-						AND uid_local='.$valueArray['uid_local'] );
-					$currentRelations[0]['relations']--;
-					$relations = $currentRelations[0];
+					$currentRelations = tx_tagpack_api::getAttachedElementsForTagId(intval($valueArray['uid_local']));
+					$relations = count($currentRelations) ? count($currentRelations)-1 : 0 ;
 					 
 					// the new number of relations has to be saved back again
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-					'tx_tagpack_tags',
+					tx_tagpack_api::tagTable,
 						$where,
 						$relations );
 					 
@@ -379,7 +373,7 @@ class tx_tagpack_tceforms_addtags {
 							// first we get all the relations for any child element of the record
 							$sub_MM_Rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 							'*',
-								'tx_tagpack_tags_relations_mm',
+								tx_tagpack_api::relationsTable,
 								'NOT hidden
 								AND pid_foreign='.$id );
 							 
@@ -403,11 +397,7 @@ class tx_tagpack_tceforms_addtags {
 						unset($current_MM_Rows[$key]);
 						 
 						// and remove the relation from the table
-						$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-						'tx_tagpack_tags_relations_mm',
-							'uid_local='.intval($valueArray['uid_local']).'
-							AND uid_foreign='.intval($valueArray['uid_foreign']).'
-							AND tablenames=\''.$valueArray['tablenames'].'\'' );
+						tx_tagpack_api::removeTagFromElement($valueArray['uid_local'], $valueArray['uid_foreign'], $valueArray['tablenames']);
 					}
 				} else {
 					// if there are tags in the taglist we have to check for the 'undelete' command
@@ -420,24 +410,19 @@ class tx_tagpack_tceforms_addtags {
 						$current_MM_Rows[$key]['pid_foreign'] = $pid;
 						 
 						// now we can count the number of records currently related to the tag
-						$currentRelations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-						'count(*) AS relations',
-							'tx_tagpack_tags_relations_mm',
-							'NOT hidden
-							AND NOT deleted
-							AND uid_local='.intval($valueArray['uid_local']) );
-						$relations = $currentRelations[0];
+						$currentRelations = tx_tagpack_api::getAttachedElementsForTagId(intval($valueArray['uid_local']));
+						$relations['relations'] = count($currentRelations);
 						 
 						// and write back the value to the relations field of the tag
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-						'tx_tagpack_tags',
+						tx_tagpack_api::tagTable,
 							$where,
 							$relations );
 					} else {
 						// in any other case we simply have to update all related tags with the valuleArray we have built before
 						$where = 'uid_local='.$valueArray['uid_local'].' AND uid_foreign='.$valueArray['uid_foreign'].' AND tablenames=\''.$valueArray['tablenames'].'\'';
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-						    'tx_tagpack_tags_relations_mm',
+						    tx_tagpack_api::relationsTable,
 						    $where,
 						    $current_MM_Rows[$key] );
 				 
