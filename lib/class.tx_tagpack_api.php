@@ -126,8 +126,8 @@ class tx_tagpack_api {
 	/**
 	 * Removes a tag from the DB
 	 * 
-	 * @param	$tagUid	 an Integer containing the unique identifier of the tag
-	 * @param	$deleteRelations	a flag whether to remove the relations as well
+	 * @param	$tagUid	an Integer containing the unique identifier of the tag
+	 * @param	$removeRelations	a flag whether to remove the relations as well
 	 * @return	void
 	 */
 	function removeTag($tagUid, $removeRelations = true) {
