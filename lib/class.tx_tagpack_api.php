@@ -64,18 +64,33 @@ class tx_tagpack_api {
 		return intval($storagePID);
 	}
 
+
 	/**
-	 * Checks whether a tag already exists by creating a lookup on the tag
+	 * Checks whether a tag already exists by creating a lookup on the tag uid
+	 * and then returns.
+	 * 
+	 * @param	$tagUid	an integer containing the uid of the tag
+	 * @return	bool	whether it exists or not
+	 */
+	function tagExists($tagUid) {
+		$existingTag = tx_tagpack_api::getTagDataById($tagUid);
+		return (count($existingTag) ? true : false);
+	}
+
+
+	/**
+	 * Checks whether a tag already exists by creating a lookup on the tag name
 	 * and then returns.
 	 * 
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	bool		whether it exists or not
 	 */
-	function tagExists($tagName) {
+	function tagNameExists($tagName) {
 		$existingTag = tx_tagpack_api::getTagDataByTagName($tagName);
 		return (count($existingTag) ? true : false);
 	}
 	
+
 
 	/**
 	 * Adds a new tag to the DB without any relationships yet.
@@ -85,7 +100,7 @@ class tx_tagpack_api {
 	 */
 	function addTag($tagName) {
 		$tagName = trim($tagName);
-		if (!empty($tagName) && !tx_tagpack_api::tagExists($tagName)) {
+		if (!empty($tagName) && !tx_tagpack_api::tagNameExists($tagName)) {
 			$storagePID = tx_tagpack_api::getTagStoragePID();
 
 			// now we have to build the value array for the following insert action
@@ -111,19 +126,43 @@ class tx_tagpack_api {
 	/**
 	 * Removes a tag from the DB
 	 * 
-	 * @param	$tagName	a string containing the tag name
-	 * @param	$deleteRelations	a flag whether to delete the relations as well
+	 * @param	$tagUid	 an Integer containing the unique identifier of the tag
+	 * @param	$deleteRelations	a flag whether to remove the relations as well
 	 * @return	void
 	 */
-	function deleteTag($tagName, $deleteRelations = true) {
-		$tagData = tx_tagpack_api::getTagDataByTagName($tagName);
-		$tagUid = intval($tagData['uid']);
-		if ($tagUid) {
+	function removeTag($tagUid, $removeRelations = true) {
+		$tagUid = intval($tagUid);
+		if ($tagUid && tx_tagpack_api::tagExists($tagUid)) {
+			if ($removeRelations) {
+				$GLOBALS['TYPO3_DB']->exec_DELETEquery(
+					tx_tagpack_api::relationsTable,
+					'uid_local = ' . $tagUid
+				);
+			}
+			$GLOBALS['TYPO3_DB']->exec_DELETEquery(
+			    tx_tagpack_api::tagTable,
+			    'uid = ' . $tagUid
+			);
+		}
+	}
+
+
+	/**
+	 * Sets the deleted flag for a tag (used only when a tagged element gets deleted itself)
+	 * 
+	 * @param	$tagUid	 an Integer containing the unique identifier of the tag
+	 * @param	$deleteRelations	a flag whether set the relations to deleted as well
+	 * @return	void
+	 */
+	function deleteTag($tagUid, $deleteRelations = true) {
+		$tagUid = intval($tagUid);
+		if ($tagUid && tx_tagpack_api::tagExists($tagUid)) {
 			if ($deleteRelations) {
-				$elements = tx_tagpack_api::getAttachedElementsForTag($tagUid);
-				foreach ($elements as $element) {
-					tx_tagpack_api::removeTagFromElement($tagName, $element['uid'], $element['table']);
-				}
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				    tx_tagpack_api::tagTable,
+				    'uid_local = ' . $tagUid,
+				    array('deleted' => 1)
+				);
 			}
 			$storagePID = tx_tagpack_api::getTagStoragePID();
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
@@ -138,6 +177,9 @@ class tx_tagpack_api {
 	/**
 	 * Returns an array full of all information about the tag
 	 * found by the tagName
+	 * Should be used while attaching tags to elements only(!)
+	 * in any other case tags should be identified by their uid,
+	 * which will always be known if a tag already has been attached to an element
 	 * 
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	array		the result row from the DB or an empty array if nothing was found
@@ -162,6 +204,7 @@ class tx_tagpack_api {
 		}
 		return $tagData;
 	}
+
 
 	/**
 	 * Returns an array full of all information about the tag
@@ -217,7 +260,7 @@ class tx_tagpack_api {
 	}
 
 	/**
-	 * Returns an array with the all tags (and their data) that are attached
+	 * Returns an array with all the tags (and their data) that are attached
 	 * to any element (UID / table pair) found in the DB
 	 * The two parameters are basically something like
 	 * $elementUid = 12, $elementTable = 'tt_news'. This function then returns all
@@ -245,20 +288,7 @@ class tx_tagpack_api {
 
 
 	/**
-	 * Returns an array with full of element pairs (UID / table) that are attached
-	 * to a certain tagName
-	 * 
-	 * @param	$tagName		a string containing the name of the tag
-	 * @return	array			an array containing pairs of "uid" and "table"
-	 */
-	function getAttachedElementsForTagName($tagName, $limitToTable = '') {
-		$tagData = tx_tagpack_api::getTagDataByTagName($tagName);
-		return tx_tagpack_api::getAttachedElementsForTagId($tagData['uid'], $limitToTable);
-	}
-
-
-	/**
-	 * Returns an array with full of element pairs (UID / table) that are attached
+	 * Returns an array full of element pairs (UID / table) that are attached
 	 * to a certain tagUid
 	 * 
 	 * @param	$tagUid		an integer that uniquely identifies the tag in the DB table
@@ -340,17 +370,15 @@ class tx_tagpack_api {
 	/**
 	 * Removes a tag from an element pair (uid, table)
 	 * 
-	 * @param	$tagName		a string containing the name of the tag
+	 * @param	$tagUid		an integer containing the identifier of the tag
 	 * @param	$elementUid		the UID of the element that will be used
 	 * @param	$elementTable	the table of the element that will be used
 	 * @param	$elementPid		the PID of the element that will be used (not in use right now)
 	 * @return	void
 	 */
-	function removeTagFromElement($tagName, $elementUid, $elementTable) {
-		$tagData = tx_tagpack_api::getTagDataByTagName($tagName);
-		$tagUid = intval($tagData['uid']);
-
-		if ($tagUid) {
+	function removeTagFromElement($tagUid, $elementUid, $elementTable) {
+		$tagUid = intval($tagUid);
+		if ($tagUid && tx_tagpack_api::tagExists($tagUid)) {
 			$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 				tx_tagpack_api::relationsTable,
 				'uid_local = ' . $tagUid . ' AND uid_foreign = ' . intval($elementUid)
