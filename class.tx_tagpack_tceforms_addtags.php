@@ -115,13 +115,11 @@ class tx_tagpack_tceforms_addtags {
 			if (count($itemRows)) {
 				foreach ($itemRows as $key => $val) {
 					//create the option list
-					$optionArray[$val['name']] = '<option value="' . $val['uid'] . '">' . $val['name'] . '</option>
+					$optionList .= '<option value="' . $val['uid'] . '">' . $val['name'] . '</option>
 						';
 					// and create the list of uids for the hidden input field
 					$hiddenList .= ($hiddenList ? ','.$val['uid'] : $val['uid']);
 				}
-				ksort($optionArray);
-				$optionList = implode('',$optionArray);
 			}
 			 
 			// add both of the newly created lists to $out
