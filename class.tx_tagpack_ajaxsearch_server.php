@@ -96,7 +96,7 @@
 			$fieldConfig['wizards']['ajax_search']['params']['client']['startLength'] = 2;
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
-			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['additionalWhere'] = 'tx_tagpack_tags.pid='.$request['pid'];
+			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['additionalWhere'] = 'tx_tagpack_tags.pid IN('.$request['pid'].')';
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
 			 
 			 
@@ -205,14 +205,18 @@
 			}
 			 
 			$data = array();
-			 
-			$fields = $table.'.*';
-			$where = join(' AND ', $conditions);
-			$limit = '0,'.intval($config['limit'] ? $config['limit'] : 10);
-			 
-			 
-			 
-			$res = $this->db->exec_SELECTquery($fields, $tableStatement, $where, '', '', $limit);
+			
+			$limit = intval($config['limit']) ? $config['limit'] : 10;
+			$tagQuery = array(
+				$table.'.*',
+				$tableStatement,
+				join(' AND ', $conditions),
+				'',
+				'',
+				$limit
+			);
+			
+			$res = $this->db->exec_SELECTquery($tagQuery[0], $tagQuery[1], $tagQuery[2], $tagQuery[3], $tagQuery[4], $tagQuery[5]);
 			while ($row = $this->db->sql_fetch_assoc($res)) {
 				$data[] = $row;
 			}
