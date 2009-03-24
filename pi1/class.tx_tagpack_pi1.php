@@ -1,364 +1,310 @@
 <?php
-	/***************************************************************
-	*  Copyright notice
-	*
-	*  (c) 2008 JoH asenau <info@cybercraft.de>
-	*  All rights reserved
-	*
-	*  This script is part of the TYPO3 project. The TYPO3 project is
-	*  free software; you can redistribute it and/or modify
-	*  it under the terms of the GNU General Public License as published by
-	*  the Free Software Foundation; either version 2 of the License, or
-	*  (at your option) any later version.
-	*
-	*  The GNU General Public License can be found at
-	*  http://www.gnu.org/copyleft/gpl.html.
-	*
-	*  This script is distributed in the hope that it will be useful,
-	*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-	*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	*  GNU General Public License for more details.
-	*
-	*  This copyright notice MUST APPEAR in all copies of the script!
-	***************************************************************/
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2008 JoH asenau <info@cybercraft.de>
+*  All rights reserved
+*
+*  This script is part of the TYPO3 project. The TYPO3 project is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+***************************************************************/
 
-	require_once(PATH_tslib.'class.tslib_pibase.php');
+require_once(PATH_tslib.'class.tslib_pibase.php');
 
-	/**
-	 * Plugin 'Tag Cloud' for the 'tagpack' extension.
-	 *
-	 * @author JoH asenau <info@cybercraft.de>
-	 * @package TYPO3
-	 * @subpackage tx_tagpack
-	 */
-	class tx_tagpack_pi1 extends tslib_pibase {
-		var $prefixId = 'tx_tagpack_pi1';
-		// Same as class name
-		var $scriptRelPath = 'pi1/class.tx_tagpack_pi1.php'; // Path to this script relative to the extension dir.
-		var $extKey = 'tagpack'; // The extension key.
-		var $pi_checkCHash = true;
-
-		/**
- * The main method of the PlugIn
+/**
+ * Plugin 'TagControl' for the 'tagpack' extension.
  *
- * @param	string		$content: The PlugIn content
- * @param	array		$conf: The PlugIn configuration
- * @return	The		content that is displayed on the website
+ * @author JoH asenau <info@cybercraft.de>
+ * @author Thomas Allmer <at@delusionworld.com>
+ * @package TYPO3
+ * @subpackage tx_tagpack
  */
-		function main($content, $conf) {
-			$conf = $conf['userFunc.']['renderObj'] ? $conf['userFunc.'] :
-			$conf;
-			$elements = $conf['tagcloudElements.'];
-			$record = t3lib_div::trimExplode(':', $this->cObj->currentRecord);
-			$table = $record[0];
-			if (($table == 'tt_content' && t3lib_div::inList($elements['enabledContent'], $this->cObj->data['CType'])) || t3lib_div::inList($conf['enabledRecords'], $table) || $this->cObj->data['CType'] == 'tagpack_pi1') {
-				$tagcloud = $this->cObj->cObjGetSingle($conf['renderObj'], $conf['renderObj.']);
+class tx_tagpack_pi1 extends tslib_pibase {
+	var $prefixId = 'tx_tagpack_pi1'; // Same as class name
+	var $scriptRelPath = 'pi1/class.tx_tagpack_pi1.php'; // Path to this script relative to the extension dir.
+	var $extKey = 'tagpack'; // The extension key.
+	var $pi_checkCHash = true;
 
-				return $content.'
-					'.$tagcloud;
+	/**
+	 * The main method of the PlugIn
+	 *
+	 * @param	string		$content: The PlugIn content
+	 * @param	array		$conf: The PlugIn configuration
+	 * @return	The		content that is displayed on the website
+	 */
+	function main($content, $conf) {
+		$conf['selectedTags'] = $this->piVars['selectedTags'] ? t3lib_div::intExplode(',', $this->piVars['selectedTags']) : t3lib_div::intExplode(',', $conf['selectedTags']);
+		if( $conf['selectedTags'][0] == 0 )
+			$conf['selectedTags'] = array();
+		else {
+			$selectedTags = array();
+			foreach( $conf['selectedTags'] as $id => $tag )
+				$selectedTags[$tag] = $tag;
+			$conf['selectedTags'] = $selectedTags;
+		}
+
+		$conf['tagPidList'] = t3lib_div::trimExplode(',', $conf['tagPidList']);
+		$conf['enabledRecords'] = t3lib_div::trimExplode(',', $conf['enabledRecords']);
+		$conf['typolink.']['parameter'] = $conf['typolink.']['parameter'] ? $conf['typolink.']['parameter'] : $GLOBALS['TSFE']->id;
+		$conf['active.']['typolink.']['parameter'] = $conf['active.']['typolink.']['parameter'] ? $conf['active.']['typolink.']['parameter'] : $conf['typolink.']['parameter'];
+		
+		$conf['type'] = t3lib_div::trimExplode(',', $conf['type']);
+		if( $this->piVars['searchWord'] )
+			$conf['searchWord'] = $this->piVars['searchWord'];
+		
+		// override mode if set with get param or session
+		if ( $this->piVars['mode'] ) {
+			$GLOBALS['TSFE']->fe_user->setKey( 'ses', 'TagItemsOutputMode', $this->piVars['mode'] );
+			$GLOBALS['TSFE']->fe_user->storeSessionData();
+		}
+		if( $GLOBALS['TSFE']->fe_user->getKey( 'ses', 'TagItemsOutputMode' ) !== 'reset' )
+			$conf['mode'] = $GLOBALS['TSFE']->fe_user->getKey( 'ses', 'TagItemsOutputMode' );
+		
+		$content = '';
+		foreach( $conf['type'] as $type ) {
+			$typeCall = 'renderTag' . ucfirst($type);
+			$conf['type'] = $type;
+			
+			// set parameter to current page if not set
+			$conf['type.'][$conf['type'].'.']['typolink.']['parameter'] = $conf['type.'][$conf['type'].'.']['typolink.']['parameter'] ? $conf['type.'][$conf['type'].'.']['typolink.']['parameter'] : $GLOBALS['TSFE']->id;
+			$conf['type.'][$conf['type'].'.']['active.']['typolink.']['parameter'] = $conf['type.'][$conf['type'].'.']['active.']['typolink.']['parameter'] ? $conf['type.'][$conf['type'].'.']['active.']['typolink.']['parameter'] : $GLOBALS['TSFE']->id;
+			$content .=  $this->cObj->stdWrap( $this->$typeCall($conf), $conf['type.'][$conf['type'].'.']['stdWrap.'] );
+		}
+			
+		return $this->cObj->stdWrap($content, $conf['stdWrap.']);
+	}
+	
+	/**
+	 * returns a well formated array containing all the tags you get with the given config
+	 *
+	 * @param	array $conf - the config to use
+	 * @return array - the tags 
+	 */		
+	function getTagList($conf) {
+
+		$onlyTagsWithContent = '';
+		if( $conf['type.'][$conf['type'].'.']['onlyTagsWithContent'] ) {
+			$onlyTagsWithContent = '
+					AND uid IN (select uid_local
+				from tx_tagpack_tags_relations_mm
+				where tablenames IN ("' . implode('", "', $conf['enabledRecords']) . '"))
+			';
+		}
+
+		$dbTagsQuery = array(
+			'*',
+			'tx_tagpack_tags',
+			'pid IN(' . implode(',', $conf['tagPidList']) . ')
+				' . $onlyTagsWithContent . '
+				AND NOT deleted
+				AND NOT hidden
+				AND pid > 0',
+			'',
+			'uid'
+		);
+		
+		$dbTags = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows( $dbTagsQuery[0], $dbTagsQuery[1], $dbTagsQuery[2], $dbTagsQuery[3], $dbTagsQuery[4], $dbTagsQuery[5] );
+		
+		$tags = array();
+		foreach( $dbTags as $id => $tag ) {
+			if( in_array($tag['uid'], $conf['selectedTags']) ) {
+				$tag['active'] = true;
+				// remove these tags from the selecteTags
+				if ($conf['mode'] === 'filterGroup')
+					unset($conf['selectedTags'][$tag['uid']]);
+			}
+			$tags[$tag['uid']] = $tag;
+		}
+		
+		// set the according links
+		foreach( $tags as $id => $tag ) {
+			$tags[$id]['typolink.'] = $conf['type.'][$conf['type'].'.']['typolink.'];
+			if( $tag['active'] )
+				$tags[$id]['typolink.'] = $conf['type.'][$conf['type'].'.']['active.']['typolink.'];
+			
+			if ( ($conf['mode'] === 'filter') || ($conf['mode'] === 'filterGroup') || ($conf['mode'] === 'select') ) {
+				if( !$tag['active'] )
+					$tags[$id]['typolink.']['additionalParams'] = '&' . $this->prefixId . '[selectedTags]=' . implode(',',$conf['selectedTags']) . ($conf['selectedTags'] ? ',' : '') . $tag['uid'];
+				else {
+					$tmp = $conf['selectedTags'];
+					unset($tmp[$tag['uid']]);
+					$tags[$id]['typolink.']['additionalParams'] = '&' . $this->prefixId . '[selectedTags]=' . implode(',', $tmp);
+				}
 			} else {
-				return $content;
+				$tags[$id]['typolink.']['additionalParams'] = '&' . $this->prefixId . '[selectedTags]=' . $tag['uid'];
 			}
+			$tags[$id]['typolink.']['additionalParams'] .= $this->keepGetVars( $conf, 'uid' );
+			$tags[$id]['typolink.']['title'] = $tag['relations'] > 1 ? $tag['relations'].' items tagged with ' . $tag['name'] : $tag['relations'].' item tagged with ' . $tag['name'];
 		}
-
+		
+		return $tags;
+	}
+	
 	/**
-	 * [Describe function...]
+	 * get's the get vars and add them either to a typolink or to a form
 	 *
-	 * @param	[type]		$content: ...
-	 * @param	[type]		$conf: ...
-	 * @return	[type]		...
+	 * @param	array $conf: the config to use
+	 * @param string $unset: you need to manually say what not to set again
+	 * @param string $mode: add it to a typolink (default) or to a form
+	 * @return string - the code to be added to the typolink or to the form
 	 */
-		function makeTagCloud($content, $conf) {
-			$conf['maxFontSize'] = $conf['maxFontSize'] ? $conf['maxFontSize'] : 24;
-			$conf['minFontSize'] = $conf['minFontSize'] ? $conf['minFontSize'] : 9;
-			$conf['maxNumberOfSizes'] = $conf['maxNumberOfSizes'] ? $conf['maxNumberOfSizes'] : 10;
-			$conf['fontColor'] = $conf['fontColor'] ? $conf['fontColor'] : '#000000';
-			$record = t3lib_div::trimExplode(':', $this->cObj->currentRecord);
-			$getTagsFromPidList = $conf['tagPidList'] ? $conf['tagPidList'] : 0;
-			$getTagsFromPidList = implode(',',t3lib_div::trimExplode(',',$getTagsFromPidList));
-			$pid = 'tt.pid IN ('.$getTagsFromPidList.') AND ';
-			if ($conf['singleItemCloud']) {
-				$table = 'tablenames=\''.$conf['tableName'].'\' AND ';
-				$uid = 'mm.uid_foreign IN('.$this->cObj->data['uid'].') AND ';
-			}
-			if (count($conf)) {
-				if ($this->piVars['filtermode'] === 'on' && !$conf['singleItemCloud'] && $this->piVars['uid']) {
-					$selectedTags = t3lib_div::intExplode(',', $this->piVars['uid']);
-					foreach($selectedTags as $key => $selectedUid) {
-						if ($selectedUid != t3lib_div::_GET('tx_tagpack_pi3_removeItems')) {
-							$taggedItems = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-							'uid_foreign,tablenames',
-								'tx_tagpack_tags_relations_mm AS mm, tx_tagpack_tags AS tt',
-								$table.$uid.$pid.'mm.uid_local=tt.uid
-								AND mm.uid_local='.intval($selectedUid).'
-								AND NOT mm.deleted
-								AND NOT mm.hidden
-								AND NOT tt.deleted
-								AND NOT tt.hidden',
-								'' );
-							if (count($taggedItems)) {
-								foreach ($taggedItems as $item) {
-									$itemArray[$item['tablenames']][intval($item['uid_foreign'])]++;
-								}
-							}
-						} else {
-							unset($selectedTags[$key]);
-						}
-					}
-					$this->piVars['uid'] = implode(',', $selectedTags);
-					if (count($itemArray)) {
-						foreach($itemArray as $key => $valueArray) {
-							$uidItems = '0';
-							$filteritems .= $filteritems ? ' OR ' :
-							'(';
-							$filteritems .= '(mm.tablenames=\''.$key.'\' AND mm.uid_foreign IN(';
-							foreach($valueArray as $uidValue => $isset) {
-								if ($isset >= count($selectedTags)) {
-									$uidItems .= ','.intval($uidValue);
-								}
-							}
-							$filteritems .= $uidItems.'))';
-						}
-					}
-					$filteritems .= $filteritems ? ') AND ' : '';
-				}
-				$tagRelations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				'relations',
-					'tx_tagpack_tags_relations_mm AS mm,tx_tagpack_tags AS tt',
-					$table.$uid.$pid.$filteritems.'tt.uid=uid_local
-					AND NOT mm.deleted
-					AND NOT mm.hidden
-					AND NOT tt.deleted
-					AND NOT tt.hidden',
-					'relations',
-					'relations DESC',
-					intval($conf['maxNumberOfSizes']) );
-				if (count($tagRelations)) {
-					foreach($tagRelations as $relations) {
-						$relationRange .= $relationRange ? ','.intval($relations['relations']) :
-						intval($relations['relations']);
-					}
-				} else {
-					$relationRange = 0;
-				}
-				$tagArray = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				'uid,name,relations',
-					'tx_tagpack_tags_relations_mm AS mm,tx_tagpack_tags AS tt',
-					$table.$uid.$pid.$filteritems.'tt.uid=mm.uid_local
-					AND NOT mm.deleted
-					AND NOT mm.hidden
-					AND NOT tt.deleted
-					AND NOT tt.hidden
-					AND tt.relations IN('.$relationRange.')',
-					'uid',
-					'name ASC',
-					'' );
-				$max = intval($tagRelations[0]['relations']);
-				$min = intval($tagRelations[($conf['maxNumberOfSizes']-1)]['relations']);
-				$typolink['parameter'] = $conf['targetPid'];
-				$typolink['useCacheHash'] = 1;
-				if (count($tagArray)) {
-					foreach($tagArray as $tagValues) {
-						$text = stripslashes($tagValues['name']);
-						if ($this->piVars['filtermode'] === 'on') {
-							$typolink['additionalParams'] = '&'.$this->prefixId.'[uid]='.($this->piVars['uid'] ? $this->piVars['uid'].','.$tagValues['uid'] : $tagValues['uid']);
-						} else {
-							$typolink['additionalParams'] = '&'.$this->prefixId.'[uid]='.$tagValues['uid'];
-						}
-						if (count($conf['keepGetVars.'])) {
-							foreach($conf['keepGetVars.'] as $parameter => $value) {
-								if (count($value)) {
-									$parameter = str_replace('.', '', $parameter);
-									$GPvalue = t3lib_div::_GET($parameter);
-									foreach($value as $subparameter => $trigger) {
-										if ($trigger) {
-											$typolink['additionalParams'] .= '&'.$parameter.'['.$subparameter.']='.$GPvalue[$subparameter];
-										}
-									}
-								} else {
-									$typolink['additionalParams'] .= '&'.$parameter.'='.t3lib_div::_GET($parameter);
-								}
-							}
-						}
-						$typolink['title'] = $tagValues['relations'] > 1 ? $tagValues['relations'].' items tagged with '.$text :
-						$tagValues['relations'].' item tagged with '.$text;
-						$difference = $max-$min;
-						$difference = $difference > 1 ? $difference :
-						1;
-						$percentage = (($tagValues['relations']-$min)/($difference));
-						$size = intval(($conf['maxFontSize']-$conf['minFontSize']) * $percentage+$conf['minFontSize']);
-						$typolink['ATagParams'] = 'style="color:'.$conf['fontColor'].'; font-size:'.$size.'px; line-height:'.ceil($conf['maxFontSize'] * 0.7).'px;"';
-						$typolink['ATagParams'] .= t3lib_div::inList($this->piVars['uid'], $tagValues['uid']) ? ' class="active"' :
-						'';
-						$content .= '
-							'.$this->cObj->stdWrap($this->cObj->typolink($text, $typolink), $conf['linkStdWrap.']).' ';
-					}
-				}
-
-				$content = $content ? $this->cObj->stdWrap($content, $conf['linkBoxStdWrap.']) :
-				'';
-
-				if ($conf['modeSwitch'] && !$conf['singleItemCloud']) {
-					$content = $content.$this->makeModeSwitch($conf);
-				}
-
-				if ($conf['searchBox'] && !$conf['singleItemCloud']) {
-					$content = $this->makeSearchBox($conf).$content;
-				}
-
-				if ($conf['calendar'] && !$conf['singleItemCloud']) {
-					$content .= $this->makeCalendar($conf);
-				}
-
-				return $content ? $this->cObj->stdWrap($content, $conf['generalStdWrap.']) :
-				'';
+	function keepGetVars($conf, $unset, $mode = 'typolink') {
+		$content = '';
+		unset( $conf['keepGetVars.'][$unset] );
+		
+		foreach( $conf['keepGetVars.'] as $keepGetVar => $value ) {
+			if( $this->piVars[$keepGetVar] ) {
+				if ($mode === 'typolink')
+					$content .= '&' . $this->prefixId . '[' . $keepGetVar . ']=' . $this->piVars[$keepGetVar];
+				if ($mode === 'form')
+					$content .= '<input type="hidden" name="' . $this->prefixId . '[' . $keepGetVar . ']" value="' . $this->piVars[$keepGetVar] . '" />';
 			}
 		}
-
+		return $content;
+	}
+	
 	/**
-	 * [Describe function...]
+	 * create a typolink for every tag
 	 *
-	 * @param	[type]		$conf: ...
-	 * @return	[type]		...
-	 */
-		function makeModeSwitch($conf) {
-			$firstUidArray = t3lib_div::intExplode(',', $this->piVars['uid']);
-			foreach($firstUidArray as $key => $val) {
-				if ($val != t3lib_div::_GET('tx_tagpack_pi3_removeItems')) {
-					$firstUid[] = $val;
-				}
-			}
-			$uidList = $uidList ? implode(',', $firstUid) :
-			'';
-			$typolink = array();
-			$typolink['parameter'] = $GLOBALS['TSFE']->id;
-			$typolink['additionalParams'] = ($uidList ? '&'.$this->prefixId.'[uid]='.$uidList : '').'&'.$this->prefixId.'[filtermode]=on';
-			if (count($conf['keepGetVars.'])) {
-				foreach($conf['keepGetVars.'] as $parameter => $value) {
-					if (count($value)) {
-						$parameter = str_replace('.', '', $parameter);
-						$GPvalue = t3lib_div::_GET($parameter);
-						foreach($value as $subparameter => $trigger) {
-							if ($trigger) {
-								$typolink['additionalParams'] .= '&'.$parameter.'['.$subparameter.']='.$GPvalue[$subparameter];
-							}
-						}
-					} else {
-						$typolink['additionalParams'] .= '&'.$parameter.'='.t3lib_div::_GET($parameter);
-					}
-				}
-			}
-			$typolink['ATagParams'] = $this->piVars['filtermode'] == 'on' ? 'class="active"' :
-			'';
-			$typolink['title'] = 'Filtermode on';
-			$typolink['useCacheHash'] = 1;
-			$modeSwitch .= $this->cObj->typolink('ON', $typolink).'&#160;&#124;&#160;';
-			$typolink['additionalParams'] = '&'.$this->prefixId.'[filtermode]=off&'.$this->prefixId.'[uid]='.$firstUid[0];
-			$typolink['title'] = 'Filtermode off';
-			$typolink['ATagParams'] = $this->piVars['filtermode'] == 'on' ? '' :
-			'class="active"';
-			$modeSwitch .= $this->cObj->typolink('OFF', $typolink).'&#160;&#124;&#160;';
-			$typolink['title'] = 'Reset all filters';
-			$typolink['useCacheHash'] = 1;
-			$typolink['additionalParams'] = '&'.$this->prefixId.'[filtermode]=&'.$this->prefixId.'[uid]=&'.$this->prefixId.'[from]=&'.$this->prefixId.'[to]=&'.$this->prefixId.'[searchWord]=';
-			$typolink['ATagParams'] = '';
-			$modeSwitch .= $this->cObj->typolink('RESET', $typolink);
-			return $this->cObj->stdWrap($modeSwitch, $conf['modeSwitchStdWrap.']);
+	 * @param	array $conf - the config to use
+	 * @return string - the rendered tags
+	 */	
+	function renderTags($tags) {
+		$content = '';
+		foreach( $tags as $tag ) {
+			$content .= $this->cObj->typolink($tag['name'], $tag['typolink.']);
 		}
-
+		return $content;
+	}
+	
 	/**
-	 * [Describe function...]
+	 * get the tags and just outputs it...
 	 *
-	 * @param	[type]		$conf: ...
-	 * @return	[type]		...
-	 */
-		function makeSearchBox($conf) {
-			$typolinkConf = array(
-			'parameter' => $GLOBALS['TSFE']->id,
-				'additionalParams' => '&tx_tagpack_pi1[searchWord]=',
-				'returnLast' => 'url' );
-			$typolink = $this->cObj->typolink('', $typolinkConf);
-			$searchBox = '<form action="'.$typolink.'" class="tagpack-searchform" method="GET" target="_top">
-				';
-			foreach($this->piVars as $key => $value) {
-				if ($key != 'searchWord') {
-					$searchBox .= '<input type="hidden" name="'.$this->prefixId.'['.$key.']" id="hidden_'.$this->prefixId.'['.$key.']" value="'.$value.'"/>';
-				}
-			}
-			if (count($conf['keepGetVars.'])) {
-				foreach($conf['keepGetVars.'] as $parameter => $value) {
-					if (count($value)) {
-						$parameter = str_replace('.', '', $parameter);
-						$GPvalue = t3lib_div::_GET($parameter);
-						foreach($value as $subparameter => $trigger) {
-							if ($trigger) {
-								$searchBox .= '<input type="hidden" name="'.$parameter.'['.$subparameter.']" value="'.$GPvalue[$subparameter].'" />';
-							}
-						}
-					} else {
-						$searchBox .= '<input type="hidden" name="'.$parameter.'" value="'.t3lib_div::_GET($parameter).'" />';
-					}
-				}
-			}
-			$searchBox .= '<input type="hidden" name="id" value="'.$GLOBALS['TSFE']->id.'" />';
-			$searchBox .= '<label for="'.$this->prefixId.'[searchword]">'.($conf['searchWord'] ? $conf['searchWord'].'<br />' : '').'<input onchange="submit();" onfocus="this.value=\'\';" type="text" class="inputfield" name="'.$this->prefixId.'[searchWord]" id="'.$this->prefixId.'[searchWord]" value="'.$this->piVars['searchWord'].'" size="20" /></label>';
-			$searchBox .= '</form><br />';
-			return $this->cObj->stdWrap($searchBox, $conf['searchBoxStdWrap.']);
-		}
-
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$conf: ...
-	 * @return	[type]		...
-	 */
-		function makeCalendar($conf) {
-			if (t3lib_extMgm::isLoaded('rlmp_dateselectlib')) {
-				require_once(t3lib_extMgm::extPath('rlmp_dateselectlib').'class.tx_rlmpdateselectlib.php');
-				tx_rlmpdateselectlib::includeLib();
-				$typolinkConf = array(
-				'parameter' => $GLOBALS['TSFE']->id,
-					'additionalParams' => '&tx_tagpack_pi1[from]=&tx_tagpack_pi1[to]=',
-					'returnLast' => 'url',
-					);
-				$typolink = $this->cObj->typolink('', $typolinkConf);
-				$calendar = '<form action="'.$typolink.'" class="tagpack-calendarform" method="GET" target="_top">
-					';
-				foreach($this->piVars as $key => $value) {
-					if ($key != 'from' && $key != 'to') {
-						$calendar .= '<input type="hidden" name="'.$this->prefixId.'['.$key.']" id="hidden_'.$this->prefixId.'['.$key.']" value="'.$value.'" />';
-					}
-				}
-				if (count($conf['keepGetVars.'])) {
-					foreach($conf['keepGetVars.'] as $parameter => $value) {
-						if (count($value)) {
-							$parameter = str_replace('.', '', $parameter);
-							$GPvalue = t3lib_div::_GET($parameter);
-							foreach($value as $subparameter => $trigger) {
-								if ($trigger) {
-									$calendar .= '<input type="hidden" name="'.$parameter.'['.$subparameter.']" value="'.$GPvalue[$subparameter].'" />';
-								}
-							}
-						} else {
-							$calendar .= '<input type="hidden" name="'.$parameter.'" value="'.t3lib_div::_GET($parameter).'" />';
-						}
-					}
-				}
-				$calendar .= '<input type="hidden" name="id" value="'.$GLOBALS['TSFE']->id.'" />';
-				$calendar .= '<label for="'.$this->prefixId.'[from]">'.($conf['calendarFrom'] ? $conf['calendarFrom'].'<br />' : '').'<input onchange="submit();" type="text" class="inputfield" name="'.$this->prefixId.'[from]" id="'.$this->prefixId.'[from2]" value="'.$this->piVars['from'].'" size="10" /></label>'. tx_rlmpdateselectlib::getInputButton($this->prefixId.'[from2]', $dateSelectorConf);
-				$calendar .= '<br /><label for="'.$this->prefixId.'[to]">'.($conf['calendarTo'] ? $conf['calendarTo'].'<br />' : '').'<input onchange="submit();" type="text" class="inputfield" name="'.$this->prefixId.'[to]" id="'.$this->prefixId.'[to2]" value="'.$this->piVars['to'].'" size="10" /></label>'. tx_rlmpdateselectlib::getInputButton($this->prefixId.'[to2]', $dateSelectorConf);
-				$calendar .= '</form>';
-			} else {
-				$calendar = 'No rlmp_dateselectlib installed!';
-			}
-			return $this->cObj->stdWrap($calendar, $conf['calendarStdWrap.']);
-		}
+	 * @param	array $conf - the config to use
+	 * @return string - the rendered TagList
+	 */	
+	function renderTagList($conf) {
+		$tags = $this->getTagList( $conf );
+		return $this->renderTags( $tags );
 	}
 
-
-
-	if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi1/class.tx_tagpack_pi1.php']) {
-		include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi1/class.tx_tagpack_pi1.php']);
+	/**
+	 * get the Tags and give the Tags different sizes (a.k.a Tag Cloud)
+	 *
+	 * @param	array $conf - the config to use
+	 * @return string - the rendered TagCloud
+	 */
+	function renderTagCloud($conf) {
+		$tags = $this->getTagList( $conf );
+		
+		$tagRelations = array();
+		foreach( $tags as $tag ) {
+			$tagRelations[$tag['relations']] = $tag;
+		}
+		
+		$max = end( $tagRelations );
+		$max = $max['relations'];
+		for( $i = 0; $i < $conf['type.']['cloud.']['maxNumberOfSizes']; $i++ )
+			prev( $tagRelations );
+		
+		$min = current( $tagRelations );
+		$min = $min['relations'];
+		if( !$min )
+			$min = 0;
+			
+		foreach( $tags as $id => $tag ) {
+			$difference = ($max - $min) > 1 ? ($max - $min) : 1;
+			$percentage = ($tag['relations'] - $min) / $difference;
+			$size = intval(($conf['type.']['cloud.']['maxFontSize'] - $conf['type.']['cloud.']['minFontSize']) * $percentage + $conf['type.']['cloud.']['minFontSize']);
+			
+			$tags[$id]['typolink.']['ATagParams'] .= 'style="font-size: ' . $size . 'px; line-height: ' . ceil( $conf['type.']['cloud.']['maxFontSize'] * 0.7 ) . 'px;"';
+		}
+		
+		return $this->renderTags( $tags );
 	}
+
+	/**
+	 * gives a simple way to switch between modes
+	 *
+	 * @param	array $conf - the config to use
+	 * @return string - rendered form for output
+	 */
+	function renderTagSwitch($conf) {
+		$content = '';
+		$conf['type.']['switch.']['allow'] = t3lib_div::trimExplode(',', $conf['type.']['switch.']['allow']);
+		
+		foreach( $conf['type.']['switch.']['allow'] as $filterMode ) {
+			$typolink = ($conf['mode'] == $filterMode) ? $conf['type.']['switch.']['active.']['typolink.'] : $conf['type.']['switch.']['typolink.'];
+			$typolink['additionalParams'] = '&' . $this->prefixId . '[mode]=' . $filterMode;
+			
+			switch( $filterMode ) {
+				case 'simple': $typolink['additionalParams'] .= '&' . $this->prefixId . '[selectedTags]=' . reset( $conf['selectedTags'] ); break;
+				case 'reset': break;
+				default: $typolink['additionalParams'] .= '&' . $this->prefixId . '[selectedTags]=' . implode(',',$conf['selectedTags']); $typolink['additionalParams'] .= $this->keepGetVars( $conf, 'mode' );
+			}
+			$content .= $this->cObj->typolink( $conf['modeTitle.'][$filterMode], $typolink);
+		}
+		
+		return $content;
+	}
+
+	/**
+	 * renders a form with an input field
+	 *
+	 * @param	array $conf - the config to use
+	 * @return string - rendered form for output
+	 */
+	function renderTagSearch($conf) {
+		$content = '';
+		$typolink = $conf['type.']['search.']['typolink.'];
+		
+		$content .= $this->cObj->wrap( $this->cObj->typolink('', $typolink), $conf['type.']['search.']['formWrap'] );
+		$content .= '<input type="text" name="' . $this->prefixId . '[searchWord]" value="' . $conf['searchWord'] . '" />';
+		
+		$content .= $this->keepGetVars( $conf, 'searchWord', 'form' );
+	
+		return $content;
+	}
+
+	/**
+	 * outputs 2 inputs to select a date range
+	 *
+	 * @param	array $conf - the config to use
+	 * @return string - rendere form for output
+	 */
+	function renderTagCalendar($conf) {
+		if (t3lib_extMgm::isLoaded('rlmp_dateselectlib')) {
+			require_once(t3lib_extMgm::extPath('rlmp_dateselectlib').'class.tx_rlmpdateselectlib.php');
+			tx_rlmpdateselectlib::includeLib();
+			
+			$typolink = $conf['type.']['calendar.']['typolink.'];
+			
+			$content .= $this->cObj->wrap( $this->cObj->typolink('', $typolink), $conf['type.']['calendar.']['formWrap'] );
+			
+			$content .= '<input type="text" name="'.$this->prefixId.'[from]" id="'.$this->prefixId.'[from]" value="'.$this->piVars['from'].'" />'. tx_rlmpdateselectlib::getInputButton($this->prefixId.'[from]', $dateSelectorConf);
+			$content .= '<input type="text" name="'.$this->prefixId.'[to]" id="'.$this->prefixId.'[to]" value="'.$this->piVars['to'].'" />'. tx_rlmpdateselectlib::getInputButton($this->prefixId.'[to]', $dateSelectorConf);
+		} else {
+			$content = 'No rlmp_dateselectlib installed!';
+		}
+		return $content;
+	}
+}
+
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi1/class.tx_tagpack_pi1.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tagpack/pi1/class.tx_tagpack_pi1.php']);
+}
 
 ?>

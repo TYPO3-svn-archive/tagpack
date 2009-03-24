@@ -9,16 +9,16 @@
 			<label index="tx_tagpack_tags">Tags</label>
 			<label index="tx_tagpack_tags.name">Tagname</label>
 			<label index="tx_tagpack_tags.relations">Linked To</label>
-			<label index="tt_content.CType_pi1">Tag Cloud</label>
+			<label index="tt_content.list_type_pi1">Tag Cloud</label>
 			<label index="tt_content.CType_pi2">Tag Nominations</label>
 			<label index="tt_content.list_type_pi3">Tagged Elements</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="tx_tagpack_tags">Tags</label>
 			<label index="tx_tagpack_tags.name">Tagname</label>
-			<label index="tx_tagpack_tags.relations">VerknÃ¼pft mit</label>
-			<label index="tt_content.CType_pi1">Tag Cloud</label>
-			<label index="tt_content.CType_pi2">VorschlÃ¤ge fÃ¼r Tags</label>
+			<label index="tx_tagpack_tags.relations">Verknüpft mit</label>
+			<label index="tt_content.list_type_pi1">Tag Cloud</label>
+			<label index="tt_content.CType_pi2">Vorschläge für Tags</label>
 			<label index="tt_content.list_type_pi3">Elemente mit Tags</label>
 		</languageKey>
 	</data>

@@ -1,0 +1,83 @@
+plugin.tx_tagpack_pi1 {
+
+	# comma separated list of content element types to be used by all TagControls (i.e. text,textpic)
+	enabledContent = text
+	
+	# comma separated list of table names that contain records to be used by all TagControls (i.e. pages,tt_news)
+	enabledRecords < plugin.tx_tagpack_pi3.enabledRecords
+	
+	# you can predefine what tags should be selected
+	selectedTags = 
+
+	# comma seperated list of ids where to get the tags from
+	tagPidList = 0
+	typolink {
+		# set only if your resultpage differs from the TagControls page
+		# parameter = 52
+		useCacheHash = 1
+		wrap = <span>|</span>
+	}
+	active {
+		typolink < plugin.tx_tagpack_pi1.typolink
+		typolink.ATagParams = class="active"
+	}
+	
+	stdWrap.wrap = <div class="tx-tagpack-pi1">|</div>
+	
+	searchWord = 
+	
+	# how the links should interact: [filter, filterGroup, select, simple]
+	mode = filter
+	modeTitle {
+		filter = Filter
+		filterGroup = FilterGroup
+		select = Select
+		simple = Simple
+		reset = Reset
+	}
+	
+	# what should be rendered: [list, cloud, calendar, search, switch]
+	type = list
+	type {
+		list {
+			stdWrap.wrap = <div class="tx-tagpack-pi1-taglist">|</div>
+			onlyTagsWithContent = 0
+			typolink < plugin.tx_tagpack_pi1.typolink
+			active.typolink < plugin.tx_tagpack_pi1.active.typolink
+		}
+		cloud {
+			minFontSize = 8
+			maxFontSize = 20
+			maxNumberOfSizes = 20
+			onlyTagsWithContent = 1
+			stdWrap.wrap = <div class="tx-tagpack-pi1-tagcloud">|</div>
+			typolink < plugin.tx_tagpack_pi1.typolink
+			active.typolink < plugin.tx_tagpack_pi1.active.typolink
+		}
+		switch {
+			allow = filter,select,reset
+			typolink < plugin.tx_tagpack_pi1.typolink
+			active.typolink < plugin.tx_tagpack_pi1.active.typolink
+			stdWrap.wrap = <div class="tx_tagpack-pi1-switch">|</div>
+		}
+		search {
+			typolink < plugin.tx_tagpack_pi1.typolink
+			typolink.returnLast = url
+			formWrap = <form action="|" class="tx-tagpack-pi1-searchform" method="get"><div>
+			stdWrap.wrap = <div class="tx_tagpack-pi1-search">|</div></form></div>
+		}
+		calendar {
+			label.from = from
+			label.to = to
+			typolink < plugin.tx_tagpack_pi1.typolink
+			typolink.returnLast = url
+			formWrap = <form action="|" class="tx-tagpack-pi1-calendarform" method="get"><div>
+			stdWrap.wrap = <div class="tx-tagpack-pi1-calendar">|</div>
+		}
+	}
+	keepGetVars {
+		mode = 1
+		uid = 1
+		searchWord = 1
+	}
+}
