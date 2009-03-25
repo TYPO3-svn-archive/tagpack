@@ -100,6 +100,8 @@
 			if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id)) {
 				
 				$this->tpm = t3lib_div::_GP('tpm');
+				$this->tpm = $this->tpm ? $this->tpm : $BE_USER->getModuleData('user_txtagpackM1/tpm');
+				$BE_USER->pushModuleData('user_txtagpackM1/tpm',$this->tpm);
 				$this->tagContainer = tx_tagpack_api::getTagContainer();
 			 
 				// Draw the header.
@@ -152,7 +154,7 @@
 		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 3 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,3);return false;">'.$GLOBALS['LANG']->getLL('TabLabel3').'</a></li>';
 		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 4 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,4);return false;">'.$GLOBALS['LANG']->getLL('TabLabel4').'</a></li>';
 		    $this->content .= '</ul>
-		    <input id="tpm_active_tab" type="hidden" name="tpm[active_tab]" value="1" />
+		    <input id="tpm_active_tab" type="hidden" name="tpm[active_tab]" value="'.($this->tpm['active_tab'] ? $this->tpm['active_tab'] : 1).'" />
 		    <div id="tabcontent1" class="'.($this->tpm['active_tab'] > 1 ? 'tabcontent_off' : 'tabcontent_on').'">
 			'.$this->moduleContentTab1().'
 		    </div>
