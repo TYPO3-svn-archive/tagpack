@@ -250,7 +250,7 @@
 			if(count($this->tagContainer)) {
 				$i=0;
 				foreach($this->tagContainer as $pageData) {
-					$selected = $selectedOptions[$pageData['uid']] == $pageData['uid'] ? ' selected="selected"' : '';
+					$selected = $selectedOptions[$pageData['uid']] ? ' selected="selected"' : '';
 					$i++;
 					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
 				}
