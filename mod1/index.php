@@ -242,8 +242,10 @@
 		 
 		function makeDefaultFormFields($tab) {
 			$content .= $this->makeContainerSelector($tab);
-			$content .= '<p>'.$GLOBALS['LANG']->getLL('within_containers').':</p>';
-			$content .= $this->makeSearchbox($tab);
+			if(count($this->tpm['container_page'][$tab])) {
+				$content .= '<p>'.$GLOBALS['LANG']->getLL('within_containers').':</p>';
+				$content .= $this->makeSearchbox($tab);
+			}
 			return $content;
 		}
 		 
