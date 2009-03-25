@@ -211,7 +211,7 @@ class tx_tagpack_api {
 				tx_tagpack_api::tagTable,
 				'hidden = 0 AND deleted = 0 '
 				. 'AND name = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($tagName, $this->tagTable)
-				. ($storagePID > 0 ?  ' AND pid IN (' . $storagePID .')' : ''),
+				. ($storagePID ?  ' AND pid IN (' . $storagePID .')' : ''),
 				'',
 				'',
 				$limit
