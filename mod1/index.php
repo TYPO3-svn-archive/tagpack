@@ -242,10 +242,15 @@
 		 
 		 
 		function makeContainerSelector($tab) {
+			if(count($this->tpm['container_page'][$tab])) {
+				foreach($this->tpm['container_page'][$tab] as $value) {
+					$selectedOptions[$value]=1;
+				}
+			}
 			if(count($this->tagContainer)) {
 				$i=0;
 				foreach($this->tagContainer as $pageData) {
-					$selected = $this->tpm['container_page'][$tab][$i] == $pageData['uid'] ? ' selected="selected"' : '';
+					$selected = $selectedOptions[$pageData['uid']] == $pageData['uid'] ? ' selected="selected"' : '';
 					$i++;
 					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
 				}
