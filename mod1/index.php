@@ -268,7 +268,7 @@
 
 		function makeSearchbox($tab) {
 			$searchBox = '<label for="tpm_tagname_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label2').'</label>
-				<input id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'..'"/>';
+				<input id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'.$this->tpm['tagname'][$tab].'"/>';
 			return $searchBox;
 		} 
 	
