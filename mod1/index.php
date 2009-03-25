@@ -29,9 +29,12 @@
 	require_once($BACK_PATH.'init.php');
 	require_once($BACK_PATH.'template.php');
 	 
-	$LANG->includeLLFile('EXT:tagpack/mod1/locallang.xml');
+		$LANG->includeLLFile('EXT:tagpack/mod1/locallang.xml');
 	require_once(PATH_t3lib.'class.t3lib_scbase.php');
 	$BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the users has no permission for entry.
+
+	include_once(t3lib_extMgm::extPath('tagpack') . 'lib/class.tx_tagpack_api.php');
+
 	// DEFAULT initialization of a module [END]
 	 
 	 
@@ -176,19 +179,21 @@
 		}
 		 
 		/**
-		* Generates the module content
+		* Generates the content for tab 1
 		*
 		* @return void
 		*/
 		function moduleContentTab1() {
-			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left').'</div>';
-			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right').'</div>';
+			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left');
+			$tab1Content .= '</div>';
+			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
+			$tab1Content .= '</div>';
 			return $tab1Content;
 		}
 		 
 		 
 		/**
-		* Generates the module content
+		* Generates the content for tab 2
 		*
 		* @return void
 		*/
@@ -200,7 +205,7 @@
 		 
 		 
 		/**
-		* Generates the module content
+		* Generates the content for tab 3
 		*
 		* @return void
 		*/
@@ -212,7 +217,7 @@
 		 
 		 
 		/**
-		* Generates the module content
+		* Generates the content for tab 4
 		*
 		* @return void
 		*/

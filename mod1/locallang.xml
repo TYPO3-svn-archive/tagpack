@@ -8,10 +8,10 @@
 		<languageKey index="default" type="array">
 			<label index="title">Tag Manager</label>
 			<label index="page">Page</label>
-			<label index="TabLabel1">Function 1</label>
-			<label index="TabLabel2">Function 2</label>
-			<label index="TabLabel3">Function 3</label>
-			<label index="TabLabel4">Function 4</label>
+			<label index="TabLabel1">Approve</label>
+			<label index="TabLabel2">Adjust</label>
+			<label index="TabLabel3">Merge</label>
+			<label index="TabLabel4">Translate</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="title">Tag Manager</label>
