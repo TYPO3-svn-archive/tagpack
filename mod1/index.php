@@ -191,6 +191,7 @@
 			$tab1Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
+			$tab1Content .= $this->makeResultList(1);
 			$tab1Content .= '</div>';
 			return $tab1Content;
 		}
@@ -206,7 +207,9 @@
 			$tab2Content .= $this->makeDefaultFormFields(2);
 			$tab2Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab2Content .= '</div>';
-			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab2 right').'</div>';
+			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab2 right');
+			$tab2Content .= $this->makeResultList(2);
+			$tab2Content .= '</div>';
 			return $tab2Content;
 		}
 		 
@@ -221,7 +224,9 @@
 			$tab3Content .= $this->makeDefaultFormFields(3);
 			$tab3Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab3Content .= '</div>';
-			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab3 right').'</div>';
+			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab3 right');
+			$tab3Content .= $this->makeResultList(3);
+			$tab3Content .= '</div>';
 			return $tab3Content;
 		}
 		 
@@ -236,7 +241,9 @@
 			$tab4Content .= $this->makeDefaultFormFields(4);
 			$tab4Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab4Content .= '</div>';
-			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab4 right').'</div>';
+			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab4 right');
+			$tab4Content .= $this->makeResultList(4);
+			$tab4Content .= '</div>';
 			return $tab4Content;
 		}
 		 
@@ -273,6 +280,14 @@
 			$searchBox = '<label for="tpm_tagname_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label2').'</label>
 				<input class="search_tagname" id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'.$this->tpm['tagname'][$tab].'"/>';
 			return $searchBox;
+		} 
+	
+
+		function makeResultlist($tab) {
+			if($this->tpm['tagname'][$tab]) {
+				$resultList = tx_tagpack_api::getTagsByTagName($this->tpm['tagname'][$tab]);
+			}
+			t3lib_div::debug($resultList);
 		} 
 	
 	}

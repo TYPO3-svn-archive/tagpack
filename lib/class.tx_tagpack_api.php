@@ -202,19 +202,19 @@ class tx_tagpack_api {
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	array		the result row from the DB or an empty array if nothing was found
 	 */
-	function getTagDataByTagName($tagName) {
+	function getTagDataByTagName($tagName,$storagePID='',$limit=1) {
 		$tagName = trim($tagName);
 		if (!empty($tagName)) {
-			$storagePID = tx_tagpack_api::getTagStoragePID();
+			$storagePID = $storagePID ? $storagePID : tx_tagpack_api::getTagStoragePID();
 			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'*',
 				tx_tagpack_api::tagTable,
 				'hidden = 0 AND deleted = 0 '
 				. 'AND name = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($tagName, $this->tagTable)
-				. ($storagePID > 0 ?  ' AND pid = ' . $storagePID : ''),
+				. ($storagePID > 0 ?  ' AND pid IN (' . $storagePID .')' : ''),
 				'',
 				'',
-				1 // limit to one result
+				$limit
 			);
 		}
 		return $tagData;
@@ -231,12 +231,10 @@ class tx_tagpack_api {
 	function getTagDataById($tagUid) {
 		$tagUid	 = intval($tagUid);
 		if ($tagUid > 0) {
-			$storagePID = tx_tagpack_api::getTagStoragePID();
 			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'*',
 				tx_tagpack_api::tagTable,
-				'hidden = 0 AND deleted = 0 AND uid = ' . $tagUid
-				. ($storagePID > 0 ?  ' AND pid = ' . $storagePID : ''),
+				'hidden = 0 AND deleted = 0 AND uid = ' . $tagUid,
 				'',
 				'',
 				1 // limit to one result
