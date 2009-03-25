@@ -9,25 +9,25 @@
 			<label index="title">Tag Manager</label>
 			<label index="page">Page</label>
 			<label index="TabLabel1">Approve</label>
-			<label index="Tab1_Label1">Select a tag container to approve tags</label>
+			<label index="Tab1_Label1">Select one or more container(s) to approve tags</label>
 			<label index="TabLabel2">Edit</label>
-			<label index="Tab2_Label1">Select a tag container to edit tags</label>
+			<label index="Tab2_Label1">Select one or more container(s) to edit tags</label>
 			<label index="TabLabel3">Merge</label>
-			<label index="Tab3_Label1">Select a tag container to merge tags</label>
+			<label index="Tab3_Label1">Select one or more container(s) to merge tags</label>
 			<label index="TabLabel4">Translate</label>
-			<label index="Tab4_Label1">Select a tag container to translate tags</label>
+			<label index="Tab4_Label1">Select one or more container(s) to translate tags</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="title">Tag Manager</label>
 			<label index="page">Seite</label>
 			<label index="TabLabel1">Freigeben</label>
-			<label index="Tab1_Label1">Wählen Sie einen Tag-Container zur Freigabe aus</label>
+			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Freigabe aus</label>
 			<label index="TabLabel2">Bearbeiten</label>
-			<label index="Tab1_Label1">Wählen Sie einen Tag-Container zur Bearbeitung aus</label>
+			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Bearbeitung aus</label>
 			<label index="TabLabel3">Zusammenfassen</label>
-			<label index="Tab1_Label1">Wählen Sie einen Tag-Container zur Zusammenfassung aus</label>
+			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Zusammenfassung aus</label>
 			<label index="TabLabel4">Übersetzen</label>
-			<label index="Tab1_Label1">Wählen Sie einen Tag-Container zur Übersetzung  aus</label>
+			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Übersetzung  aus</label>
 		</languageKey>
 	</data>
 </T3locallang>
