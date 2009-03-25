@@ -285,7 +285,7 @@
 
 		function makeResultlist($tab) {
 			if($this->tpm['tagname'][$tab]) {
-				$resultList = tx_tagpack_api::getTagDataByTagName($this->tpm['tagname'][$tab],t3lib_div::trimExplode(',',$this->tpm['container_page'][$tab]));
+				$resultList = tx_tagpack_api::getTagDataByTagName($this->tpm['tagname'][$tab],implode(',',$this->tpm['container_page'][$tab]));
 			}
 			t3lib_div::debug($resultList);
 		} 
