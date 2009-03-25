@@ -240,12 +240,13 @@
 		function makeContainerSelector($tab) {
 			if(count($this->tagContainer)) {
 				foreach($this->tagContainer as $pageData) {
-					$selected = $this->tpm['container_page'][$tab] == $pageData['uid'] ? ' selected="selected"' : '';
+					$i++;
+					$selected = $this->tpm['container_page'][$tab][$i] == $pageData['uid'] ? ' selected="selected"' : '';
 					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
 				}
-				$selectBox = '<label for="tpm_container_page_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>'.
-				$this->tpm['container_page'][$tab].'
-				<select multiple="multiple" size="5" id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.']" onchange="submit();">'.$optionList.'</select>';
+				$selectBox = '<label for="tpm_container_page_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>
+				<select multiple="multiple" size="5" id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.'][]">'.$optionList.'</select>';
+				t3lib_div::debug($this->tpm['container_page'][$tab]);
 			}
 			return $selectBox;
 		} 
