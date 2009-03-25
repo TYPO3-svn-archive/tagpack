@@ -147,22 +147,22 @@
 		function moduleContentDynTabs() {
 		
 		    $this->content .= '<ul id="tabmenu">';
-		    $this->content .= '<li id="tabitem1" class="'. $this->tpm['active_tab']>1 ? 'redbutton' : 'greenbutton' .'"><a href="#" onclick="triggerTab(this,1);return false;">'.$GLOBALS['LANG']->getLL('TabLabel1').'</a></li>';
-		    $this->content .= '<li id="tabitem2" class="'. $this->tpm['active_tab']==2 ? 'greenbutton' : 'redbutton' .'"><a href="#" onclick="triggerTab(this,2);return false;">'.$GLOBALS['LANG']->getLL('TabLabel2').'</a></li>';
-		    $this->content .= '<li id="tabitem3" class="'. $this->tpm['active_tab']==3 ? 'greenbutton' : 'redbutton' .'"><a href="#" onclick="triggerTab(this,3);return false;">'.$GLOBALS['LANG']->getLL('TabLabel3').'</a></li>';
-		    $this->content .= '<li id="tabitem3" class="'. $this->tpm['active_tab']==4 ? 'greenbutton' : 'redbutton' .'"><a href="#" onclick="triggerTab(this,4);return false;">'.$GLOBALS['LANG']->getLL('TabLabel4').'</a></li>';
+		    $this->content .= '<li id="tabitem1" class="'.($this->tpm['active_tab'] > 1 ? 'redbutton' : 'greenbutton').'"><a href="#" onclick="triggerTab(this,1);return false;">'.$GLOBALS['LANG']->getLL('TabLabel1').'</a></li>';
+		    $this->content .= '<li id="tabitem2" class="'.($this->tpm['active_tab'] == 2 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,2);return false;">'.$GLOBALS['LANG']->getLL('TabLabel2').'</a></li>';
+		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 3 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,3);return false;">'.$GLOBALS['LANG']->getLL('TabLabel3').'</a></li>';
+		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 4 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,4);return false;">'.$GLOBALS['LANG']->getLL('TabLabel4').'</a></li>';
 		    $this->content .= '</ul>
 		    <input id="tpm_active_tab" type="hidden" name="tpm[active_tab]" value="1" />
-		    <div id="tabcontent1" class="'. $this->tpm['active_tab']>1 ? 'tabcontent_off' : 'tabcontent_on' .'">
+		    <div id="tabcontent1" class="'.($this->tpm['active_tab'] > 1 ? 'tabcontent_off' : 'tabcontent_on').'">
 			'.$this->moduleContentTab1().'
 		    </div>
-		    <div id="tabcontent2" class="'. $this->tpm['active_tab']==2 ? 'tabcontent_on' : 'tabcontent_off' .'">
+		    <div id="tabcontent2" class="'.($this->tpm['active_tab'] == 2 ? 'tabcontent_on' : 'tabcontent_off').'">
 			'.$this->moduleContentTab2().'
 		    </div>
-		    <div id="tabcontent3" class="'. $this->tpm['active_tab']==3 ? 'tabcontent_on' : 'tabcontent_off' .'">
+		    <div id="tabcontent3" class="'.($this->tpm['active_tab'] == 3 ? 'tabcontent_on' : 'tabcontent_off').'">
 			'.$this->moduleContentTab3().'
 		    </div>
-		    <div id="tabcontent4" class="'. $this->tpm['active_tab']==4 ? 'tabcontent_on' : 'tabcontent_off' .'">
+		    <div id="tabcontent4" class="'.($this->tpm['active_tab'] == 4 ? 'tabcontent_on' : 'tabcontent_off').'">
 			'.$this->moduleContentTab4().'
 		    </div>
 		    ';
