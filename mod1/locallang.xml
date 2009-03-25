@@ -9,7 +9,7 @@
 			<label index="title">Tag Manager</label>
 			<label index="page">Page</label>
 			<label index="TabLabel1">Approve</label>
-			<label index="TabLabel2">Adjust</label>
+			<label index="TabLabel2">Edit</label>
 			<label index="TabLabel3">Merge</label>
 			<label index="TabLabel4">Translate</label>
 		</languageKey>
@@ -17,7 +17,7 @@
 			<label index="title">Tag Manager</label>
 			<label index="page">Seite</label>
 			<label index="TabLabel1">Freigeben</label>
-			<label index="TabLabel2">Korrigieren</label>
+			<label index="TabLabel2">Bearbeiten</label>
 			<label index="TabLabel3">Zusammenfassen</label>
 			<label index="TabLabel4">Übersetzen</label>
 		</languageKey>
