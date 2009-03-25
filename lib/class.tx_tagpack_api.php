@@ -203,6 +203,7 @@ class tx_tagpack_api {
 	 * @return	array		the result row from the DB or an empty array if nothing was found
 	 */
 	function getTagDataByTagName($tagName,$storagePID='',$limit=1) {
+		t3lib_div::debug($storagePID);
 		$tagName = trim($tagName);
 		if (!empty($tagName)) {
 			$storagePID = $storagePID ? $storagePID : tx_tagpack_api::getTagStoragePID();
