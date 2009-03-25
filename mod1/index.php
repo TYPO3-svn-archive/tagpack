@@ -245,6 +245,7 @@
 				$selectBox = '<label for="tpm_container_page">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>' .
 						'<select id="tpm_container_page" name="tpm[container_page]['.$tab.']" onchange="submit();">'.$optionList.'</select>';
 			}
+			return $selectBox;
 		} 
 	}
 	 
