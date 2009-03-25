@@ -185,6 +185,8 @@
 		*/
 		function moduleContentTab1() {
 			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left');
+				$tagContainer = tx_tagpack_api::getTagContainer;
+				t3lib_div::debug($tagContainer);
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
 			$tab1Content .= '</div>';
