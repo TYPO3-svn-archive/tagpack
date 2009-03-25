@@ -267,7 +267,7 @@
 				foreach($this->tagContainer as $pageData) {
 					$selected = $selectedOptions[$pageData['uid']] ? ' selected="selected"' : '';
 					$i++;
-					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
+					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>['.$pageData['uid'].'] '.substr($pageData['title'],0,20).(strlen($pageData['title'])>20 ? '...' : '').'</option>';
 				}
 				$selectBox = '<label for="tpm_container_page_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>
 				<select multiple="multiple" size="5" id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.'][]">'.$optionList.'</select>';
