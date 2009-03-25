@@ -100,6 +100,7 @@
 			if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id)) {
 				
 				$this->tpm = t3lib_div::_GP('tpm');
+				$this->tagContainer = tx_tagpack_api::getTagContainer();
 			 
 				// Draw the header.
 				$this->doc = t3lib_div::makeInstance('bigDoc');
@@ -185,15 +186,7 @@
 		*/
 		function moduleContentTab1() {
 			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left');
-				$tagContainer = tx_tagpack_api::getTagContainer();
-				if(count($tagContainer)) {
-					foreach($tagContainer as $pageData) {
-						$selected = $this->tpm['container_page'] == $pageData['uid'] ? ' selected="selected"' : '';
-						$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
-					}
-					$selectBox = '<label for="tpm_container_page">'.$GLOBALS['LANG']->getLL('Tab1_Label1').'</label><select id="tpm_container_page" name="tpm[container_page]">'.$optionList.'</select>';
-				}
-			$tab1Content .= $selectBox;
+			$tab1Content .= $this->makeContainerSelector(1);
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
 			$tab1Content .= '</div>';
@@ -207,7 +200,9 @@
 		* @return void
 		*/
 		function moduleContentTab2() {
-			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab2 left').'</div>';
+			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab2 left');
+			$tab2Content .= $this->makeContainerSelector(2);
+			$tab2Content .= '</div>';
 			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab2 right').'</div>';
 			return $tab2Content;
 		}
@@ -219,7 +214,9 @@
 		* @return void
 		*/
 		function moduleContentTab3() {
-			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab3 left').'</div>';
+			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab3 left');
+			$tab3Content .= $this->makeContainerSelector(3);
+			$tab3Content .= '</div>';
 			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab3 right').'</div>';
 			return $tab3Content;
 		}
@@ -231,12 +228,24 @@
 		* @return void
 		*/
 		function moduleContentTab4() {
-			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab4 left').'</div>';
+			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab4 left');
+			$tab4Content .= $this->makeContainerSelector(4);
+			$tab4Content .= '</div>';
 			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab4 right').'</div>';
 			return $tab4Content;
 		}
 		 
 		 
+		function makeContainerSelector($tab) {
+			if(count($this->tagContainer)) {
+				foreach($this->tagContainer as $pageData) {
+					$selected = $this->tpm['container_page'][$tab] == $pageData['uid'] ? ' selected="selected"' : '';
+					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
+				}
+				$selectBox = '<label for="tpm_container_page">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>' .
+						'<select id="tpm_container_page" name="tpm[container_page]['.$tab.']" onchange="submit();">'.$optionList.'</select>';
+			}
+		} 
 	}
 	 
 	 
