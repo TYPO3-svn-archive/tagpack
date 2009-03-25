@@ -20,6 +20,7 @@
 			<label index="TabLabel4">Translate</label>
 			<label index="Tab4_Label2">Find a tag by name</label>
 			<label index="Tab4_Label1">Select one or more container(s) to translate tags</label>
+			<label index="within_containers">Within these containers</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="title">Tag Manager</label>
@@ -36,6 +37,7 @@
 			<label index="TabLabel4">Übersetzen</label>
 			<label index="Tab4_Label2">Nach Tag-Namen suchen</label>
 			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Übersetzung  aus</label>
+			<label index="within_containers">Innerhalb dieser Container</label>
 		</languageKey>
 	</data>
 </T3locallang>
