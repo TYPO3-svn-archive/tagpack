@@ -9,6 +9,7 @@ function triggerTab(triggerItem,triggeredContent) {
 	    document.getElementById("tabcontent" + i).className = "tabcontent_off";
 	}
     }
+    document.getElementById("tpm_active_tab").value = triggeredContent;
     triggerItem.parentNode.className = "greenbutton";
     triggerItem.blur();
 }
