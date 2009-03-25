@@ -188,6 +188,7 @@
 		function moduleContentTab1() {
 			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left');
 			$tab1Content .= $this->makeContainerSelector(1);
+			$tab1Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
 			$tab1Content .= '</div>';
@@ -203,6 +204,7 @@
 		function moduleContentTab2() {
 			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab2 left');
 			$tab2Content .= $this->makeContainerSelector(2);
+			$tab2Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab2Content .= '</div>';
 			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab2 right').'</div>';
 			return $tab2Content;
@@ -217,6 +219,7 @@
 		function moduleContentTab3() {
 			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab3 left');
 			$tab3Content .= $this->makeContainerSelector(3);
+			$tab3Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab3Content .= '</div>';
 			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab3 right').'</div>';
 			return $tab3Content;
@@ -231,6 +234,7 @@
 		function moduleContentTab4() {
 			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab4 left');
 			$tab4Content .= $this->makeContainerSelector(4);
+			$tab4Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab4Content .= '</div>';
 			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab4 right').'</div>';
 			return $tab4Content;
@@ -239,9 +243,10 @@
 		 
 		function makeContainerSelector($tab) {
 			if(count($this->tagContainer)) {
+				$i=0;
 				foreach($this->tagContainer as $pageData) {
-					$i++;
 					$selected = $this->tpm['container_page'][$tab][$i] == $pageData['uid'] ? ' selected="selected"' : '';
+					$i++;
 					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
 				}
 				$selectBox = '<label for="tpm_container_page_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>
