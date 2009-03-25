@@ -16,6 +16,10 @@
 		<languageKey index="de" type="array">
 			<label index="title">Tag Manager</label>
 			<label index="page">Seite</label>
+			<label index="TabLabel1">Freigeben</label>
+			<label index="TabLabel2">Korrigieren</label>
+			<label index="TabLabel3">Zusammenfassen</label>
+			<label index="TabLabel4">Übersetzen</label>
 		</languageKey>
 	</data>
 </T3locallang>
