@@ -186,11 +186,11 @@
 		* @return void
 		*/
 		function moduleContentTab1() {
-			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left');
+			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Left'));
 			$tab1Content .= $this->makeDefaultFormFields(1);
 			$tab1Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab1Content .= '</div>';
-			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
+			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Right'));
 			$tab1Content .= $this->makeResultList(1);
 			$tab1Content .= '</div>';
 			return $tab1Content;
@@ -203,11 +203,11 @@
 		* @return void
 		*/
 		function moduleContentTab2() {
-			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab2 left');
+			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab2_Left'));
 			$tab2Content .= $this->makeDefaultFormFields(2);
 			$tab2Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab2Content .= '</div>';
-			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab2 right');
+			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab2_Right'));
 			$tab2Content .= $this->makeResultList(2);
 			$tab2Content .= '</div>';
 			return $tab2Content;
@@ -220,11 +220,11 @@
 		* @return void
 		*/
 		function moduleContentTab3() {
-			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab3 left');
+			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Left'));
 			$tab3Content .= $this->makeDefaultFormFields(3);
 			$tab3Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab3Content .= '</div>';
-			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab3 right');
+			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Right'));
 			$tab3Content .= $this->makeResultList(3);
 			$tab3Content .= '</div>';
 			return $tab3Content;
@@ -237,11 +237,11 @@
 		* @return void
 		*/
 		function moduleContentTab4() {
-			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab4 left');
+			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Left'));
 			$tab4Content .= $this->makeDefaultFormFields(4);
 			$tab4Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab4Content .= '</div>';
-			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab4 right');
+			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Right'));
 			$tab4Content .= $this->makeResultList(4);
 			$tab4Content .= '</div>';
 			return $tab4Content;
