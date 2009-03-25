@@ -187,7 +187,7 @@
 		*/
 		function moduleContentTab1() {
 			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left');
-			$tab1Content .= $this->makeContainerSelector(1);
+			$tab1Content .= $this->makeDefaultFormFields(1);
 			$tab1Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
@@ -203,7 +203,7 @@
 		*/
 		function moduleContentTab2() {
 			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab2 left');
-			$tab2Content .= $this->makeContainerSelector(2);
+			$tab2Content .= $this->makeDefaultFormFields(2);
 			$tab2Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab2Content .= '</div>';
 			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab2 right').'</div>';
@@ -218,7 +218,7 @@
 		*/
 		function moduleContentTab3() {
 			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab3 left');
-			$tab3Content .= $this->makeContainerSelector(3);
+			$tab3Content .= $this->makeDefaultFormFields(3);
 			$tab3Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab3Content .= '</div>';
 			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab3 right').'</div>';
@@ -233,13 +233,18 @@
 		*/
 		function moduleContentTab4() {
 			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab4 left');
-			$tab4Content .= $this->makeContainerSelector(4);
+			$tab4Content .= $this->makeDefaultFormFields(4);
 			$tab4Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab4Content .= '</div>';
 			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab4 right').'</div>';
 			return $tab4Content;
 		}
 		 
+		function makeDefaultFormFields($tab) {
+			$content .= $this->makeContainerSelector($tab);
+			$content .= $this->makeSearchbox($tab);
+			return $content;
+		}
 		 
 		function makeContainerSelector($tab) {
 			if(count($this->tpm['container_page'][$tab])) {
@@ -256,10 +261,17 @@
 				}
 				$selectBox = '<label for="tpm_container_page_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>
 				<select multiple="multiple" size="5" id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.'][]">'.$optionList.'</select>';
-				t3lib_div::debug($this->tpm['container_page'][$tab]);
 			}
 			return $selectBox;
 		} 
+
+
+		function makeSearchbox($tab) {
+			$searchBox = '<label for="tpm_tagname_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label2').'</label>
+				<input id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'..'"/>';
+			return $searchBox;
+		} 
+	
 	}
 	 
 	 
