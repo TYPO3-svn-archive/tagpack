@@ -98,10 +98,10 @@ class tx_tagpack_api {
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	int			the uid of the newly added tag, or zero if the tagName was empty
 	 */
-	function addTag($tagName) {
+	function addTag($tagName,$pid=0) {
 		$tagName = trim($tagName);
 		if (!empty($tagName) && !tx_tagpack_api::tagNameExists($tagName)) {
-			$storagePID = tx_tagpack_api::getTagStoragePID();
+			$storagePID = tx_tagpack_api::getTagStoragePID($pid);
 
 			// now we have to build the value array for the following insert action
 			$newTagRow = array(
@@ -185,11 +185,10 @@ class tx_tagpack_api {
 	 * @return	array		the result row from the DB or an empty array if nothing was found
 	 */
 	function getTagDataByTagName($tagName) {
-		$tagData = array();
 		$tagName = trim($tagName);
 		if (!empty($tagName)) {
 			$storagePID = tx_tagpack_api::getTagStoragePID();
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'*',
 				tx_tagpack_api::tagTable,
 				'hidden = 0 AND deleted = 0 '
@@ -199,8 +198,6 @@ class tx_tagpack_api {
 				'',
 				1 // limit to one result
 			);
-			$tagData = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 		return $tagData;
 	}
@@ -214,11 +211,10 @@ class tx_tagpack_api {
 	 * @return	array		the result row from the DB or an empty array if nothing was found
 	 */
 	function getTagDataById($tagUid) {
-		$tagData = array();
 		$tagUid	 = intval($tagUid);
 		if ($tagUid > 0) {
 			$storagePID = tx_tagpack_api::getTagStoragePID();
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'*',
 				tx_tagpack_api::tagTable,
 				'hidden = 0 AND deleted = 0 AND uid = ' . $tagUid
@@ -227,8 +223,6 @@ class tx_tagpack_api {
 				'',
 				1 // limit to one result
 			);
-			$tagData = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 		return $tagData;
 	}
@@ -245,17 +239,12 @@ class tx_tagpack_api {
 	 * @return	array			an array containing all tag UIDs 
 	 */
 	function getAttachedTagIdsForElement($elementUid, $elementTable) {
-		$tagUids = array();
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'uid_local',
+		$tagUids = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			'*',
 			tx_tagpack_api::relationsTable,
 			'tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
 			 . ' AND hidden = 0 AND deleted = 0 AND uid_foreign = ' . intval($elementUid)
 		);
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
-			$tagUids[] = $row[0];
-		}
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);	
 		return $tagUids;
 	}
 
@@ -271,8 +260,7 @@ class tx_tagpack_api {
 	 * @return	array			a multi-dimensional array containing all tagdata infos 
 	 */
 	function getAttachedTagsForElement($elementUid, $elementTable) {
-		$tags = array();
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+		$tags = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'tg.*',
 			tx_tagpack_api::relationsTable . ' AS mm, ' . tx_tagpack_api::tagTable . ' AS tg',
 			'mm.uid_local = tg.uid '
@@ -281,10 +269,6 @@ class tx_tagpack_api {
 			'',
 			'tg.name ASC'
 		);
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$tags[] = $row;
-		}
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);	
 		return $tags;
 	}
 
@@ -327,12 +311,14 @@ class tx_tagpack_api {
 	 * @param	$elementPid		the PID of the element that will be used (not in use right now)
 	 * @return	void
 	 */
-	function attachTagToElement($tagName, $elementUid, $elementTable) {
+	function attachTagToElement($tagUid=0, $tagName='', $elementUid, $elementTable, $pid) {
 		// create the tag if it doesn't exist yet
-		$tagData = tx_tagpack_api::getTagDataByTagName($tagName);
-		if (!count($tagData)) {
-			$tagUid = tx_tagpack_api::addTag($tagName);
-		} else {
+		if($tagName && !$tagUid) {
+		    $tagData = tx_tagpack_api::getTagDataByTagName($tagName);
+		}
+		if (!count($tagData) && !$tagUid) {
+			$tagUid = tx_tagpack_api::addTag($tagName,$pid);
+		} else if (!$tagUid) {
 			$tagUid = $tagData['uid'];
 		}
 		$tagUid = intval($tagUid);
@@ -393,11 +379,9 @@ class tx_tagpack_api {
 				tx_tagpack_api::relationsTable,
 				'hidden = 0 AND deleted = 0 AND uid_local = ' . $tagUid
 			);
-			$relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
 			// and write back the value to the relations field of the tag
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);	 
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations[0]);	 
 		}
 	}
 }

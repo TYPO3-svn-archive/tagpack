@@ -314,9 +314,9 @@ class tx_tagpack_tceforms_addtags {
 		 
 		// first we get all the tags that were related to the current record before the upcoming actions
 		if ($id === intval($id)) {
-			$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($id, $table);
+			$current_MM_Rows = tx_tagpack_api::getAttachedTagIdsForElement($id, $table);
 		};
-		 
+		
 		// this one is needed to set the current crdate and tstamp values
 		$timeNow = time();
 		 
@@ -326,14 +326,15 @@ class tx_tagpack_tceforms_addtags {
 		if (count($current_MM_Rows)) {
 			foreach ($current_MM_Rows as $key => $valueArray) {
 				$where = 'uid = ' . intval($valueArray['uid_local']);
-				 
-				// if there are no tags in the taglist anymore we have to make sure they are removed or marked deleted
+				// if there are no tags in the taglist anymore or some tags have been removed from thelist we have to make sure they are removed or marked deleted
+				
 				if (!$selectedTagUids[$valueArray['uid_local']]) {
-					 
+				
 					// now we must get the number of relations of this tag and decrement it
 					$currentRelations = tx_tagpack_api::getAttachedElementsForTagId(intval($valueArray['uid_local']));
-					$relations = count($currentRelations) ? count($currentRelations)-1 : 0 ;
+					$relations['relations'] = count($currentRelations) ? count($currentRelations)-1 : 0 ;
 					 
+					
 					// the new number of relations has to be saved back again
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 					tx_tagpack_api::tagTable,
@@ -377,11 +378,11 @@ class tx_tagpack_tceforms_addtags {
 					} else {
 						// so we just unset the corresponding array key
 						unset($current_MM_Rows[$key]);
-						 
 						// and remove the relation from the table
 						tx_tagpack_api::removeTagFromElement($valueArray['uid_local'], $valueArray['uid_foreign'], $valueArray['tablenames']);
 					}
-				} else {
+				} else {					
+				
 					// if there are tags in the taglist we have to check for the 'undelete' command
 					if ($command == 'undelete') {
 						 
@@ -426,7 +427,7 @@ class tx_tagpack_tceforms_addtags {
 			// for each of them we have to perform the same operations
 			foreach ($selectedTagUids as $selectedUid => $switch) {
 				if ($switch != 'new') {
-					tx_tagpack_api::attachTagToElement($selectedUid, $id, $table);
+					tx_tagpack_api::attachTagToElement($selectedUid, '', $id, $table, $pid);
 					unset($selectedTagUids[$selectedUid]);
 				}
 			}
@@ -442,21 +443,7 @@ class tx_tagpack_tceforms_addtags {
 			foreach ($selectedTagUids as $tagName => $switch) {
 				$tagName = trim(stripslashes($tagName));
 				if ($switch == 'new') {
-
-					// first lets check if the name entered in the searchbox already exists
-					$existingTag = tx_tagpack_api::getTagData($tagName);					 
-					// if it exists, we have to create just a new relation
-					// because this one seems to be entered as a new item without clicking
-					// on the dynamic list but simply hitting ENTER instead
-					if (count($existingTag)) {
-						tx_tagpack_api::attachTagToElement($existingTag['name'], $id, $table);
-					} else {
-						// if it doesn't, we have to create a new tag
-						$tagUid = tx_tagpack_api::addTag($tagName);
-
-						tx_tagpack_api::attachTagToElement($tagName, $id, $table, $pid);
-						unset($selectedTagUids[$tagName]);
-					}
+					tx_tagpack_api::attachTagToElement(0, $tagName, $id, $table, $pid);
 				}
 			}
 		}
