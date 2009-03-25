@@ -2,7 +2,7 @@
 	/***************************************************************
 	*  Copyright notice
 	*
-	*  (c) 2008 JoH asenau <info@cybercraft.de>
+	*  (c) 2009 JoH asenau <jh@eqony.com>
 	*  All rights reserved
 	*
 	*  This script is part of the TYPO3 project. The TYPO3 project is
@@ -37,9 +37,9 @@
 	 
 	 
 	/**
-	* Module 'Tag Management' for the 'tagpack' extension.
+	* Module 'Site Generator' for the 'tagpack' extension.
 	*
-	* @author JoH asenau <info@cybercraft.de>
+	* @author JoH asenau <jh@eqony.com>
 	* @package TYPO3
 	* @subpackage tx_tagpack
 	*/
@@ -48,6 +48,7 @@
 		 
 		/**
 		* Initializes the Module
+		*
 		* @return void
 		*/
 		function init() {
@@ -91,51 +92,36 @@
 			// Access check!
 			// The page will show only if there is a valid page and if this page may be viewed by the user
 			$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
-			$access = is_array($this->pageinfo) ? 1 :
-			 0;
+			$access = is_array($this->pageinfo) ? 1 : 0;
 			 
 			if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id)) {
-				 
+				
+				$this->tagpack = t3lib_div::_GP('tagpack');
+			 
 				// Draw the header.
-				$this->doc = t3lib_div::makeInstance('mediumDoc');
+				$this->doc = t3lib_div::makeInstance('bigDoc');
 				$this->doc->backPath = $BACK_PATH;
-				$this->doc->form = '<form action="" method="POST">';
-				 
-				// JavaScript
-				$this->doc->JScode = '
-					<script language="javascript" type="text/javascript">
-					script_ended = 0;
-					function jumpToUrl(URL) {
-					document.location = URL;
-					}
-					</script>
-					';
-				$this->doc->postCode = '
-					<script language="javascript" type="text/javascript">
-					script_ended = 1;
-					if (top.fsMod) top.fsMod.recentIds[\'web\'] = 0;
-					</script>
-					';
-				 
-				$headerSection = $this->doc->getHeader('pages', $this->pageinfo, $this->pageinfo['_thePath']).'<br />'.$LANG->sL('LLL:EXT:lang/locallang_core.xml:labels.path').': '.t3lib_div::fixed_lgd_pre($this->pageinfo['_thePath'], 50);
+				$this->doc->JScode = '<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
+				$this->doc->JScode .= '
+				<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
+				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
 				 
 				$this->content .= $this->doc->startPage($LANG->getLL('title'));
-				$this->content .= $this->doc->header($LANG->getLL('title'));
-				$this->content .= $this->doc->spacer(5);
-				$this->content .= $this->doc->section('', $this->doc->funcMenu($headerSection, t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function'])));
-				$this->content .= $this->doc->divider(5);
-				 
-				 
-				// Render content:
-				$this->moduleContent();
+
+				if ($this->tagpack['save']) {
+					//Save Pagetree
+					$this->savePageTree();
+				} else {
+					// Render content:
+					$this->moduleContentDynTabs();
+				}
 				 
 				 
 				// ShortCut
 				if ($BE_USER->mayMakeShortcut()) {
-					$this->content .= $this->doc->spacer(20).$this->doc->section('', $this->doc->makeShortcutIcon('id', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name']));
+					$this->content .= '<div id="shortcuticon">'.$this->doc->section('', $this->doc->makeShortcutIcon('id', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name'])).'</div>';
 				}
 				 
-				$this->content .= $this->doc->spacer(10);
 			} else {
 				// If no access or if ID == zero
 				 
@@ -147,6 +133,35 @@
 				$this->content .= $this->doc->spacer(5);
 				$this->content .= $this->doc->spacer(10);
 			}
+		}
+		 
+		/**
+		* [Describe function...]
+		*
+		* @return [type]  ...
+		*/
+		function moduleContentDynTabs() {
+		
+		    $this->content .= '<ul id="tabmenu">';
+		    $this->content .= '<li id="tabitem1" class="greenbutton"><a href="#" onclick="triggerTab(this,1);return false;">'.$GLOBALS['LANG']->getLL('TabLabel1').'</a></li>';
+		    $this->content .= '<li id="tabitem2" class="redbutton"><a href="#" onclick="triggerTab(this,2);return false;">'.$GLOBALS['LANG']->getLL('TabLabel2').'</a></li>';
+		    $this->content .= '<li id="tabitem3" class="redbutton"><a href="#" onclick="triggerTab(this,3);return false;">'.$GLOBALS['LANG']->getLL('TabLabel3').'</a></li>';
+		    $this->content .= '<li id="tabitem3" class="redbutton"><a href="#" onclick="triggerTab(this,4);return false;">'.$GLOBALS['LANG']->getLL('TabLabel4').'</a></li>';
+		    $this->content .= '</ul>
+		    <div id="tabcontent1" class="tabcontent_on">
+			'.$this->moduleContentTab1().'
+		    </div>
+		    <div id="tabcontent2" class="tabcontent_off">
+			'.$this->moduleContentTab2().'
+		    </div>
+		    <div id="tabcontent3" class="tabcontent_off">
+			'.$this->moduleContentTab3().'
+		    </div>
+		    <div id="tabcontent4" class="tabcontent_off">
+			'.$this->moduleContentTab4().'
+		    </div>
+		    ';
+		    
 		}
 		 
 		/**
@@ -165,25 +180,49 @@
 		*
 		* @return void
 		*/
-		function moduleContent() {
-			switch((string)$this->MOD_SETTINGS['function']) {
-				case 1:
-				$content = '<div align="center"><strong>Hello World!</strong></div><br />
-					The "Kickstarter" has made this module automatically, it contains a default framework for a backend module but apart from that it does nothing useful until you open the script '.substr(t3lib_extMgm::extPath('tagpack'), strlen(PATH_site)).$pathSuffix.'index.php and edit it!
-					<hr />
-					<br />This is the GET/POST vars sent to the script:<br />'. 'GET:'.t3lib_div::view_array($_GET).'<br />'. 'POST:'.t3lib_div::view_array($_POST).'<br />'. '';
-				$this->content .= $this->doc->section('Message #1:', $content, 0, 1);
-				break;
-				case 2:
-				$content = '<div align=center><strong>Menu item #2...</strong></div>';
-				$this->content .= $this->doc->section('Message #2:', $content, 0, 1);
-				break;
-				case 3:
-				$content = '<div align=center><strong>Menu item #3...</strong></div>';
-				$this->content .= $this->doc->section('Message #3:', $content, 0, 1);
-				break;
-			}
+		function moduleContentTab1() {
+			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left').'</div>';
+			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right').'</div>';
+			return $tab1Content;
 		}
+		 
+		 
+		/**
+		* Generates the module content
+		*
+		* @return void
+		*/
+		function moduleContentTab2() {
+			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab2 left').'</div>';
+			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab2 right').'</div>';
+			return $tab2Content;
+		}
+		 
+		 
+		/**
+		* Generates the module content
+		*
+		* @return void
+		*/
+		function moduleContentTab3() {
+			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab3 left').'</div>';
+			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab3 right').'</div>';
+			return $tab3Content;
+		}
+		 
+		 
+		/**
+		* Generates the module content
+		*
+		* @return void
+		*/
+		function moduleContentTab4() {
+			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab4 left').'</div>';
+			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab4 right').'</div>';
+			return $tab4Content;
+		}
+		 
+		 
 	}
 	 
 	 

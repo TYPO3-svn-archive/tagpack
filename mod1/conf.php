@@ -5,7 +5,6 @@ define('TYPO3_MOD_PATH', '../typo3conf/ext/tagpack/mod1/');
 $BACK_PATH='../../../../typo3/';
 $MCONF['name']='user_txtagpackM1';
 
-	
 $MCONF['access']='user,group';
 $MCONF['script']='index.php';
 

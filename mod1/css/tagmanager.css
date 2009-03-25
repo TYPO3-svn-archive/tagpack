@@ -1,0 +1,144 @@
+#tagmanager_form {
+    background:#EFEFF4 url(../images/background1.png) no-repeat left top;
+    width:790px;
+    height:570px;
+    overflow:hidden;
+    position:relative;
+}
+
+#shortcuticon {
+    position:absolute;
+    left:0;
+    bottom:0;
+}
+
+#tabmenu {
+    width:592px;
+    height:35px;
+    position:absolute;
+    left:39px;
+    bottom:44px;
+    overflow:hidden;
+    margin:0;
+    padding:0;
+    list-style-type:none;
+}
+
+#tabmenu li {
+    display:block;
+    float:left;
+    width:138px;
+    height:35px;
+    line-height:31px;
+    background:#900;
+    margin-right:10px;
+    vertical-align:middle;
+    color:#FFF;
+    text-align:center;
+    font-size:12px;
+}
+
+#tabmenu li a {
+    display:block;
+    width:138px;
+    height:35px;
+    line-height:31px;
+    vertical-align:middle;
+    color:#FFF;
+    text-align:center;
+    font-size:12px;
+}
+#tabmenu li.redbutton, #tabmenu li.redbutton a {
+    background:url(../images/buttonred_off.png) no-repeat left top;
+}
+
+#tabmenu li.redbutton a:hover {
+    background:url(../images/buttonred_on.png) no-repeat left top;
+}
+
+#tabmenu li.greenbutton, #tabmenu li.greenbutton a {
+    background:url(../images/buttongreen_off.png) no-repeat left top;
+}
+
+#tabmenu li.greenbutton a:hover {
+    background:url(../images/buttongreen_on.png) no-repeat left top;
+}
+
+.tabcontent_on, .tabcontent_off {
+    width:720px;
+    height:430px;
+    position:absolute;
+    left:35px;
+    top:18px;
+    overflow:hidden;
+}
+
+.tabcontent_on {
+    display:block;
+}
+
+.tabcontent_off {
+    display:none;
+}
+
+.tabscreenback1 {
+    background:#FFF url(../images/screenback.png) no-repeat center top;
+    opacity:0.5;
+    filter:alpha(opacity=50);
+    position:absolute;
+    left:0;
+    top:0;
+    width:255px;
+    height:430px;
+}
+
+.tabscreenback2 {
+    background:#FFF url(../images/screenback.png) no-repeat center top;
+    opacity:0.5;
+    filter:alpha(opacity=50);
+    position:absolute;
+    left:265px;
+    top:0;
+    width:455px;
+    height:430px;
+}
+
+.tabscreen_left {
+    position:absolute;
+    top:10px;
+    left:10px;
+    width:235px;
+    height:410px; 
+    color:#FFF;
+    overflow:auto;
+    background-attachment:fixed;
+    color:#FFF;
+}
+
+.tabscreen_right {
+    position:absolute;
+    top:10px;
+    left:275px;
+    width:435px;
+    height:410px; 
+    color:#FFF;
+    overflow:auto;
+    background-attachment:fixed;
+}
+
+.tabcontent h1, .tabcontent h2, .tabcontent h3, .tabcontent h4, .tabcontent h5 {
+    color:#DEF;
+    background:none;
+    font-size:12px;
+    width:95%;
+}
+
+.tabcontent p {
+    color:#FFF;
+}
+
+.tabcontent fieldset {
+    border:0;
+    padding:0;
+}
+

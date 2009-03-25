@@ -6,14 +6,10 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="mlang_tabs_tab">Tag Management</label>
-			<label index="mlang_labels_tabdescr">Manage nominated and existing Tags</label>
-			<label index="mlang_labels_tablabel">Manage your tags</label>
+			<label index="mlang_tabs_tab">Tag Manager</label>
 		</languageKey>
 		<languageKey index="de" type="array">
-			<label index="mlang_tabs_tab">Tag Management</label>
-			<label index="mlang_labels_tabdescr">Vorgeschlagene und existierende Tags verwalten</label>
-			<label index="mlang_labels_tablabel">Verwalten Sie Ihre Tags</label>
+			<label index="mlang_tabs_tab">Tag Manager</label>
 		</languageKey>
 	</data>
 </T3locallang>
