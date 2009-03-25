@@ -99,7 +99,7 @@
 			 
 			if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id)) {
 				
-				$this->tagpack = t3lib_div::_GP('tagpack');
+				$this->tpm = t3lib_div::_GP('tpm');
 			 
 				// Draw the header.
 				$this->doc = t3lib_div::makeInstance('bigDoc');
@@ -186,7 +186,14 @@
 		function moduleContentTab1() {
 			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Tab1 left');
 				$tagContainer = tx_tagpack_api::getTagContainer();
-				t3lib_div::debug($tagContainer);
+				if(count($tagContainer)) {
+					foreach($tagContainer as $pageData) {
+						$selected = $this->tpm['container_page'] == $pageData['uid'] ? ' selected="selected"' : '';
+						$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
+					}
+					$selectBox = '<select name="tpm[container_page]">'.$optionList.'</select>';
+				}
+			$tab1Content .= $selectBox;
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Tab1 right');
 			$tab1Content .= '</div>';
