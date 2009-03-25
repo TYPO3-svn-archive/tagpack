@@ -66,6 +66,24 @@ class tx_tagpack_api {
 
 
 	/**
+	 * Fetches all pages that are containing at least one tag
+	 *
+	 * @return	array		the complete record-set of all container pages
+	 */
+	function getTagContainer() {
+		$tagContainer = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			'pages.*',
+			'pages,'.tx_tagpack_api::tagTable.' AS tt',
+			'pages.hidden = 0 AND pages.deleted = 0 '
+			. 'AND pages.uid=tt.pid',
+			'pages.uid',
+			'pages.uid'
+		);
+		return $tagContainer;
+	}
+
+
+	/**
 	 * Checks whether a tag already exists by creating a lookup on the tag uid
 	 * and then returns.
 	 * 
