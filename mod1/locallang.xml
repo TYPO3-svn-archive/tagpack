@@ -9,6 +9,7 @@
 			<label index="title">Tag Manager</label>
 			<label index="page">Page</label>
 			<label index="TabLabel1">Approve</label>
+			<label index="Tab1_Label1">Select a tag container</label>
 			<label index="TabLabel2">Edit</label>
 			<label index="TabLabel3">Merge</label>
 			<label index="TabLabel4">Translate</label>
@@ -17,6 +18,7 @@
 			<label index="title">Tag Manager</label>
 			<label index="page">Seite</label>
 			<label index="TabLabel1">Freigeben</label>
+			<label index="Tab1_Label1">Wählen Sie einen Tag-Container aus</label>
 			<label index="TabLabel2">Bearbeiten</label>
 			<label index="TabLabel3">Zusammenfassen</label>
 			<label index="TabLabel4">Übersetzen</label>

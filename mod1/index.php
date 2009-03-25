@@ -191,7 +191,7 @@
 						$selected = $this->tpm['container_page'] == $pageData['uid'] ? ' selected="selected"' : '';
 						$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>'.$pageData['title'].'</option>';
 					}
-					$selectBox = '<select name="tpm[container_page]">'.$optionList.'</select>';
+					$selectBox = '<label for="tpm_container_page">'.$GLOBALS['LANG']->getLL('Tab1_Label1').'</label><select id="tpm_container_page" name="tpm[container_page]">'.$optionList.'</select>';
 				}
 			$tab1Content .= $selectBox;
 			$tab1Content .= '</div>';
