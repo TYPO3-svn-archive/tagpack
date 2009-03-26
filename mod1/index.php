@@ -282,7 +282,7 @@
 
 		function makeSearchbox($tab) {
 			$searchBox = '<label for="tpm_tagname_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label2').'</label>
-				<input class="search_tagname" id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'.$this->tpm['tagname'][$tab].'"/>';
+				<input class="search_tagname" id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'.($this->tpm['tagname'][$tab] ? $this->tpm['tagname'][$tab] : '%').'"/>';
 			return $searchBox;
 		} 
 	
@@ -300,10 +300,10 @@
 				if(count($sortedData[$selectedId])) {
 				    ksort($sortedData[$selectedId]);
 				    $resultList .= '<h3>['.$selectedId.'] '.$this->availableContainers[$selectedId]['title'].'</h3>';
-				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="400px">
+				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="420px">
 				    <colgroup>
 					<col width="50px" />
-					<col width="320px" />
+					<col width="340px" />
 					<col width="15px" />
 					<col width="15px" />
 				    </colgroup>
@@ -318,10 +318,10 @@
 				    if($tab == 1) {
 					$resultList .= '
 					    <th>
-						<img src="icons/button_hide.gif" alt="hidden" />
+						<img src="icons/button_hide.gif" alt="'.$GLOBALS['LANG']->getLL('blocked').'" title="'.$GLOBALS['LANG']->getLL('blocked').'" />
 					    </th>
 					    <th>
-						<img src="icons/garbage.gif" alt="deleted" />
+						<img src="icons/garbage.gif" alt="'.$GLOBALS['LANG']->getLL('remove').'" title="'.$GLOBALS['LANG']->getLL('remove').'" />
 					    </th>
 					';
 				    } else {
@@ -341,13 +341,12 @@
 					$trClass = fmod($counter,2) ? 'odd' : 'even';
 					$resultList .= '<tr class="'.$trClass.'" id="tag'.$tagData['uid'].'"><td align="right">'.$tagData['uid'].'</td><td>'.$tagData['name'].'</td>';
 					if($tab == 1) {
-					    $hiddenClass = $tagData['hidden'] ? ' class="alert"' : ' class="ok"';
-					    $deletedClass = $tagData['deleted'] ? ' class="alert"' : ' class="ok"';
+					    $hiddenClass = $tagData['hidden'] ? ' class="caution"' : ' class="ok"';
 					    $resultList .= '<td'.$hiddenClass.'>
-						<input class="checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
+						<input title="'.($tagData['hidden'] ? $GLOBALS['LANG']->getLL('blocked') : $GLOBALS['LANG']->getLL('approved')).'" class="checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
 						</td>
-						<td'.$deletedClass.'>
-						<input class="checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
+						<td class="alert">
+						<input title="'.$GLOBALS['LANG']->getLL('remove').'" class="checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
 						</td>';
 					} else if($tab == 2) {
 					    $resultList .= '<td>2</td><td></td>';

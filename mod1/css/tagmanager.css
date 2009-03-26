@@ -144,7 +144,7 @@
 }
 
 .tabcontent table.resultlist {
-    width:400px;
+    width:420px;
     opacity:0.6;
     filter:alpha(opacity=60);
 }
@@ -162,6 +162,10 @@
 
 .tabcontent td {
     padding:0.2em 0.5em;
+}
+
+.tabcontent td.caution {
+    background:#FC6;
 }
 
 .tabcontent td.alert {
