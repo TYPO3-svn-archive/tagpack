@@ -287,9 +287,9 @@
 		} 
 	
 
-		function makeResultlist($tab,$deleted=FALSE) {
+		function makeResultlist($tab,$hidden=FALSE) {
 			if($this->tpm['tagname'][$tab]) {
-			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($this->tpm['tagname'][$tab],implode(',',$this->tpm['container_page'][$tab]),FALSE,$deleted))) {
+			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($this->tpm['tagname'][$tab],implode(',',$this->tpm['container_page'][$tab]),FALSE,$hidden))) {
 				foreach ($resultData as $tagData) {
 				    $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;				    
 				}
@@ -297,9 +297,9 @@
 			}
 			if(count($sortedData)) {
 			    foreach($this->tpm['container_page'][$tab] as $selectedId) {
-				$resultList .= '<h3>['.$selectedId.'] '.$this->availableContainers[$selectedId]['title'].'</h3>';
 				if(count($sortedData[$selectedId])) {
 				    ksort($sortedData[$selectedId]);
+				    $resultList .= '<h3>['.$selectedId.'] '.$this->availableContainers[$selectedId]['title'].'</h3>';
 				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="400px">
 				    <colgroup>
 					<col width="50px" />
@@ -347,7 +347,7 @@
 						<input class="checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
 						</td>
 						<td'.$deletedClass.'>
-						<input class="checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].']['.($tagData['deleted'] ? 'undelete' : 'delete').']" value="1"'.($tagData['deleted'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
+						<input class="checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
 						</td>';
 					} else if($tab == 2) {
 					    $resultList .= '<td>2</td><td></td>';
@@ -356,7 +356,8 @@
 					} else {
 					    $resultList .= '<td>4</td><td></td>';
 					}
-					$resultList .= '</tr>';
+					$resultList .= '</tr>
+					';
 				    }
 				    $resultList .= '
 				    </table>';

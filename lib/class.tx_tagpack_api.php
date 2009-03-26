@@ -202,15 +202,15 @@ class tx_tagpack_api {
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	array		the result row from the DB or an empty array if nothing was found
 	 */
-	function getTagDataByTagName($tagName,$storagePID='',$limit=1,$showHiddenDeleted=FALSE) {
+	function getTagDataByTagName($tagName,$storagePID='',$limit=1,$showHidden=FALSE) {
 		$tagName = trim($tagName);
 		if (!empty($tagName)) {
 			$storagePID = $storagePID ? $storagePID : tx_tagpack_api::getTagStoragePID();
 			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'*',
 				tx_tagpack_api::tagTable,
-				($showHiddenDeleted ? '' : 'hidden = 0 AND deleted = 0 AND ')
-				. 'name LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($tagName, $this->tagTable)
+				($showHidden ? '' : 'hidden = 0 AND ')
+				. 'deleted = 0 AND name LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($tagName, $this->tagTable)
 				. ($storagePID ?  ' AND pid IN (' . $storagePID .')' : ''),
 				'',
 				'name ASC',
