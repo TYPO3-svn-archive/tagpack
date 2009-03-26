@@ -5,11 +5,20 @@ function triggerTab(triggerItem,triggeredContent) {
 	allTriggers[i-1].className = "redbutton";
 	if(i==triggeredContent) {
 	    document.getElementById("tabcontent" + i).className = "tabcontent_on";
+	    allTriggers[i-1].className = "greenbutton";
 	} else {
 	    document.getElementById("tabcontent" + i).className = "tabcontent_off";
 	}
     }
     document.getElementById("tpm_active_tab").value = triggeredContent;
-    triggerItem.parentNode.className = "greenbutton";
-    triggerItem.blur();
+}
+
+function switchStatus(triggerItem) {
+    if(triggerItem.checked) {
+	self.location.href = '/typo3/tce_db.php?&amp;' + triggerItem.name + '=1&amp;redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
+	return false;
+    } else {
+	self.location.href = '/typo3/tce_db.php?&amp;' + triggerItem.name + '=0&amp;redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
+	return false;
+    }
 }

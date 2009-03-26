@@ -12,7 +12,7 @@
 			<label index="Tab1_Left">Find Tags</label>
 			<label index="Tab1_Right">Matching Tags</label>
 			<label index="Tab1_Label1">Select one or more container(s) to approve tags</label>
-			<label index="Tab1_Label2">Find a tag by name</label>
+			<label index="Tab1_Label2">Find a tag by name (use % as wildcard)</label>
 			<label index="TabLabel2">Edit</label>
 			<label index="Tab2_Left">Find Tags</label>
 			<label index="Tab2_Right">Matching Tags</label>
@@ -37,7 +37,7 @@
 			<label index="Tab1_Left">Tags Finden</label>
 			<label index="Tab1_Right">Passende Tags</label>
 			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Freigabe aus</label>
-			<label index="Tab1_Label2">Nach Tag-Namen suchen</label>
+			<label index="Tab1_Label2">Nach Tag-Namen suchen (mit % als Platzhalter)</label>
 			<label index="TabLabel2">Bearbeiten</label>
 			<label index="Tab2_Left">Tags Finden</label>
 			<label index="Tab2_Right">Passende Tags</label>

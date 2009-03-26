@@ -193,7 +193,7 @@
 			$tab1Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Right'));
-			$tab1Content .= $this->makeResultList(1);
+			$tab1Content .= $this->makeResultList(1,TRUE);
 			$tab1Content .= '</div>';
 			return $tab1Content;
 		}
@@ -223,7 +223,7 @@
 		*/
 		function moduleContentTab3() {
 			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Left'));
-			$tab3Content .= $this->makeDefaultFormFields(3);
+			$tab3Content .= $this->makeDefaultFormFields(3,FALSE);
 			$tab3Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab3Content .= '</div>';
 			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Right'));
@@ -249,8 +249,8 @@
 			return $tab4Content;
 		}
 		 
-		function makeDefaultFormFields($tab) {
-			$content .= $this->makeContainerSelector($tab);
+		function makeDefaultFormFields($tab,$multiple=TRUE) {
+			$content .= $this->makeContainerSelector($tab,$multiple);
 			if(count($this->tpm['container_page'][$tab])) {
 				$content .= '<p>'.$GLOBALS['LANG']->getLL('within_containers').':</p>';
 				$content .= $this->makeSearchbox($tab);
@@ -258,7 +258,7 @@
 			return $content;
 		}
 		 
-		function makeContainerSelector($tab) {
+		function makeContainerSelector($tab,$multiple=TRUE) {
 			if(count($this->tpm['container_page'][$tab])) {
 				foreach($this->tpm['container_page'][$tab] as $value) {
 					$selectedOptions[$value]=1;
@@ -267,12 +267,14 @@
 			if(count($this->tagContainer)) {
 				$i=0;
 				foreach($this->tagContainer as $pageData) {
+					$this->availableContainers[$pageData['uid']]=$pageData;
 					$selected = $selectedOptions[$pageData['uid']] ? ' selected="selected"' : '';
 					$i++;
 					$optionList .= '<option value="'.$pageData['uid'].'"'.$selected.'>['.$pageData['uid'].'] '.substr($pageData['title'],0,16).(strlen($pageData['title'])>16 ? '...' : '').'</option>';
 				}
+				$multiple = $multiple ? ' multiple="multiple" size="5"' : '';
 				$selectBox = '<label for="tpm_container_page_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>
-				<select multiple="multiple" size="5" id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.'][]">'.$optionList.'</select>';
+				<select'.$multiple.' id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.'][]">'.$optionList.'</select>';
 			}
 			return $selectBox;
 		} 
@@ -285,11 +287,83 @@
 		} 
 	
 
-		function makeResultlist($tab) {
+		function makeResultlist($tab,$deleted=FALSE) {
 			if($this->tpm['tagname'][$tab]) {
-				$resultList = tx_tagpack_api::getTagDataByTagName($this->tpm['tagname'][$tab],implode(',',$this->tpm['container_page'][$tab]),count($this->tpm['container_page'][$tab]));
+			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($this->tpm['tagname'][$tab],implode(',',$this->tpm['container_page'][$tab]),FALSE,$deleted))) {
+				foreach ($resultData as $tagData) {
+				    $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;				    
+				}
+			    }
 			}
-			t3lib_div::debug($resultList);
+			if(count($sortedData)) {
+			    foreach($this->tpm['container_page'][$tab] as $selectedId) {
+				$resultList .= '<h3>['.$selectedId.'] '.$this->availableContainers[$selectedId]['title'].'</h3>';
+				if(count($sortedData[$selectedId])) {
+				    ksort($sortedData[$selectedId]);
+				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="400px">
+				    <colgroup>
+					<col width="50px" />
+					<col width="320px" />
+					<col width="15px" />
+					<col width="15px" />
+				    </colgroup>
+				    <tr>
+					<th>
+					    ID
+					</th>
+					<th>
+					    Name
+					</th>
+					';
+				    if($tab == 1) {
+					$resultList .= '
+					    <th>
+						<img src="icons/button_hide.gif" alt="hidden" />
+					    </th>
+					    <th>
+						<img src="icons/garbage.gif" alt="deleted" />
+					    </th>
+					';
+				    } else {
+					$resultList .= '
+					    <th>
+					    </th>
+					    <th>
+					    </th>
+					';
+				    }
+				    $resultList .= '
+				    </tr>
+				    ';
+				    $counter = 0;
+				    foreach($sortedData[$selectedId] as $tagData) {
+					$counter++;
+					$trClass = fmod($counter,2) ? 'odd' : 'even';
+					$resultList .= '<tr class="'.$trClass.'" id="tag'.$tagData['uid'].'"><td align="right">'.$tagData['uid'].'</td><td>'.$tagData['name'].'</td>';
+					if($tab == 1) {
+					    $hiddenClass = $tagData['hidden'] ? ' class="alert"' : ' class="ok"';
+					    $deletedClass = $tagData['deleted'] ? ' class="alert"' : ' class="ok"';
+					    $resultList .= '<td'.$hiddenClass.'>
+						<input class="checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
+						</td>
+						<td'.$deletedClass.'>
+						<input class="checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].']['.($tagData['deleted'] ? 'undelete' : 'delete').']" value="1"'.($tagData['deleted'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
+						</td>';
+					} else if($tab == 2) {
+					    $resultList .= '<td>2</td><td></td>';
+					} else if($tab == 3) {
+					    $resultList .= '<td>3</td><td></td>';
+					} else {
+					    $resultList .= '<td>4</td><td></td>';
+					}
+					$resultList .= '</tr>';
+				    }
+				    $resultList .= '
+				    </table>';
+				}
+			    }
+			}
+			return $resultList;
 		} 
 	
 	}
