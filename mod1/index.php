@@ -107,25 +107,10 @@
 				// Draw the header.
 				$this->doc = t3lib_div::makeInstance('bigDoc');
 				$this->doc->backPath = $BACK_PATH;
-				$this->doc->JScode = '<link rel="stylesheet" type="text/css" href="css/slimbox.css" />';
 				$this->doc->JScode .= '
 				<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
 				$this->doc->JScode .= '
 				<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
-				$this->doc->JScode .= '
-				<script type="text/javascript" src="js/mootools-1.2.1.js"><!--MOOTOOLS--></script>';
-				$this->doc->JScode .= '
-				<script type="text/javascript" src="js/slimboxMagnify.js"><!--SLIMBOX--></script>';
-				$this->doc->JScode .= '
-				<script type="text/javascript">//<![CDATA[
-/*<![CDATA[*/
-<!--
-window.addEvent(\'domready\', slimboxMagnify.init.bind(slimboxMagnify,{magnifyDuration: 400, magnifyTransition: Fx.Transitions.sineInOut}));
-// -->
-/*]]>*/
-				</script>';
-				
-				
 				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
 				 
 				$this->content .= $this->doc->startPage($LANG->getLL('title'));
@@ -383,7 +368,7 @@ window.addEvent(\'domready\', slimboxMagnify.init.bind(slimboxMagnify,{magnifyDu
 						<input title="'.$GLOBALS['LANG']->getLL('remove').'" class="tpm_checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
 						</td>';
 					} else if($tab == 2) {
-					    $resultList .= '<td colspan="2"><a href="index.php" rel="lightbox">Test</a></td>';
+					    $resultList .= '<td colspan="2"><a href="#"><img src="icons/edit2.gif" /></a></td>';
 					} else if($tab == 3) {
 					    $resultList .= '<td>3</td><td></td>';
 					} else {
