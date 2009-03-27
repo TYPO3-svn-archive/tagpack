@@ -144,7 +144,7 @@
 }
 
 .tabcontent table.resultlist {
-    width:420px;
+    width:400px;
     opacity:0.6;
     filter:alpha(opacity=60);
 }
@@ -204,3 +204,13 @@
     filter:alpha(opacity=70);
     width:235px;
 }
+
+.tabcontent #approvedfilter, .tabcontent #approvedfilter * {
+    color:#FFF;
+    vertical-align:bottom;
+}
+
+.tabcontent #approvedfilter * {
+    display:inline;
+}
+

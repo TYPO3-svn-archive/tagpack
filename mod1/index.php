@@ -190,6 +190,17 @@
 		function moduleContentTab1() {
 			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Left'));
 			$tab1Content .= $this->makeDefaultFormFields(1);
+			$blockedChecked = $this->tpm['approve']['blocked'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved']) ? ' checked="checked"' : '';
+			$approvedChecked = $this->tpm['approve']['approved'] ? ' checked="checked"' : '';
+			$tab1Content .= '
+			    <div id="approvedfilter">
+				'.$GLOBALS['LANG']->getLL('find').' <input type="checkbox" class="tpm_checkbox" id="tpm_approve_blocked" name="tpm[approve][blocked]" value="1"'.$blockedChecked.' />
+				<label for="tpm_approve_blocked"> '.$GLOBALS['LANG']->getLL('blocked').' </label>
+				<input type="checkbox" class="tpm_checkbox" id="tpm_approve_approved" name="tpm[approve][approved]" value="1"'.$approvedChecked.' />
+				<label for="tpm_approve_approved"> '.$GLOBALS['LANG']->getLL('approved').' </label>
+				'.$GLOBALS['LANG']->getLL('tags').'
+			    </div>
+			';
 			$tab1Content .= '<input type="submit" class="submit" value="submit" />';
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Right'));
@@ -282,16 +293,23 @@
 
 		function makeSearchbox($tab) {
 			$searchBox = '<label for="tpm_tagname_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label2').'</label>
-				<input class="search_tagname" id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'.($this->tpm['tagname'][$tab] ? $this->tpm['tagname'][$tab] : '%').'"/>';
+				<input class="search_tagname" id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'.$this->tpm['tagname'][$tab].'"/>';
 			return $searchBox;
 		} 
 	
 
 		function makeResultlist($tab,$hidden=FALSE) {
-			if($this->tpm['tagname'][$tab]) {
-			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($this->tpm['tagname'][$tab],implode(',',$this->tpm['container_page'][$tab]),FALSE,$hidden))) {
+			if(count($this->tpm['container_page'][$tab])) {
+			    $tagName = trim($this->tpm['tagname'][$tab]) ? trim($this->tpm['tagname'][$tab]) : '%';
+			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($tagName,implode(',',$this->tpm['container_page'][$tab]),FALSE,$hidden))) {
 				foreach ($resultData as $tagData) {
-				    $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;				    
+				    if($tagData['hidden']) {
+					if($this->tpm['approve']['blocked'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved'])) {
+				    	    $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
+					}
+				    } else if ($this->tpm['approve']['approved']) {
+					$sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
+			    	    }
 				}
 			    }
 			}
@@ -300,10 +318,10 @@
 				if(count($sortedData[$selectedId])) {
 				    ksort($sortedData[$selectedId]);
 				    $resultList .= '<h3>['.$selectedId.'] '.$this->availableContainers[$selectedId]['title'].'</h3>';
-				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="420px">
+				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="400px">
 				    <colgroup>
 					<col width="50px" />
-					<col width="340px" />
+					<col width="320px" />
 					<col width="15px" />
 					<col width="15px" />
 				    </colgroup>
@@ -343,10 +361,10 @@
 					if($tab == 1) {
 					    $hiddenClass = $tagData['hidden'] ? ' class="caution"' : ' class="ok"';
 					    $resultList .= '<td'.$hiddenClass.'>
-						<input title="'.($tagData['hidden'] ? $GLOBALS['LANG']->getLL('blocked') : $GLOBALS['LANG']->getLL('approved')).'" class="checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
+						<input title="'.($tagData['hidden'] ? $GLOBALS['LANG']->getLL('blocked') : $GLOBALS['LANG']->getLL('approved')).'" class="tpm_checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
 						</td>
 						<td class="alert">
-						<input title="'.$GLOBALS['LANG']->getLL('remove').'" class="checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
+						<input title="'.$GLOBALS['LANG']->getLL('remove').'" class="tpm_checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
 						</td>';
 					} else if($tab == 2) {
 					    $resultList .= '<td>2</td><td></td>';
