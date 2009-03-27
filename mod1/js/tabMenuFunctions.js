@@ -15,10 +15,10 @@ function triggerTab(triggerItem,triggeredContent) {
 
 function switchStatus(triggerItem) {
     if(triggerItem.checked) {
-	self.location.href = '/typo3/tce_db.php?' + triggerItem.name + '=1&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
+	self.location.href = '/typo3/tce_db.php?' + triggerItem.name + '=0&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
 	return false;
     } else {
-	self.location.href = '/typo3/tce_db.php?' + triggerItem.name + '=0&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
+	self.location.href = '/typo3/tce_db.php?' + triggerItem.name + '=1&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
 	return false;
     }
 }

@@ -107,9 +107,15 @@
 				// Draw the header.
 				$this->doc = t3lib_div::makeInstance('bigDoc');
 				$this->doc->backPath = $BACK_PATH;
-				$this->doc->JScode = '<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
+				$this->doc->JScode = '<link rel="stylesheet" type="text/css" href="css/slimbox.css" />';
+				$this->doc->JScode .= '
+				<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
 				$this->doc->JScode .= '
 				<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
+				$this->doc->JScode .= '
+				<script type="text/javascript" src="js/mootools-1.2.1.js"><!--MOOTOOLS--></script>';
+				$this->doc->JScode .= '
+				<script type="text/javascript" src="js/slimbox.js"><!--SLIMBOX--></script>';
 				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
 				 
 				$this->content .= $this->doc->startPage($LANG->getLL('title'));
@@ -191,7 +197,7 @@
 			$tab1Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Left'));
 			$tab1Content .= $this->makeDefaultFormFields(1);
 			$blockedChecked = $this->tpm['approve']['blocked'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved']) ? ' checked="checked"' : '';
-			$approvedChecked = $this->tpm['approve']['approved'] ? ' checked="checked"' : '';
+			$approvedChecked = $this->tpm['approve']['approved'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved']) ? ' checked="checked"' : '';
 			$tab1Content .= '
 			    <div id="approvedfilter">
 				'.$GLOBALS['LANG']->getLL('find').' <input type="checkbox" class="tpm_checkbox" id="tpm_approve_blocked" name="tpm[approve][blocked]" value="1"'.$blockedChecked.' />
@@ -307,7 +313,7 @@
 					if($this->tpm['approve']['blocked'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved'])) {
 				    	    $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
 					}
-				    } else if ($this->tpm['approve']['approved']) {
+				    } else if ($this->tpm['approve']['approved'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved'])) {
 					$sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
 			    	    }
 				}
@@ -336,7 +342,7 @@
 				    if($tab == 1) {
 					$resultList .= '
 					    <th>
-						<img src="icons/button_hide.gif" alt="'.$GLOBALS['LANG']->getLL('blocked').'" title="'.$GLOBALS['LANG']->getLL('blocked').'" />
+						<img src="icons/button_unhide.gif" alt="'.$GLOBALS['LANG']->getLL('blocked').'" title="'.$GLOBALS['LANG']->getLL('blocked').'" />
 					    </th>
 					    <th>
 						<img src="icons/garbage.gif" alt="'.$GLOBALS['LANG']->getLL('remove').'" title="'.$GLOBALS['LANG']->getLL('remove').'" />
@@ -361,13 +367,13 @@
 					if($tab == 1) {
 					    $hiddenClass = $tagData['hidden'] ? ' class="caution"' : ' class="ok"';
 					    $resultList .= '<td'.$hiddenClass.'>
-						<input title="'.($tagData['hidden'] ? $GLOBALS['LANG']->getLL('blocked') : $GLOBALS['LANG']->getLL('approved')).'" class="tpm_checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? ' checked="checked"' : '').' onclick="switchStatus(this);return false;" />
+						<input title="'.($tagData['hidden'] ? $GLOBALS['LANG']->getLL('blocked') : $GLOBALS['LANG']->getLL('approved')).'" class="tpm_checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? '' : ' checked="checked"').' onclick="switchStatus(this);return false;" />
 						</td>
 						<td class="alert">
 						<input title="'.$GLOBALS['LANG']->getLL('remove').'" class="tpm_checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
 						</td>';
 					} else if($tab == 2) {
-					    $resultList .= '<td>2</td><td></td>';
+					    $resultList .= '<td colspan="2"><a href="index.php" rel="lightbox">Test</a></td>';
 					} else if($tab == 3) {
 					    $resultList .= '<td>3</td><td></td>';
 					} else {
