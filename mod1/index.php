@@ -115,7 +115,17 @@
 				$this->doc->JScode .= '
 				<script type="text/javascript" src="js/mootools-1.2.1.js"><!--MOOTOOLS--></script>';
 				$this->doc->JScode .= '
-				<script type="text/javascript" src="js/slimbox.js"><!--SLIMBOX--></script>';
+				<script type="text/javascript" src="js/slimboxMagnify.js"><!--SLIMBOX--></script>';
+				$this->doc->JScode .= '
+				<script type="text/javascript">//<![CDATA[
+/*<![CDATA[*/
+<!--
+window.addEvent(\'domready\', slimboxMagnify.init.bind(slimboxMagnify,{magnifyDuration: 400, magnifyTransition: Fx.Transitions.sineInOut}));
+// -->
+/*]]>*/
+				</script>';
+				
+				
 				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
 				 
 				$this->content .= $this->doc->startPage($LANG->getLL('title'));
