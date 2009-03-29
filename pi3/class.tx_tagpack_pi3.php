@@ -157,7 +157,7 @@ class tx_tagpack_pi3 extends tslib_pibase {
 			$groupBy = ($conf['mode'] === 'filter') ? '' : $table . '.uid';
 			
 			$elsQuery = array(
-				$table.'.*, mm.*',
+				$table.'.*, mm.uid_local, mm.uid_foreign, mm.pid_foreign, mm.tablenames',
 				$table.' JOIN tx_tagpack_tags_relations_mm AS mm',
 				'mm.uid_foreign='.$table.'.uid
 					AND mm.tablenames=\''.$table.'\'
