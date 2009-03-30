@@ -22,3 +22,19 @@ function switchStatus(triggerItem) {
 	return false;
     }
 }
+
+function tpmEditItem(triggerItem,tabId) {
+    if(triggerItem) {
+	window.inner_frame.location.href = '/typo3/alt_doc.php?edit[tx_tagpack_tags][' + triggerItem + ']=edit';
+	Effect.Grow('iframe_container',{duration:2});
+	top.iframeOn = true;
+	window.inner_frame.focus();
+    }
+}
+
+function tpmIframeHide() {
+    if(top.iframeOn) {
+	Effect.SwitchOff('iframe_container');
+	top.iframeOn = false;
+    }
+}

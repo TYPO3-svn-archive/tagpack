@@ -110,6 +110,10 @@
 				$this->doc->JScode .= '
 				<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
 				$this->doc->JScode .= '
+				<script type="text/javascript" src="/typo3/contrib/prototype/prototype.js"><!--PROTOTYPE--></script>';
+				$this->doc->JScode .= '
+				<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';
+				$this->doc->JScode .= '
 				<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
 				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
 				 
@@ -150,10 +154,10 @@
 		function moduleContentDynTabs() {
 		
 		    $this->content .= '<ul id="tabmenu">';
-		    $this->content .= '<li id="tabitem1" class="'.($this->tpm['active_tab'] > 1 ? 'redbutton' : 'greenbutton').'"><a href="#" onclick="triggerTab(this,1);return false;">'.$GLOBALS['LANG']->getLL('TabLabel1').'</a></li>';
-		    $this->content .= '<li id="tabitem2" class="'.($this->tpm['active_tab'] == 2 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,2);return false;">'.$GLOBALS['LANG']->getLL('TabLabel2').'</a></li>';
-		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 3 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,3);return false;">'.$GLOBALS['LANG']->getLL('TabLabel3').'</a></li>';
-		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 4 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,4);return false;">'.$GLOBALS['LANG']->getLL('TabLabel4').'</a></li>';
+		    $this->content .= '<li id="tabitem1" class="'.($this->tpm['active_tab'] > 1 ? 'redbutton' : 'greenbutton').'"><a href="#" onclick="triggerTab(this,1);tpmIframeHide();return false;">'.$GLOBALS['LANG']->getLL('TabLabel1').'</a></li>';
+		    $this->content .= '<li id="tabitem2" class="'.($this->tpm['active_tab'] == 2 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,2);tpmIframeHide();return false;">'.$GLOBALS['LANG']->getLL('TabLabel2').'</a></li>';
+		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 3 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,3);tpmIframeHide();return false;">'.$GLOBALS['LANG']->getLL('TabLabel3').'</a></li>';
+		    $this->content .= '<li id="tabitem3" class="'.($this->tpm['active_tab'] == 4 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,4);tpmIframeHide();return false;">'.$GLOBALS['LANG']->getLL('TabLabel4').'</a></li>';
 		    $this->content .= '</ul>
 		    <input id="tpm_active_tab" type="hidden" name="tpm[active_tab]" value="'.($this->tpm['active_tab'] ? $this->tpm['active_tab'] : 1).'" />
 		    <div id="tabcontent1" class="'.($this->tpm['active_tab'] > 1 ? 'tabcontent_off' : 'tabcontent_on').'">
@@ -168,7 +172,9 @@
 		    <div id="tabcontent4" class="'.($this->tpm['active_tab'] == 4 ? 'tabcontent_on' : 'tabcontent_off').'">
 			'.$this->moduleContentTab4().'
 		    </div>
-		    ';
+		    <div id="iframe_container" style="display:none;">
+			<iframe id="inner_frame" name="inner_frame" src="/typo3/alt_doc.php" onblur="tpmIframeHide();return false;"><!--//IFRAME FOR TCE-FORM//--></iframe>
+		    </div>';
 		    
 		}
 		 
@@ -315,6 +321,7 @@
 			    }
 			}
 			if(count($sortedData)) {
+
 			    foreach($this->tpm['container_page'][$tab] as $selectedId) {
 				if(count($sortedData[$selectedId])) {
 				    ksort($sortedData[$selectedId]);
@@ -368,7 +375,7 @@
 						<input title="'.$GLOBALS['LANG']->getLL('remove').'" class="tpm_checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
 						</td>';
 					} else if($tab == 2) {
-					    $resultList .= '<td colspan="2"><a href="#"><img src="icons/edit2.gif" /></a></td>';
+					    $resultList .= '<td colspan="2"><a href="#" onclick="tpmEditItem('.$tagData['uid'].');return false;"><img src="icons/edit2.gif" /></a></td>';
 					} else if($tab == 3) {
 					    $resultList .= '<td>3</td><td></td>';
 					} else {

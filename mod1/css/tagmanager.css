@@ -227,3 +227,18 @@
     display:inline;
 }
 
+#iframe_container {
+    width:710px;
+    height:420px;
+    left:40px;
+    top:23px;
+    position:absolute;
+}
+
+#inner_frame {
+    width:710px;
+    height:420px;        
+    opacity:0.9;
+    filter:alpha(opacity=90);
+}
+

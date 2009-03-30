@@ -105,7 +105,7 @@
 			'internal_type' => 'db',
 			'allowed' => '*',
 			'prepend_tname' => 1,
-			'size' => 10,
+			'size' => 8,
 			'minitems' => 0,
 			'maxitems' => 999999999,
 			'MM' => 'tx_tagpack_tags_relations_mm',
