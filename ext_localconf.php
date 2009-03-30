@@ -20,4 +20,5 @@ $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tceforms.php']['ge
 $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = 'EXT:tagpack/class.tx_tagpack_tceforms_addtags.php:tx_tagpack_tceforms_addtags';
 $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = 'EXT:tagpack/class.tx_tagpack_tceforms_addtags.php:tx_tagpack_tceforms_addtags';
 
+$TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['typo3/dummy.php']= t3lib_extMgm::extPath($_EXTKEY) . 'class.ux_SC_dummy.php';
 ?>
