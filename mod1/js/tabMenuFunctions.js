@@ -26,7 +26,7 @@ function switchStatus(triggerItem) {
 function tpmEditItem(triggerItem,tabId) {
     if(triggerItem) {
 	window.inner_frame.location.href = '/typo3/alt_doc.php?edit[tx_tagpack_tags][' + triggerItem + ']=edit';
-	Effect.Grow('iframe_container',{duration:2});
+	alert(top.Effect);
 	top.iframeOn = true;
 	window.inner_frame.focus();
     }

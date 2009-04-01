@@ -109,10 +109,10 @@
 				$this->doc->backPath = $BACK_PATH;
 				$this->doc->JScode .= '
 				<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
-				$this->doc->JScode .= '
+/*				$this->doc->JScode .= '
 				<script type="text/javascript" src="/typo3/contrib/prototype/prototype.js"><!--PROTOTYPE--></script>';
 				$this->doc->JScode .= '
-				<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';
+				<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';*/
 				$this->doc->JScode .= '
 				<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
 				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
@@ -348,6 +348,12 @@
 					    </th>
 					    <th>
 						<img src="icons/garbage.gif" alt="'.$GLOBALS['LANG']->getLL('remove').'" title="'.$GLOBALS['LANG']->getLL('remove').'" />
+					    </th>
+					';
+				    } else if($tab == 2) {
+					$resultList .= '
+					    <th colspan="2">
+						Edit
 					    </th>
 					';
 				    } else {
