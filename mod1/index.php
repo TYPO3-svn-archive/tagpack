@@ -109,10 +109,10 @@
 				$this->doc->backPath = $BACK_PATH;
 				$this->doc->JScode .= '
 				<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
-/*				$this->doc->JScode .= '
+				$this->doc->JScode .= '
 				<script type="text/javascript" src="/typo3/contrib/prototype/prototype.js"><!--PROTOTYPE--></script>';
 				$this->doc->JScode .= '
-				<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';*/
+				<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';
 				$this->doc->JScode .= '
 				<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
 				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
@@ -208,7 +208,8 @@
 				'.$GLOBALS['LANG']->getLL('tags').'
 			    </div>
 			';
-			$tab1Content .= '<input type="submit" class="submit" value="submit" />';
+			$tab1Content .= $this->makeLimitField(1);
+			$tab1Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Right'));
 			$tab1Content .= $this->makeResultList(1,TRUE);
@@ -225,7 +226,8 @@
 		function moduleContentTab2() {
 			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab2_Left'));
 			$tab2Content .= $this->makeDefaultFormFields(2);
-			$tab2Content .= '<input type="submit" class="submit" value="submit" />';
+			$tab2Content .= $this->makeLimitField(2);
+			$tab2Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
 			$tab2Content .= '</div>';
 			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab2_Right'));
 			$tab2Content .= $this->makeResultList(2);
@@ -242,10 +244,13 @@
 		function moduleContentTab3() {
 			$tab3Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Left'));
 			$tab3Content .= $this->makeDefaultFormFields(3,FALSE);
-			$tab3Content .= '<input type="submit" class="submit" value="submit" />';
+			$tab3Content .= $this->makeContextSearchFields(3);
+			$tab3Content .= $this->makeLimitField(3);
+			$tab3Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
 			$tab3Content .= '</div>';
 			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Right'));
 			$tab3Content .= $this->makeResultList(3);
+			$tab3Content .= $this->makeRelatedList(3,$this->firstLevelResults[3],$this->tpm['container_page'][3][0],$this->tpm['taglimit'][3]);
 			$tab3Content .= '</div>';
 			return $tab3Content;
 		}
@@ -259,7 +264,8 @@
 		function moduleContentTab4() {
 			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Left'));
 			$tab4Content .= $this->makeDefaultFormFields(4);
-			$tab4Content .= '<input type="submit" class="submit" value="submit" />';
+			$tab4Content .= $this->makeLimitField(4);
+			$tab4Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
 			$tab4Content .= '</div>';
 			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Right'));
 			$tab4Content .= $this->makeResultList(4);
@@ -301,22 +307,50 @@
 		function makeSearchbox($tab) {
 			$searchBox = '<label for="tpm_tagname_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label2').'</label>
 				<input class="search_tagname" id="tpm_tagname_'.$tab.'" type="text" name="tpm[tagname]['.$tab.']" value="'.$this->tpm['tagname'][$tab].'"/>';
+			$searchBox .= '<div class="floatbox"><label for="tpm_tagdate_from_'.$tab.'">'.$GLOBALS['LANG']->getLL('Between').' </label>
+				<input onblur="checkDate(this);return false;" class="search_tagfrom" id="tpm_tagdate_from_'.$tab.'" type="text" name="tpm[tagdatefrom]['.$tab.']" value="'.($this->tpm['tagdatefrom'][$tab] ? $this->tpm['tagdatefrom'][$tab] : date('Y-m-d',0)).'"/></div>';
+			$searchBox .= '<div class="floatbox"><label for="tpm_tagdate_to_'.$tab.'"> '.$GLOBALS['LANG']->getLL('and').' </label>
+				<input onblur="checkDate(this);return false;" class="search_tagto" id="tpm_tagdate_to_'.$tab.'" type="text" name="tpm[tagdateto]['.$tab.']" value="'.($this->tpm['tagdateto'][$tab] ? $this->tpm['tagdateto'][$tab] : date('Y-m-d',time())).'"/></div><br class="clearer" />';
 			return $searchBox;
+		} 
+	
+		function makeLimitField($tab) {
+			$searchBox .= '<div class="floatbox"><p>'.$GLOBALS['LANG']->getLL('limit1').' <input class="search_taglimit" type="text" name="tpm[taglimit]['.$tab.']" value="'.($this->tpm['taglimit'][$tab] ? $this->tpm['taglimit'][$tab] : 50).'"/> ';
+			$searchBox .= $GLOBALS['LANG']->getLL('limit2').'</p></div><br class="clearer" />';
+			return $searchBox;
+		} 
+	
+		function makeContextSearchFields($tab) {
+			if($this->tpm['tagname'][$tab]) {
+			    $checked = $this->tpm['context_enabled'] ? ' checked="checked"' : '';
+			    $searchBox .= '<div class="floatbox"><p>
+				<input type="checkbox" class="tpm_checkbox" name="tpm[context_enabled]['.$tab.']" value="1"'.$checked.' /> '.$GLOBALS['LANG']->getLL('context_enabled1').' <select id="context_levels" name="tpm[context_levels]['.$tab.']">
+				';
+				for($i=1;$i<=4;$i++) {				
+				    $selected = $this->tpm['context_levels'][$tab]==$i ? ' selected="selected"' : '';
+				    $searchBox .= '<option value="'.$i.'"'.$selected.'>'.$i.'</option>';
+				}
+			    $searchBox .= '</select> '.$GLOBALS['LANG']->getLL('context_enabled2').'
+				</p>
+			    </div><br class="clearer" />';
+			    return $searchBox;
+			}
 		} 
 	
 
 		function makeResultlist($tab,$hidden=FALSE) {
 			if(count($this->tpm['container_page'][$tab])) {
 			    $tagName = trim($this->tpm['tagname'][$tab]) ? trim($this->tpm['tagname'][$tab]) : '%';
-			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($tagName,implode(',',$this->tpm['container_page'][$tab]),FALSE,$hidden))) {
+			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($tagName,implode(',',$this->tpm['container_page'][$tab]),($this->tpm['taglimit'][$tab] ? $this->tpm['taglimit'][$tab] : 50),$hidden,$this->tpm['tagdatefrom'][$tab],$this->tpm['tagdateto'][$tab]))) {
 				foreach ($resultData as $tagData) {
 				    if($tagData['hidden']) {
-					if($this->tpm['approve']['blocked'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved'])) {
-				    	    $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
+				        if($this->tpm['approve']['blocked'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved'])) {
+						$sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
 					}
 				    } else if ($this->tpm['approve']['approved'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved'])) {
-					$sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
-			    	    }
+				        $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
+					$this->firstLevelResults[$tab] .= $this->firstLevelResults[$tab] ? ','.$tagData['uid'] : $tagData['uid'];
+				    }
 				}
 			    }
 			}
@@ -326,10 +360,10 @@
 				if(count($sortedData[$selectedId])) {
 				    ksort($sortedData[$selectedId]);
 				    $resultList .= '<h3>['.$selectedId.'] '.$this->availableContainers[$selectedId]['title'].'</h3>';
-				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="400px">
+				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="100%">
 				    <colgroup>
 					<col width="50px" />
-					<col width="320px" />
+					<col />
 					<col width="15px" />
 					<col width="15px" />
 				    </colgroup>
@@ -396,7 +430,15 @@
 			    }
 			}
 			return $resultList;
-		} 
+		}
+		
+		function makeRelatedList($tab,$levelResults,$containerId,$limit) {
+		    if($levelResults && $this->tpm['context_enabled'][$tab] && $this->tpm['tagname'][$tab]) {
+			$attachedElementUids = tx_tagpack_api::getRelatedTagsForTags($levelResults,$containerId,$limit);
+			t3lib_div::debug($attachedElementUids);
+			return $relatedList;
+		    }
+		}
 	
 	}
 	 

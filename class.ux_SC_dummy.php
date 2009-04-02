@@ -19,6 +19,7 @@ class ux_SC_dummy extends SC_dummy {
 	<!--// TRIGGER onblur
 	if(parent.Effect && top.iframeOn) {
 	    parent.Effect.SwitchOff("iframe_container");
+	    top.iframeOn = false;
 	}
 	//-->
 	</script>';

@@ -202,8 +202,19 @@ class tx_tagpack_api {
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	array		the result row from the DB or an empty array if nothing was found
 	 */
-	function getTagDataByTagName($tagName,$storagePID='',$limit=1,$showHidden=FALSE) {
+	function getTagDataByTagName($tagName,$storagePID='',$limit=1,$showHidden=FALSE,$fromDate=FALSE,$toDate=FALSE) {
 		$tagName = trim($tagName);
+		$limitArray = t3lib_div::trimExplode(',',$limit);
+		if($limitArray[1]) {
+		    $limit = intval($limitArray[0]).','.intval($limitArray[1]);
+		} else {
+		    $limit = intval($limitArray[0]);
+		}
+		if($fromDate || $toDate) {
+		    $fromDate = $fromDate ? strtotime($fromDate) : 0;
+		    $toDate = $toDate ? strtotime($toDate)+(60*60*24)-1 : time();
+		    $timeFrame = ' AND crdate > '.intval($fromDate).' AND crdate < '.intval($toDate);
+		}
 		if (!empty($tagName)) {
 			$storagePID = $storagePID ? $storagePID : tx_tagpack_api::getTagStoragePID();
 			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
@@ -211,7 +222,8 @@ class tx_tagpack_api {
 				tx_tagpack_api::tagTable,
 				($showHidden ? '' : 'hidden = 0 AND ')
 				. 'deleted = 0 AND name LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($tagName, $this->tagTable)
-				. ($storagePID ?  ' AND pid IN (' . $storagePID .')' : ''),
+				. ($storagePID ?  ' AND pid IN (' . $storagePID .')' : '')
+				. $timeFrame,
 				'',
 				'name ASC',
 				$limit
@@ -312,6 +324,49 @@ class tx_tagpack_api {
 					$elements[] = array('uid' => $row[0], 'table' => $row[1]);
 				}
 			}
+		}
+		return $elements;
+	}
+
+
+	/**
+	 * Returns an array full of tags that are attached to
+	 * the same element(s) as a list of known tags
+	 * 
+	 * @param	$tagUidList	a list of integers that uniquely identifie a tag in the DB table
+	 * @param	$containerId	an integer that uniquely identifies the container for the related tags
+	 * @return	array		an array with the tag data
+	 */
+	function getRelatedTagsForTags($tagUidList,$containerId=0,$limit=10) {
+		$elements = array();
+		$limitArray = t3lib_div::trimExplode(',',$limit);
+		if($limitArray[1]) {
+		    $limit = intval($limitArray[0]).','.intval($limitArray[1]);
+		} else {
+		    $limit = intval($limitArray[0]);
+		}
+		if ($tagUidList != '') {
+			$elements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+				'tags.*',
+				tx_tagpack_api::relationsTable.' AS t1 JOIN '.
+				    tx_tagpack_api::relationsTable.' AS t2 ON (
+					t1.uid_foreign = t2.uid_foreign AND 
+					t1.tablenames = t2.tablenames AND
+					t2.hidden = 0 AND t2.deleted = 0) JOIN '.
+				    tx_tagpack_api::tagTable.' AS tags ON (
+					t2.uid_local = tags.uid AND 
+					tags.pid = '.intval($containerId).' AND
+					tags.hidden = 0 AND 
+					tags.deleted = 0 AND
+					tags.uid NOT IN ('. $GLOBALS['TYPO3_DB']->fullQuoteStr($tagUidList, tx_tagpack_api::relationsTable) .')
+				    )',
+				't1.hidden = 0 AND 
+				 t1.deleted = 0 AND
+				 t1.uid_local IN ('. $GLOBALS['TYPO3_DB']->fullQuoteStr($tagUidList, tx_tagpack_api::relationsTable) .')',
+				 'tags.uid',
+				 'tags.relations DESC',
+				 $limit
+			);
 		}
 		return $elements;
 	}

@@ -8,8 +8,10 @@
 		<languageKey index="default" type="array">
 			<label index="title">Tag Manager</label>
 			<label index="page">Page</label>
-			<label index="TabLabel1">Approve</label>
-			<label index="Tab1_Left">Find Tags</label>
+			<label index="Between">Between</label>
+			<label index="and">and</label>
+			<label index="TabLabel1">Examine</label>
+			<label index="Tab1_Left">Find tags</label>
 			<label index="Tab1_Right">Matching tags to be approved/blocked/removed</label>
 			<label index="Tab1_Label1">Select one or more container(s) to approve tags</label>
 			<label index="Tab1_Label2">Find a tag by name (use % as wildcard)</label>
@@ -19,26 +21,32 @@
 			<label index="tags">tags</label>
 			<label index="remove">Remove completely!</label>
 			<label index="TabLabel2">Edit</label>
-			<label index="Tab2_Left">Find Tags</label>
-			<label index="Tab2_Right">Matching Tags</label>
+			<label index="Tab2_Left">Find tags</label>
+			<label index="Tab2_Right">Matching tags to be edited</label>
 			<label index="Tab2_Label1">Select one or more container(s) to edit tags</label>
 			<label index="Tab2_Label2">Find a tag by name</label>
 			<label index="TabLabel3">Merge</label>
 			<label index="Tab3_Left">Find Tags</label>
-			<label index="Tab3_Right">Matching Tags</label>
+			<label index="context_enabled1">including related tags on </label>
+			<label index="context_enabled2"> levels</label>
+			<label index="Tab3_Right">Matching tags to be merged</label>
 			<label index="Tab3_Label1">Select a container to merge tags</label>
 			<label index="Tab3_Label2">Find a tag by name</label>
 			<label index="TabLabel4">Translate</label>
-			<label index="Tab4_Left">Find Tags</label>
-			<label index="Tab4_Right">Matching Tags</label>
+			<label index="Tab4_Left">Find tags</label>
+			<label index="Tab4_Right">Matching tags to be translated</label>
 			<label index="Tab4_Label1">Select one or more container(s) to translate tags</label>
 			<label index="Tab4_Label2">Find a tag by name</label>
-			<label index="within_containers">Within these container(s)</label>
+			<label index="within_containers">Within this container</label>
+			<label index="limit1">Limited to</label>
+			<label index="limit2">results per section</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="title">Tag Manager</label>
 			<label index="page">Seite</label>
-			<label index="TabLabel1">Freigeben</label>
+			<label index="Between">Zwischen dem</label>
+			<label index="and">und dem</label>
+			<label index="TabLabel1">Überwachen</label>
 			<label index="Tab1_Left">Tags Finden</label>
 			<label index="Tab1_Right">Passende Tags zur Freigabe/Sperrung/Löschung</label>
 			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Freigabe von Tags aus</label>
@@ -50,11 +58,13 @@
 			<label index="remove">Komplett entfernen!</label>
 			<label index="TabLabel2">Bearbeiten</label>
 			<label index="Tab2_Left">Tags Finden</label>
-			<label index="Tab2_Right">Passende Tags</label>
-			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Bearbeitung von Tags aus</label>
+			<label index="Tab2_Right">Passende Tags zum Bearbeiten</label>
+			<label index="Tab2_Label1">Wählen Sie einen oder mehrere Container zur Bearbeitung von Tags aus</label>
 			<label index="Tab2_Label2">Nach Tag-Namen suchen</label>
 			<label index="TabLabel3">Zusammenfassen</label>
 			<label index="Tab3_Left">Tags Finden</label>
+			<label index="context_enabled1">inklusive verwandter Tags auf </label>
+			<label index="context_enabled2"> Ebenen.</label>
 			<label index="Tab3_Right">Passende Tags</label>
 			<label index="Tab3_Label1">Wählen Sie einen Container zur Zusammenfassung von Tags aus</label>
 			<label index="Tab3_Label2">Nach Tag-Namen suchen</label>
@@ -63,7 +73,9 @@
 			<label index="Tab4_Right">Passende Tags</label>
 			<label index="Tab1_Label1">Wählen Sie einen oder mehrere Container zur Übersetzung von Tags aus</label>
 			<label index="Tab4_Label2">Nach Tag-Namen suchen</label>
-			<label index="within_containers">Innerhalb dieser Container</label>
+			<label index="within_containers">Innerhalb des/r Container</label>
+			<label index="limit1">Begrenzt auf</label>
+			<label index="limit2">Ergebnisse pro Abschnitt</label>
 		</languageKey>
 	</data>
 </T3locallang>

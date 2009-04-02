@@ -1,3 +1,5 @@
+top.iframeOn = false;
+
 function triggerTab(triggerItem,triggeredContent) {
     allTriggers = triggerItem.parentNode.parentNode.getElementsByTagName("li");
     countTriggers = allTriggers.length;
@@ -23,18 +25,22 @@ function switchStatus(triggerItem) {
     }
 }
 
-function tpmEditItem(triggerItem,tabId) {
+function tpmEditItem(triggerItem) {
     if(triggerItem) {
 	window.inner_frame.location.href = '/typo3/alt_doc.php?edit[tx_tagpack_tags][' + triggerItem + ']=edit';
-	alert(top.Effect);
+	Effect.Grow('iframe_container');
 	top.iframeOn = true;
 	window.inner_frame.focus();
     }
 }
 
 function tpmIframeHide() {
-    if(top.iframeOn) {
+    if(top.iframeOn === true) {
 	Effect.SwitchOff('iframe_container');
 	top.iframeOn = false;
     }
+}
+
+function checkDate(triggerItem) {
+    alert(toLocaleString(triggerItem.value));        
 }
