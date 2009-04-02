@@ -19,18 +19,23 @@ plugin.tx_tagpack_pi3 {
 		select.defaultView = none
 	}
 	
-	maxItems = 50
+	# maxItems should be pretty high if you use filter mode
+	maxItems = 200
 	
+	# used for selecting the timerange
 	timeFields {
 		default = tstamp
 		pages = tstamp
 		tt_content = tstamp
 	}
+	
+	# howto order the query
 	orderFields {
 		default = tstamp DESC
-		pages = tstamp DESC
+		pages = crdate DESC
 		tt_content = tstamp DESC
 	}
+	
 	# field(s) to be used for the fulltext search: tablename = fieldname, fieldname...
 	searchFields {
 		pages = title,nav_title,subtitle,abstract
@@ -39,9 +44,8 @@ plugin.tx_tagpack_pi3 {
 
 	pages = COA
 	pages {
-	
 		5 = TEXT
-		5.field = tstamp
+		5.field = crdate
 		5.strftime = %d.%m.%Y - %H:%M
 		5.wrap = <div class="newsDate">|</div>
 	
@@ -75,7 +79,6 @@ plugin.tx_tagpack_pi3 {
 		
 		40 = TEXT
 		40.value = </div>
-
 		
 		wrap = <div class="newsItem clearfix">|</div>
 	}
