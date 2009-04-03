@@ -316,7 +316,7 @@
 	
 		function makeLimitField($tab) {
 			$searchBox .= '<div class="floatbox"><p>'.$GLOBALS['LANG']->getLL('limit1').' <input class="search_taglimit" type="text" name="tpm[taglimit]['.$tab.']" value="'.($this->tpm['taglimit'][$tab] ? $this->tpm['taglimit'][$tab] : 50).'"/> ';
-			$searchBox .= $GLOBALS['LANG']->getLL('limit2').'</p></div><br class="clearer" />';
+			$searchBox .= ($tab==3 ? $GLOBALS['LANG']->getLL('limit3') : $GLOBALS['LANG']->getLL('limit2')).'</p></div><br class="clearer" />';
 			return $searchBox;
 		} 
 	
@@ -324,10 +324,10 @@
 			if($this->tpm['tagname'][$tab]) {
 			    $checked = $this->tpm['context_enabled'] ? ' checked="checked"' : '';
 			    $searchBox .= '<div class="floatbox"><p>
-				<input type="checkbox" class="tpm_checkbox" name="tpm[context_enabled]['.$tab.']" value="1"'.$checked.' /> '.$GLOBALS['LANG']->getLL('context_enabled1').' <select id="context_levels" name="tpm[context_levels]['.$tab.']">
+				<input type="checkbox" class="tpm_checkbox" name="tpm[context_enabled]['.$tab.']" value="1"'.$checked.' /> '.$GLOBALS['LANG']->getLL('context_enabled1').' <select id="context_level" name="tpm[context_level]['.$tab.']">
 				';
 				for($i=1;$i<=4;$i++) {				
-				    $selected = $this->tpm['context_levels'][$tab]==$i ? ' selected="selected"' : '';
+				    $selected = $this->tpm['context_level'][$tab]==$i ? ' selected="selected"' : '';
 				    $searchBox .= '<option value="'.$i.'"'.$selected.'>'.$i.'</option>';
 				}
 			    $searchBox .= '</select> '.$GLOBALS['LANG']->getLL('context_enabled2').'
@@ -353,13 +353,44 @@
 				    }
 				}
 			    }
+			    foreach($this->tpm['container_page'][$tab] as $selectedId) {			    
+				$resultList .= $this->makeList($sortedData,$tab,$selectedId);
+			    }
+			    return $resultList;
 			}
+		}
+		
+		function makeRelatedList($tab,$levelResults,$containerId,$limit,$level=0) {
+		    $level++;
+		    if($levelResults && $this->tpm['context_enabled'][$tab] && $this->tpm['tagname'][$tab]) {
+			$this->relatedTags[$level] = tx_tagpack_api::getRelatedTagsForTags($levelResults,$containerId,$limit);
+			if($level < $this->tpm['context_level'][$tab] && count($this->relatedTags[$level])) {
+			    $nextLevelResults = $levelResults;
+			    foreach($this->relatedTags[$level] as $relatedTag) {
+				$nextLevelResults .= ','.$relatedTag['uid'];				
+			    }
+			    return $this->makeRelatedList($tab,$nextLevelResults,$containerId,$limit,$level);
+			} else if(count($this->relatedTags)) {
+			    foreach($this->relatedTags as $levelId => $levelTags) {
+			        foreach($levelTags as $tagData) {
+				    $sortedData[$levelId][ucwords($tagData['name'])]=$tagData;
+				}
+				$levelList .= $this->makeList($sortedData,$tab,$levelId,TRUE);
+			    }
+			    return $levelList;
+			}
+		    }
+		}
+	
+		function makeList($sortedData,$tab,$selectedId,$levelTitle = FALSE) {
 			if(count($sortedData)) {
-
-			    foreach($this->tpm['container_page'][$tab] as $selectedId) {
-				if(count($sortedData[$selectedId])) {
+				if($counter = count($sortedData[$selectedId])) {
 				    ksort($sortedData[$selectedId]);
-				    $resultList .= '<h3>['.$selectedId.'] '.$this->availableContainers[$selectedId]['title'].'</h3>';
+				    if($levelTitle===FALSE) {
+					$resultList .= '<h3>'.$this->availableContainers[$selectedId]['title'].'['.$selectedId.']</h3>';
+				    } else {
+					$resultList .= '<h3>'.$counter.' '.($counter==1 ? $GLOBALS['LANG']->getLL('leveltitle') : $GLOBALS['LANG']->getLL('leveltitles')).' '.$selectedId.'</h3>';				    
+				    } 
 				    $resultList .= '<table cellspacing="1" cellpadding="0" border="0" class="resultlist" width="100%">
 				    <colgroup>
 					<col width="50px" />
@@ -428,18 +459,9 @@
 				    </table>';
 				}
 			    }
-			}
-			return $resultList;
+			    return $resultList;			    
 		}
 		
-		function makeRelatedList($tab,$levelResults,$containerId,$limit) {
-		    if($levelResults && $this->tpm['context_enabled'][$tab] && $this->tpm['tagname'][$tab]) {
-			$attachedElementUids = tx_tagpack_api::getRelatedTagsForTags($levelResults,$containerId,$limit);
-			t3lib_div::debug($attachedElementUids);
-			return $relatedList;
-		    }
-		}
-	
 	}
 	 
 	 

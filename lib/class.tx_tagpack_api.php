@@ -349,20 +349,20 @@ class tx_tagpack_api {
 			$elements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'tags.*',
 				tx_tagpack_api::relationsTable.' AS t1 JOIN '.
-				    tx_tagpack_api::relationsTable.' AS t2 ON (
-					t1.uid_foreign = t2.uid_foreign AND 
-					t1.tablenames = t2.tablenames AND
-					t2.hidden = 0 AND t2.deleted = 0) JOIN '.
-				    tx_tagpack_api::tagTable.' AS tags ON (
-					t2.uid_local = tags.uid AND 
-					tags.pid = '.intval($containerId).' AND
-					tags.hidden = 0 AND 
-					tags.deleted = 0 AND
-					tags.uid NOT IN ('. $GLOBALS['TYPO3_DB']->fullQuoteStr($tagUidList, tx_tagpack_api::relationsTable) .')
-				    )',
+				tx_tagpack_api::relationsTable.' AS t2 ON (
+				    t1.uid_foreign = t2.uid_foreign AND 
+				    t1.tablenames = t2.tablenames AND
+				    t2.hidden = 0 AND t2.deleted = 0) JOIN '.
+				tx_tagpack_api::tagTable.' AS tags ON (
+				    t2.uid_local = tags.uid AND 
+				    tags.pid = '.intval($containerId).' AND
+				    tags.hidden = 0 AND 
+				    tags.deleted = 0 AND
+				    tags.uid NOT IN ('. $GLOBALS['TYPO3_DB']->quoteStr($tagUidList, tx_tagpack_api::relationsTable) .')
+				)',
 				't1.hidden = 0 AND 
 				 t1.deleted = 0 AND
-				 t1.uid_local IN ('. $GLOBALS['TYPO3_DB']->fullQuoteStr($tagUidList, tx_tagpack_api::relationsTable) .')',
+				 t1.uid_local IN ('. $GLOBALS['TYPO3_DB']->quoteStr($tagUidList, tx_tagpack_api::relationsTable) .')',
 				 'tags.uid',
 				 'tags.relations DESC',
 				 $limit
