@@ -25,6 +25,7 @@
 			<label index="Tab2_Right">Matching tags to be edited</label>
 			<label index="Tab2_Label1">Select one or more container(s) to edit tags</label>
 			<label index="Tab2_Label2">Find a tag by name</label>
+			<label index="Edit">Edit</label>
 			<label index="TabLabel3">Merge</label>
 			<label index="Tab3_Left">Find Tags</label>
 			<label index="context_enabled1">including related tags up to </label>
@@ -34,6 +35,7 @@
 			<label index="Tab3_Right">Matching tags to be merged</label>
 			<label index="Tab3_Label1">Select a container to merge tags</label>
 			<label index="Tab3_Label2">Find a tag by name</label>
+			<label index="Merge">Merge</label>
 			<label index="TabLabel4">Translate</label>
 			<label index="Tab4_Left">Find tags</label>
 			<label index="Tab4_Right">Matching tags to be translated</label>
@@ -64,6 +66,7 @@
 			<label index="Tab2_Right">Passende Tags zum Bearbeiten</label>
 			<label index="Tab2_Label1">Wählen Sie einen oder mehrere Container zur Bearbeitung von Tags aus</label>
 			<label index="Tab2_Label2">Nach Tag-Namen suchen</label>
+			<label index="Edit">Bearbeiten</label>
 			<label index="TabLabel3">Zusammenfassen</label>
 			<label index="Tab3_Left">Tags Finden</label>
 			<label index="context_enabled1">inklusive verwandter Tags auf bis zu </label>
@@ -73,6 +76,7 @@
 			<label index="Tab3_Right">Passende Tags</label>
 			<label index="Tab3_Label1">Wählen Sie einen Container zur Zusammenfassung von Tags aus</label>
 			<label index="Tab3_Label2">Nach Tag-Namen suchen</label>
+			<label index="Merge">Zusammen- fassen</label>
 			<label index="TabLabel4">Übersetzen</label>
 			<label index="Tab4_Left">Tags Finden</label>
 			<label index="Tab4_Right">Passende Tags</label>

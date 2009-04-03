@@ -44,3 +44,24 @@ function tpmIframeHide() {
 function checkDate(triggerItem) {
     alert(toLocaleString(triggerItem.value));        
 }
+
+function mergeForm(triggerItem) {
+    selectBox = document.getElementById('tags_to_merge');
+    triggerItemId = triggerItem.id.substring(4);
+    newOption = new Option(triggerItem.value,triggerItemId,false,false);
+    exists = false;	
+    if(selectBox.options.length) {
+        for(var i=0;i<selectBox.options.length;i++) {
+	    if(selectBox.options[i].value == triggerItemId) {
+	        exists == true;
+		if(!triggerItem.checked) {
+		    selectBox.options[i] = null;    
+		}		
+	    }
+	}
+    }
+    if(exists==false && triggerItem.checked) {
+        selectBox.options[document.getElementById('tags_to_merge').options.length] = newOption;
+    }
+    selectBox.size = selectBox.options.length;
+}

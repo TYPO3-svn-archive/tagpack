@@ -225,7 +225,7 @@
 }
 
 .tabcontent td.ok {
-    background:#9F9;
+    background:#7D7;
 }
 
 .tabcontent fieldset {
@@ -326,7 +326,6 @@
 .submitbox, .submit {
     display:block;
     background:url(../images/submitbutton.png) no-repeat top left;
-    width:138px;
     height:28px;
     line-height:10px!important;
     margin:0!important;
@@ -338,11 +337,16 @@
     border:0!important;
 }
 
+.submitbox {
+    float:left;
+}
+
 .submit {
+    float:none;
     background:url(../images/submitbutton.png) no-repeat top right;
     margin-top:0!important;
-    margin-left:10px!important;
-    padding-right:10px!important;
+    margin-left:20px!important;
+    padding-right:40px!important;
     padding-bottom:0.5em;
     line-height:10px!important;
     cursor:pointer;

@@ -209,7 +209,7 @@
 			    </div>
 			';
 			$tab1Content .= $this->makeLimitField(1);
-			$tab1Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
+			$tab1Content .= '<div class="submitbox"><input type="submit" class="submit" value="'.$GLOBALS['LANG']->getLL('find').'" /></div>';
 			$tab1Content .= '</div>';
 			$tab1Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab1_Right'));
 			$tab1Content .= $this->makeResultList(1,TRUE);
@@ -227,7 +227,7 @@
 			$tab2Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab2_Left'));
 			$tab2Content .= $this->makeDefaultFormFields(2);
 			$tab2Content .= $this->makeLimitField(2);
-			$tab2Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
+			$tab2Content .= '<div class="submitbox"><input type="submit" class="submit" value="'.$GLOBALS['LANG']->getLL('find').'" /></div>';
 			$tab2Content .= '</div>';
 			$tab2Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab2_Right'));
 			$tab2Content .= $this->makeResultList(2);
@@ -246,9 +246,10 @@
 			$tab3Content .= $this->makeDefaultFormFields(3,FALSE);
 			$tab3Content .= $this->makeContextSearchFields(3);
 			$tab3Content .= $this->makeLimitField(3);
-			$tab3Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
+			$tab3Content .= '<div class="submitbox"><input type="submit" class="submit" value="'.$GLOBALS['LANG']->getLL('find').'" /></div>';
 			$tab3Content .= '</div>';
 			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Right'));
+			$tab3Content .= $this->makeMergeForm();
 			$tab3Content .= $this->makeResultList(3);
 			$tab3Content .= $this->makeRelatedList(3,$this->firstLevelResults[3],$this->tpm['container_page'][3][0],$this->tpm['taglimit'][3]);
 			$tab3Content .= '</div>';
@@ -265,7 +266,7 @@
 			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Left'));
 			$tab4Content .= $this->makeDefaultFormFields(4);
 			$tab4Content .= $this->makeLimitField(4);
-			$tab4Content .= '<div class="submitbox"><input type="submit" class="submit" value="Submit" /></div>';
+			$tab4Content .= '<div class="submitbox"><input type="submit" class="submit" value="'.$GLOBALS['LANG']->getLL('find').'" /></div>';
 			$tab4Content .= '</div>';
 			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Right'));
 			$tab4Content .= $this->makeResultList(4);
@@ -336,6 +337,21 @@
 			    return $searchBox;
 			}
 		} 
+		
+		function makeMergeForm() {
+		    $mergeForm = '<div id="merge_form">';
+		    $mergeForm .= '<select id="tags_to_merge" name="tpm[tags_to_merge]" size="'.(($size = count($this->tpm['to_be_merged'])) ? $size : 1).'">';
+			if($size) {
+			    $selectedTags = $this->tpm['to_be_merged'];
+			    sort($selectedTags);
+			    foreach($selectedTags as $name => $value) {
+				$mergeForm .= '<option>'.$value.'</option>';
+			    }
+			}
+		    $mergeForm .= '</select>';
+		    $mergeForm .= '</div>';
+		    return $mergeForm;
+		}
 	
 
 		function makeResultlist($tab,$hidden=FALSE) {
@@ -418,14 +434,13 @@
 				    } else if($tab == 2) {
 					$resultList .= '
 					    <th colspan="2">
-						Edit
+						'.$GLOBALS['LANG']->getLL('Edit').'
 					    </th>
 					';
 				    } else {
 					$resultList .= '
-					    <th>
-					    </th>
-					    <th>
+					    <th colspan="2">
+						'.$GLOBALS['LANG']->getLL('Merge').'
 					    </th>
 					';
 				    }
@@ -439,16 +454,18 @@
 					$resultList .= '<tr class="'.$trClass.'" id="tag'.$tagData['uid'].'"><td align="right">'.$tagData['uid'].'</td><td>'.$tagData['name'].'</td>';
 					if($tab == 1) {
 					    $hiddenClass = $tagData['hidden'] ? ' class="caution"' : ' class="ok"';
-					    $resultList .= '<td'.$hiddenClass.'>
+					    $resultList .= '<td'.$hiddenClass.' align="center">
 						<input title="'.($tagData['hidden'] ? $GLOBALS['LANG']->getLL('blocked') : $GLOBALS['LANG']->getLL('approved')).'" class="tpm_checkbox" type="checkbox" name="data[tx_tagpack_tags]['.$tagData['uid'].'][hidden]" value="1"'.($tagData['hidden'] ? '' : ' checked="checked"').' onclick="switchStatus(this);return false;" />
 						</td>
-						<td class="alert">
+						<td class="alert" align="center">
 						<input title="'.$GLOBALS['LANG']->getLL('remove').'" class="tpm_checkbox" type="checkbox" name="cmd[tx_tagpack_tags]['.$tagData['uid'].'][delete]" value="1" onclick="switchStatus(this);return false;" />
 						</td>';
 					} else if($tab == 2) {
-					    $resultList .= '<td colspan="2"><a href="#" onclick="tpmEditItem('.$tagData['uid'].');return false;"><img src="icons/edit2.gif" /></a></td>';
+					    $resultList .= '<td colspan="2" align="center"><a href="#" onclick="tpmEditItem('.$tagData['uid'].');return false;"><img src="icons/edit2.gif" /></a></td>';
 					} else if($tab == 3) {
-					    $resultList .= '<td>3</td><td></td>';
+					    $resultList .= '<td align="center" colspan="2">
+						<input class="tpm_checkbox" type="checkbox" id="tpm_'.$tagData['uid'].'" name="tpm[to_be_merged]['.$tagData['uid'].']" value="'.$tagData['name'].'"'.($this->tpm['to_be_merged'][$tagData['uid']] ? ' checked="checked"' : '').'" onclick="mergeForm(this);return true;" />
+						</td>';
 					} else {
 					    $resultList .= '<td>4</td><td></td>';
 					}
