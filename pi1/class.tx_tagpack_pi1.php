@@ -24,8 +24,6 @@
 
 	require_once(PATH_tslib.'class.tslib_pibase.php');
 	
-	include_once(t3lib_extMgm::extPath('tagpack').'lib/class.txt_tagpack_api.php');
-
 	/**
 	 * Plugin 'Tag Cloud' for the 'tagpack' extension.
 	 *
