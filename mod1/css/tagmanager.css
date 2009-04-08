@@ -1,0 +1,361 @@
+#tagmanager_form {
+    background:#EFEFF4 url(../images/background1.png) no-repeat left top;
+    width:790px;
+    height:570px;
+    overflow:hidden;
+    position:relative;
+}
+
+#tagmanager_form * {
+    font-family:Arial,Helvetica,Tahoma,Sans Serif;
+}
+
+#tagmanager_form .clearer {
+    display:block;
+    width;1px;
+    height:1px;
+    overflow:hidden;
+    margin-top:-1px;
+    clear:both;
+}
+
+#shortcuticon {
+    position:absolute;
+    left:0;
+    bottom:0;
+}
+
+#tabmenu {
+    width:592px;
+    height:35px;
+    position:absolute;
+    left:39px;
+    bottom:44px;
+    overflow:hidden;
+    margin:0;
+    padding:0;
+    list-style-type:none;
+}
+
+#tabmenu li {
+    display:block;
+    float:left;
+    width:138px;
+    height:35px;
+    line-height:31px;
+    background:#900;
+    margin-right:10px;
+    vertical-align:middle;
+    color:#FFF;
+    text-align:center;
+    font-size:12px;
+}
+
+#tabmenu li a {
+    display:block;
+    width:138px;
+    height:35px;
+    line-height:31px;
+    vertical-align:middle;
+    color:#FFF;
+    text-align:center;
+    font-size:12px;
+}
+
+#tabmenu li.redbutton, #tabmenu li.redbutton a {
+    background:url(../images/buttonred_off.png) no-repeat left top;
+}
+
+#tabmenu li.redbutton a:hover {
+    background:url(../images/buttonred_on.png) no-repeat left top;
+}
+
+#tabmenu li.greenbutton, #tabmenu li.greenbutton a {
+    background:url(../images/buttongreen_off.png) no-repeat left top;
+}
+
+#tabmenu li.greenbutton a:hover {
+    background:url(../images/buttongreen_on.png) no-repeat left top;
+}
+
+.tabcontent_on, .tabcontent_off {
+    width:720px;
+    height:430px;
+    position:absolute;
+    left:35px;
+    top:18px;
+    overflow:hidden;
+}
+
+.tabcontent_on {
+    display:block;
+}
+
+.tabcontent_off {
+    display:none;
+}
+
+.tabscreenback1 {
+    background:#FFF url(../images/screenback.png) no-repeat center top;
+    opacity:0.5;
+    filter:alpha(opacity=50);
+    position:absolute;
+    left:0;
+    top:0;
+    width:255px;
+    height:430px;
+}
+
+.tabscreenback2 {
+    background:#FFF url(../images/screenback.png) no-repeat center top;
+    opacity:0.5;
+    filter:alpha(opacity=50);
+    position:absolute;
+    left:265px;
+    top:0;
+    width:455px;
+    height:430px;
+}
+
+.tabscreen_left {
+    position:absolute;
+    top:10px;
+    left:10px;
+    width:235px;
+    height:410px; 
+    color:#FFF;
+    overflow:auto;
+    background-attachment:fixed;
+    color:#FFF;
+}
+
+.tabscreen_right {
+    position:absolute;
+    top:10px;
+    left:275px;
+    width:435px;
+    height:410px; 
+    color:#FFF;
+    overflow:auto;
+    background-attachment:fixed;
+}
+
+.tabcontent h1 {
+    color:#DEF;
+    background:none;
+    font-size:16px;
+}
+
+.tabcontent h2 {
+    color:#DEF;
+    background:none;
+    font-size:15px;
+}
+
+.tabcontent h3 {
+    display:block;
+    height:1.6em;
+    line-height:1.6em;
+    color:#333;
+    background:#DEF;
+    font-size:14px;
+    opacity:0.6;
+    filter:alpha(opacity=60);
+    padding:0 0.5em;
+    vertical-align:middle;
+    margin:0.5em 1px 0 1px;
+}
+
+.tabcontent h4 {
+    color:#ABC;
+    background:none;
+    font-size:13px;
+}
+
+.tabcontent h5 {
+    color:#9AB;
+    background:none;
+    font-size:12px;
+}
+
+.tabcontent p {
+    margin:0.5em 0;
+    color:#FFF;
+}
+
+.tabcontent table, .tabcontent th, .tabcontent td {
+    color:#000;
+    font-size:10px;
+}
+
+.tabcontent table.resultlist {
+    width:100%;
+    opacity:0.6;
+    filter:alpha(opacity=60);
+}
+
+.tabcontent tr {
+}
+
+.tabcontent tr.odd {
+    background:#EEE;
+}
+
+.tabcontent tr.even {
+    background:#FFF;
+}
+
+.tabcontent th {
+    padding:0.2em 0.5em;
+    background:#CDE;
+    color:#333;
+    font-weight:bold;
+}
+
+.tabcontent td {
+    padding:0.2em 0.5em;
+}
+
+.tabcontent td.caution {
+    background:#FC6;
+}
+
+.tabcontent td.alert {
+    background:#F99;
+}
+
+.tabcontent td.ok {
+    background:#7D7;
+}
+
+.tabcontent fieldset {
+    border:0;
+    padding:0;
+}
+
+.floatbox {
+    float:left;
+}
+
+.tabcontent input.tpm_checkbox {
+    padding:0!important;
+    margin:0!important;
+    border:0!important;
+    background:none!important;
+    width:15px!important;
+    height:15px!important;
+}
+
+.tabcontent input.tpm_checkbox:hover {
+    padding:0!important;
+    margin:0!important;
+    width:15px!important;
+    height:15px!important;
+}
+
+.tabcontent label, .tabcontent input, .tabcontent select, .tabcontent textarea {
+    display:block;
+    margin:0.5em 0 0.2em 0;
+}
+
+.tabcontent select.container_page {
+    display:block;
+    opacity:0.7;
+    filter:alpha(opacity=70);
+    width:235px;
+}
+
+.tabcontent input.search_tagname {
+    display:block;
+    opacity:0.7;
+    filter:alpha(opacity=70);
+    width:235px;
+    line-height:15px;
+}
+
+.tabcontent label {
+    color:#FFF;
+}
+
+.tabcontent input.search_tagfrom, .tabcontent input.search_tagto {
+    display:block;
+    opacity:0.7;
+    filter:alpha(opacity=70);
+    width:70px;
+    line-height:15px;
+}
+
+.tabcontent input.search_taglimit {
+    display:block;
+    opacity:0.7;
+    filter:alpha(opacity=70);
+    width:30px;
+    line-height:15px;
+}
+
+.tabcontent #approvedfilter, .tabcontent #approvedfilter * {
+    color:#FFF;
+    vertical-align:middle;
+    line-height:15px;
+}
+
+.tabcontent #approvedfilter * {
+    display:inline;
+}
+
+#iframe_container {
+    width:710px;
+    height:420px;
+    left:40px;
+    top:23px;
+    position:absolute;
+}
+
+#inner_frame {
+    width:100%;
+    height:100%;
+    opacity:0.9;
+    filter:alpha(opacity=90);
+    overflow:hidden;
+}
+
+.floatbox * {
+    display:inline!important;
+}
+
+.submitbox, .submit {
+    display:block;
+    background:url(../images/submitbutton.png) no-repeat top left;
+    height:28px;
+    line-height:10px!important;
+    margin:0!important;
+    padding:0!important;
+    vertical-align:top!important;
+    color:#FFF;
+    font-size:12px;
+    margin-top:2em!important;
+    border:0!important;
+}
+
+.submitbox {
+    float:left;
+}
+
+.submit {
+    float:none;
+    background:url(../images/submitbutton.png) no-repeat top right;
+    margin-top:0!important;
+    margin-left:20px!important;
+    padding-right:40px!important;
+    padding-bottom:0.5em;
+    line-height:10px!important;
+    cursor:pointer;
+}
+
+#tags_to_merge {
+    overflow:hidden;
+    background:#FFF;
+    opacity:0.7;
+    filter:alpha(opacity=70);
+}
+
