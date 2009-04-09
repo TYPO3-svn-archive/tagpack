@@ -315,7 +315,7 @@
 				}
 				$multiple = $multiple ? ' multiple="multiple" size="5"' : '';
 				$selectBox = '<label for="tpm_container_page_'.$tab.'">'.$GLOBALS['LANG']->getLL('Tab'.$tab.'_Label1').'</label>
-				<select'.$multiple.' id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.'][]">'.$optionList.'</select>';
+				<select'.$multiple.' id="tpm_container_page_'.$tab.'" class="container_page" name="tpm[container_page]['.$tab.'][]" ondblclick="submit();">'.$optionList.'</select>';
 			}
 			return $selectBox;
 		} 
@@ -366,8 +366,9 @@
 			}
 		    $mergeForm .= '</select>
 		    <div class="typoSuggest">
-		    <input id="tpm_new_name_ajaxsearch" name="tpm[merge_now][new_name]" type="text" onfocus="window.tx_tagpack_ajaxsearch_lazyCreator.get(this,{\'startLength\':2}).onfocus();" size="20" autocomplete="off" class="search" value="" title="Tags'.$this->tpm['container_page'][$tab][0].'" />
-		    <input id="tpm_new_id" name="tpm[merge_now][new_id]" type="hidden" />
+		    <input id="tpm_new_name_ajaxsearch" name="tpm[merge_now][new_name]" type="text" onfocus="window.tx_tagpack_ajaxsearch_lazyCreator.get(this,{\'startLength\':2}).onfocus();" size="20" autocomplete="off" class="search" value="" title="Tags'.$this->tpm['container_page'][$tab][0].'" onkeypress="document.getElementById(\'tpm_merge_submit\').value = \'submit\'; return true;"/>
+		    <input class="hidden" id="tpm_new_id" name="tpm[merge_now][new_id]" type="hidden" />
+		    <input class="hidden" id="tpm_merge_submit" name="tpm[merge_now][submit]" type="hidden" />
 		    <div class="submitbox"><input type="submit" class="submit" name="tpm[merge_now][submit]" value="'.$GLOBALS['LANG']->getLL('merge_now').'" /></div>
 		    <ul class="results" style="" id="tpm_new_name_ajaxsearch_results"></ul>
 		    </div>
@@ -395,7 +396,7 @@
 
 		function makeResultlist($tab,$hidden=FALSE) {
 			if(count($this->tpm['container_page'][$tab])) {
-			    $tagName = trim($this->tpm['tagname'][$tab]) ? trim($this->tpm['tagname'][$tab]) : '%';
+			    $tagName = trim($this->tpm['tagname'][$tab]) ? '%'.trim($this->tpm['tagname'][$tab]).'%' : '%';
 			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($tagName,implode(',',$this->tpm['container_page'][$tab]),($this->tpm['taglimit'][$tab] ? $this->tpm['taglimit'][$tab] : 50),$hidden,$this->tpm['tagdatefrom'][$tab],$this->tpm['tagdateto'][$tab]))) {
 				foreach ($resultData as $tagData) {
 				    if($tagData['hidden']) {

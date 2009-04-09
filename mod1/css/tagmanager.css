@@ -1,9 +1,18 @@
+.typo3-bigDoc {
+    width:99%!important;
+    text-align:center;
+}
+
 #tagmanager_form {
     background:#EFEFF4 url(../images/background1.png) no-repeat left top;
     width:790px;
     height:570px;
     overflow:hidden;
     position:relative;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    text-align:left;
+    margin-top:2em;
 }
 
 #tagmanager_form * {
@@ -402,3 +411,6 @@
     background:#DDD!important;
 }
 
+.typoSuggest .hidden {
+    display:none;
+}
