@@ -7,13 +7,15 @@ function tx_tagpack_ajaxsearch_observer(el,creator,params) {
 	 * onfocus is already an event handler the "oldschool" attribute way
 	 **/
 	this.onfocus = function() {
-		
 		if (!this.vcListener) {
-			if (!this.results.empty())
+			if (!this.results.empty()) {
 				this.results.style.display = 'block';
+			} else {
+			}
 			this.vcListener = this.valChanged.bindAsEventListener(this);
 			this.el.observe('keydown',this.vcListener);
 		}
+			
 	}
 
 	/** 
@@ -84,7 +86,7 @@ function tx_tagpack_ajaxsearch_observer(el,creator,params) {
 			this.resultsListener = null;
 		}
 		// this timeout is super important, else the result browser will disappear before the clicks will be triggered
-		window.setTimeout((function () {this.results.hide()}).bind(this),100);
+		window.setTimeout((function () {this.results.hide();this.results.innerHTML = '';}).bind(this),500);
 	}
 
 	/**
@@ -105,12 +107,21 @@ function tx_tagpack_ajaxsearch_observer(el,creator,params) {
 			case 10: // prototype doesn't care for *ix*
 			case Event.KEY_RETURN:
 				if (this.current) {
-					this.current.down('a').onclick();
-					this.current = false;
-					this.el.value='';
-					this.el.blur();
-					this.el.focus();
-					this.lastVal = false;
+					if(this.el.id.substr(0,3)!='tpm') {
+					    this.current.down('a').onclick();
+					    this.el.value = '';
+					    this.el.blur();
+					    this.el.focus();
+					    this.current = false;
+					    this.lastVal = false;
+					} else {
+					    this.el.value = this.current.getElementsByTagName('span')[0].title;
+					    if(document.getElementById('tpm_new_id')) {
+						document.getElementById('tpm_new_id').value = this.current.title.replace(/tx_tagpack_tags_/,'');
+					    }
+					    this.el.blur();
+					    this.current = false;
+					}
 				} else {
 				    setFormValueFromBrowseWin(this.el.id.replace(/_ajaxsearch/g,''),'new_'+this.el.value,this.el.value,'');
 				    this.el.value='';

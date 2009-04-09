@@ -280,11 +280,16 @@
 					if ($this->prefixTables === true)
 						$value = $table.'_'.$row['uid'];
 					 
-					$icon = t3lib_iconWorks::getIconImage($table, $row, '', 'title="'.t3lib_BEfunc::getRecordIconAltText($row, $table).'"');
-					$onclick = 'setFormValueFromBrowseWin(\''.$fieldId.'\',\''.$value.'\',\''.$label.'\');return true;';
-					$label = str_replace($searchWord,'<strong>'.$searchWord.'</strong>',$label);
-					$label = str_replace(strtolower($searchWord),'<strong>'.strtolower($searchWord).'</strong>',$label);
-					$content .= '<li><a href="#" title="'.$title.'" onclick="'.$onclick.'" >'.$icon.'<span>'.$label.'</span></a></li>';
+					/*$icon = t3lib_iconWorks::getIconImage($table, $row, '', 'title="'.t3lib_BEfunc::getRecordIconAltText($row, $table).'"');*/
+					$title = $label;
+					if(strpos($id,'tpm')===FALSE) {
+					    $onclick = 'setFormValueFromBrowseWin(\''.$fieldId.'\',\''.$value.'\',\''.$label.'\');return true;';
+					} else {
+					    $onclick = 'setTpmFormValue(this,\''.$title.'\');return true;';					
+					}
+					$label = str_replace($searchWord,'<b>'.$searchWord.'</b>',$label);
+					$label = str_replace(strtolower($searchWord),'<b>'.strtolower($searchWord).'</b>',$label);
+					$content .= '<li title="'.$value.'"><a href="#" title="'.$title.'" onclick="'.$onclick.'" >'.$icon.'<span title="'.$title.'">'.$label.'</span></a></li>';
 				}
 			}
 			if (!$content)

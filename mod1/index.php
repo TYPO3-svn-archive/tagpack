@@ -29,10 +29,11 @@
 	require_once($BACK_PATH.'init.php');
 	require_once($BACK_PATH.'template.php');
 	 
-		$LANG->includeLLFile('EXT:tagpack/mod1/locallang.xml');
+		$LANG->includeLLFile('EXT:tagpack/mod1/locallang.xml');		
+		
 	require_once(PATH_t3lib.'class.t3lib_scbase.php');
 	$BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the users has no permission for entry.
-
+	
 	include_once(t3lib_extMgm::extPath('tagpack') . 'lib/class.tx_tagpack_api.php');
 
 	// DEFAULT initialization of a module [END]
@@ -101,8 +102,18 @@
 				
 				$this->tpm = t3lib_div::_GP('tpm');
 				$this->tpm = $this->tpm ? $this->tpm : $BE_USER->getModuleData('user_txtagpackM1/tpm');
+				
+				t3lib_div::debug($this->tpm);
+				
 				$BE_USER->pushModuleData('user_txtagpackM1/tpm',$this->tpm);
 				$this->tagContainer = tx_tagpack_api::getTagContainer();
+				
+				if($this->tpm['merge_now']['submit'] && $this->tpm['merge_now']['new_name'] && count($this->tpm['to_be_merged'])) {
+				    $this->mergeNow = $this->mergeTags($this->tpm['to_be_merged'],$this->tpm['merge_now']['new_id'],$this->tpm['merge_now']['new_name'],$this->tpm['container_page'][3][0]);
+				    unset($this->tpm['to_be_merged']);
+				    unset($this->tpm['merge_now']);
+				}
+				
 			 
 				// Draw the header.
 				$this->doc = t3lib_div::makeInstance('bigDoc');
@@ -153,6 +164,12 @@
 		*/
 		function moduleContentDynTabs() {
 		
+		    $this->content .= '
+		    	<script type="text/javascript">window.tx_tagpack_ajaxsearch_server = "../class.tx_tagpack_ajaxsearch_server.php";</script>
+			<script type="text/javascript" src="../res/ajaxgroupsearch.js"><!--AJAXGROUPSEARCH--></script>';
+		    $this->content .= '
+			<link rel="stylesheet" type="text/css" href="../res/ajaxgroupsearch.css">
+		    ';
 		    $this->content .= '<ul id="tabmenu">';
 		    $this->content .= '<li id="tabitem1" class="'.($this->tpm['active_tab'] > 1 ? 'redbutton' : 'greenbutton').'"><a href="#" onclick="triggerTab(this,1);tpmIframeHide();return false;">'.$GLOBALS['LANG']->getLL('TabLabel1').'</a></li>';
 		    $this->content .= '<li id="tabitem2" class="'.($this->tpm['active_tab'] == 2 ? 'greenbutton' : 'redbutton').'"><a href="#" onclick="triggerTab(this,2);tpmIframeHide();return false;">'.$GLOBALS['LANG']->getLL('TabLabel2').'</a></li>';
@@ -249,7 +266,8 @@
 			$tab3Content .= '<div class="submitbox"><input type="submit" class="submit" value="'.$GLOBALS['LANG']->getLL('find').'" /></div>';
 			$tab3Content .= '</div>';
 			$tab3Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab3_Right'));
-			$tab3Content .= $this->makeMergeForm();
+			$tab3Content .= $this->mergeNow;
+			$tab3Content .= $this->makeMergeForm(3);
 			$tab3Content .= $this->makeResultList(3);
 			$tab3Content .= $this->makeRelatedList(3,$this->firstLevelResults[3],$this->tpm['container_page'][3][0],$this->tpm['taglimit'][3]);
 			$tab3Content .= '</div>';
@@ -338,19 +356,43 @@
 			}
 		} 
 		
-		function makeMergeForm() {
+		function makeMergeForm($tab) {
 		    $mergeForm = '<div id="merge_form">';
-		    $mergeForm .= '<select id="tags_to_merge" name="tpm[tags_to_merge]" size="'.(($size = count($this->tpm['to_be_merged'])) ? $size : 1).'">';
+		    $mergeForm .= '<label for="tags_to_merge">'.$GLOBALS['LANG']->getLL('as_replacement').'</label><select id="tags_to_merge" name="tpm[tags_to_merge]" size="'.(($size = count($this->tpm['to_be_merged'])) > 3 ? $size+1 : 4).'" onclick="changeSelectedState(this);return false;">
+			<option value="" style="background:#CCC;">'.$GLOBALS['LANG']->getLL('select_master').'</option>';
 			if($size) {
 			    $selectedTags = $this->tpm['to_be_merged'];
-			    sort($selectedTags);
-			    foreach($selectedTags as $name => $value) {
-				$mergeForm .= '<option>'.$value.'</option>';
+			    foreach($selectedTags as $value => $name) {
+				$mergeForm .= '<option value="'.$value.'">'.$name.'</option>';
 			    }
 			}
-		    $mergeForm .= '</select>';
-		    $mergeForm .= '</div>';
+		    $mergeForm .= '</select>
+		    <div class="typoSuggest">
+		    <input id="tpm_new_name_ajaxsearch" name="tpm[merge_now][new_name]" type="text" onfocus="window.tx_tagpack_ajaxsearch_lazyCreator.get(this,{\'startLength\':2}).onfocus();" size="20" autocomplete="off" class="search" value="" title="Tags'.$this->tpm['container_page'][$tab][0].'" />
+		    <input id="tpm_new_id" name="tpm[merge_now][new_id]" type="hidden" />
+		    <div class="submitbox"><input type="submit" class="submit" name="tpm[merge_now][submit]" value="'.$GLOBALS['LANG']->getLL('merge_now').'" /></div>
+		    <ul class="results" style="" id="tpm_new_name_ajaxsearch_results"></ul>
+		    </div>
+		    ';
+		    $mergeForm .= '<div class="clearer"><!--//CLEARER//--></div></div>';
 		    return $mergeForm;
+		}
+		
+		function mergeTags($tagsToMerge,$newId,$newName,$pid) {
+		    if(count($tagsToMerge)) {
+			if(!$newId) {
+			    $newId = tx_tagpack_api::addTag($newName,intval($pid),TRUE);
+			}
+			if($newId) {
+			    echo 'newId ist da';
+			    foreach($tagsToMerge as $tagToMergeId => $tagToMergeName) {
+				if(tx_tagpack_api::tagExists($tagToMergeId)) {
+				    tx_tagpack_api::removeTag($tagToMergeId,FALSE,$newId);
+				}
+			    }			    
+			    return '<div class="ok"><strong>'.count($tagsToMerge).' '.((count($tagsToMerge) == 1) ? $GLOBALS['LANG']->getLL('merge_success1') : $GLOBALS['LANG']->getLL('merge_success')).'</strong></div>';
+			}
+		    }
 		}
 	
 
@@ -403,7 +445,7 @@
 				if($counter = count($sortedData[$selectedId])) {
 				    ksort($sortedData[$selectedId]);
 				    if($levelTitle===FALSE) {
-					$resultList .= '<h3>'.$this->availableContainers[$selectedId]['title'].'['.$selectedId.']</h3>';
+					$resultList .= '<h3>'.$this->availableContainers[$selectedId]['title'].' ['.$selectedId.']</h3>';
 				    } else {
 					$resultList .= '<h3>'.$counter.' '.($counter==1 ? $GLOBALS['LANG']->getLL('leveltitle') : $GLOBALS['LANG']->getLL('leveltitles')).' '.$selectedId.'</h3>';				    
 				    } 

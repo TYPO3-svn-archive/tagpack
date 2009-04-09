@@ -42,7 +42,6 @@ function tpmIframeHide() {
 }
 
 function checkDate(triggerItem) {
-    alert(toLocaleString(triggerItem.value));        
 }
 
 function mergeForm(triggerItem) {
@@ -63,5 +62,17 @@ function mergeForm(triggerItem) {
     if(exists==false && triggerItem.checked) {
         selectBox.options[document.getElementById('tags_to_merge').options.length] = newOption;
     }
-    selectBox.size = selectBox.options.length;
+    selectBox.size = selectBox.options.length > 4 ? selectBox.options.length : 4;
+}
+
+function changeSelectedState(triggerItem) {
+    document.getElementById('tpm_new_name_ajaxsearch').value = triggerItem.options[triggerItem.options.selectedIndex].firstChild.data;
+    document.getElementById('tpm_new_id').value = triggerItem.value;
+    triggerItem.options[triggerItem.options.selectedIndex].selected = false;
+    triggerItem.blur();
+}
+
+function setTpmFormValue(triggerItem,labelValue) {
+    triggerItem.parentNode.parentNode.parentNode.getElementsByTagName('input')[0].value = labelValue;
+    document.getElementById('tpm_new_id').value = triggerItem.parentNode.title.replace(/tx_tagpack_tags_/,'');
 }

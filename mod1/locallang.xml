@@ -28,14 +28,19 @@
 			<label index="Edit">Edit</label>
 			<label index="TabLabel3">Merge</label>
 			<label index="Tab3_Left">Find Tags</label>
-			<label index="context_enabled1">including related tags up to </label>
-			<label index="context_enabled2"> levels</label>
-			<label index="leveltitle"> related tag on level</label>
-			<label index="leveltitles"> related tags on level</label>
-			<label index="Tab3_Right">Matching tags to be merged</label>
 			<label index="Tab3_Label1">Select a container to merge tags</label>
 			<label index="Tab3_Label2">Find a tag by name</label>
+			<label index="context_enabled1">including related tags up to </label>
+			<label index="context_enabled2"> levels</label>
+			<label index="Tab3_Right">Matching tags to be merged</label>
 			<label index="Merge">Merge</label>
+			<label index="merge_now">Merge now!</label>
+			<label index="as_replacement">Select the tags you want to merge by activating the checkboxes. Then replace the selected tags by clicking on a tag from the list or with another tag that you type into the input field.</label>
+			<label index="merge_success1">tag has successfully been replaced!</label>
+			<label index="merge_success">tags have successfully been merged!</label>
+			<label index="select_master">Click on a tag or type it here =></label>
+			<label index="leveltitle"> related tag on level</label>
+			<label index="leveltitles"> related tags on level</label>
 			<label index="TabLabel4">Translate</label>
 			<label index="Tab4_Left">Find tags</label>
 			<label index="Tab4_Right">Matching tags to be translated</label>
@@ -47,7 +52,7 @@
 			<label index="limit3">results per level</label>
 		</languageKey>
 		<languageKey index="de" type="array">
-			<label index="title">Tag Manager</label>
+			<label index="title">Tag Manager DE</label>
 			<label index="page">Seite</label>
 			<label index="Between">Zwischen dem</label>
 			<label index="and">und dem</label>
@@ -69,14 +74,19 @@
 			<label index="Edit">Bearbeiten</label>
 			<label index="TabLabel3">Zusammenfassen</label>
 			<label index="Tab3_Left">Tags Finden</label>
-			<label index="context_enabled1">inklusive verwandter Tags auf bis zu </label>
-			<label index="context_enabled2"> Ebenen.</label>
-			<label index="leveltitle"> verwandtes Tag auf Ebene </label>
-			<label index="leveltitles"> verwandte Tags auf Ebene </label>
-			<label index="Tab3_Right">Passende Tags</label>
 			<label index="Tab3_Label1">Wählen Sie einen Container zur Zusammenfassung von Tags aus</label>
 			<label index="Tab3_Label2">Nach Tag-Namen suchen</label>
+			<label index="context_enabled1">inklusive verwandter Tags auf bis zu </label>
+			<label index="context_enabled2"> Ebenen.</label>
+			<label index="Tab3_Right">Passende Tags</label>
 			<label index="Merge">Zusammen- fassen</label>
+			<label index="merge_now">Jetzt zusammenfassen!</label>
+			<label index="as_replacement">Wählen Sie ein Tag zum Zusammenfassen aus, indem Sie dessen Checkbox aktivieren. Danach ersetzen Sie die aktivierten Tags durch einen Klick auf eines aus der Liste oder durch ein weiteres, das Sie ins Input-Feld eingeben.</label>
+			<label index="merge_success1">Tag wurde erfolgreich umgenannt!</label>
+			<label index="merge_success">Tags wurden erfolgreich zusammengefasst!</label>
+			<label index="select_master">Auf ein Tag klicken oder hierhin schreiben =></label>
+			<label index="leveltitle"> verwandtes Tag auf Ebene </label>
+			<label index="leveltitles"> verwandte Tags auf Ebene </label>
 			<label index="TabLabel4">Übersetzen</label>
 			<label index="Tab4_Left">Tags Finden</label>
 			<label index="Tab4_Right">Passende Tags</label>

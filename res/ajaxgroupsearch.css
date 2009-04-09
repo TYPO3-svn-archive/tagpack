@@ -1,4 +1,3 @@
-
 div.typoSuggest {		
 	position:relative;
 	width:150px;
@@ -13,7 +12,7 @@ div.typoSuggest input.search {
 	padding:3px 0px 0px 20px;
 	margin:0px;
 	width:80%;
-	height:16px;
+	height:16px!important;
 	color:#212424;
 }
 
@@ -37,6 +36,8 @@ ul.results {
 	margin:0;
 	padding:0;
 	display:none;
+	list-style:none!important;
+	z-index:10000;
 }
 
 * html ul.results {left:2px;}

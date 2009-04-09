@@ -116,10 +116,10 @@ class tx_tagpack_api {
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	int			the uid of the newly added tag, or zero if the tagName was empty
 	 */
-	function addTag($tagName,$pid=0) {
+	function addTag($tagName,$pid=0,$isStoragePID=FALSE) {
 		$tagName = trim($tagName);
 		if (!empty($tagName) && !tx_tagpack_api::tagNameExists($tagName)) {
-			$storagePID = tx_tagpack_api::getTagStoragePID($pid);
+			$storagePID = $isStoragePID ? $pid : tx_tagpack_api::getTagStoragePID($pid);
 
 			// now we have to build the value array for the following insert action
 			$newTagRow = array(
@@ -146,9 +146,10 @@ class tx_tagpack_api {
 	 * 
 	 * @param	$tagUid	an Integer containing the unique identifier of the tag
 	 * @param	$removeRelations	a flag whether to remove the relations as well
+	 * @param	$replacementId		an id to fill into relations as a replacement if relations are not removed
 	 * @return	void
 	 */
-	function removeTag($tagUid, $removeRelations = true) {
+	function removeTag($tagUid, $removeRelations = true, $replacementId = 0) {
 		$tagUid = intval($tagUid);
 		if ($tagUid && tx_tagpack_api::tagExists($tagUid)) {
 			if ($removeRelations) {
@@ -156,6 +157,18 @@ class tx_tagpack_api {
 					tx_tagpack_api::relationsTable,
 					'uid_local = ' . $tagUid
 				);
+			} else if($replacementId) {
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					tx_tagpack_api::relationsTable,
+					'uid_local = ' . $tagUid,
+					array('uid_local' => $replacementId)
+				);
+				$attachedElements = count(tx_tagpack_api::getAttachedElementsForTagId($replacementId));
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					tx_tagpack_api::tagTable,
+					'uid = ' . $replacementId,
+					array('relations' => $attachedElements)
+				);				
 			}
 			$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 			    tx_tagpack_api::tagTable,

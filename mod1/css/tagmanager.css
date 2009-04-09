@@ -153,6 +153,7 @@
 }
 
 .tabcontent h3 {
+    clear:both;
     display:block;
     height:1.6em;
     line-height:1.6em;
@@ -163,7 +164,7 @@
     filter:alpha(opacity=60);
     padding:0 0.5em;
     vertical-align:middle;
-    margin:0.5em 1px 0 1px;
+    margin:0.5em 1px 0  1px;
 }
 
 .tabcontent h4 {
@@ -224,8 +225,14 @@
     background:#F99;
 }
 
-.tabcontent td.ok {
+.tabcontent .ok {
     background:#7D7;
+}
+
+.tabcontent div.ok {
+    opacity:0.7;
+    filter:alpha(opacity=70);
+    padding:0.2em 0.5em;
 }
 
 .tabcontent fieldset {
@@ -323,6 +330,10 @@
     display:inline!important;
 }
 
+.floatbox option {
+    display:block!important;
+}
+
 .submitbox, .submit {
     display:block;
     background:url(../images/submitbutton.png) no-repeat top left;
@@ -350,5 +361,44 @@
     padding-bottom:0.5em;
     line-height:10px!important;
     cursor:pointer;
+}
+
+#tags_to_merge {
+    overflow:hidden;
+    background:#FFF;
+    opacity:0.7;
+    filter:alpha(opacity=70);
+    float:left;
+    width:180px;
+    margin-right:0.5em;
+}
+
+.typoSuggest {
+    position:relative;
+    float:left;
+    width:180px;
+}
+
+.typoSuggest input {
+    opacity:0.7;
+    filter:alpha(opacity=70);    
+    width:180px!important;
+}
+
+.typoSuggest .submitbox {
+    margin-top:0.5em!important;
+}
+
+.typoSuggest .submitbox input {
+    width:150px!important;
+}
+
+.typoSuggest ul {
+    opacity:0.9;
+    filter:alpha(opacity=90);    
+}
+
+.typoSuggest ul, .typoSuggest ul li {
+    background:#DDD!important;
 }
 
