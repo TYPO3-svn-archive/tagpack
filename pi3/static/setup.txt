@@ -1,0 +1,100 @@
+plugin.tx_tagpack_pi3 {
+	enabledRecords = pages
+	
+	tableWrap = <div class="tx_tagpack-pi1-table">|</div>
+	stdWrap {
+		wrap = <div class="tx-tagpack-pi1-tagItemList">|</div>
+	}
+	
+	# you can predefine what tags should be selected
+	selectedTags = 
+	
+	searchWord < plugin.tx_tagpack_pi1.searchWord
+	
+	# mode = filter => select all and filter accordingly
+	# mode = select => just select the items from given uids
+	mode = filter
+	mode {
+		filter.defaultView = all
+		select.defaultView = none
+	}
+	
+	# maxItems should be pretty high if you use filter mode
+	maxItems = 200
+	
+	# used for selecting the timerange
+	timeFields {
+		default = tstamp
+		pages = tstamp
+		tt_content = tstamp
+	}
+	
+	# howto order the query
+	orderFields {
+		default = tstamp DESC
+		pages = crdate DESC
+		tt_content = tstamp DESC
+	}
+	
+	# field(s) to be used for the fulltext search: tablename = fieldname, fieldname...
+	searchFields {
+		pages = title,nav_title,subtitle,abstract
+		tt_content = header,subheader,bodytext
+	}
+
+	pages = COA
+	pages {
+		5 = TEXT
+		5.field = crdate
+		5.strftime = %d.%m.%Y - %H:%M
+		5.wrap = <div class="newsDate">|</div>
+	
+		10 = TEXT
+		10.field = title
+		10.typolink.parameter.field = uid
+		10.wrap = <h3>|</h3>
+		
+		20 = TEXT
+		20.value = <div class="newsContent clearfix">
+		
+		30 = IMAGE
+		30.file {
+			import = uploads/media/
+			import.field = media
+			import.listNum = 0
+			maxW = 60
+			maxH = 60
+		}
+		30.params = class="newsImage"
+		
+		35  = TEXT
+		35.field = abstract
+		35.crop = 200||1
+		
+		36  = TEXT
+		36.value = ... [more]
+		36.typolink.parameter.field = uid
+		36.typolink.ATagBeforeWrap = 1
+		36.typolink.wrap = <span>|</span>
+		
+		40 = TEXT
+		40.value = </div>
+		
+		wrap = <div class="newsItem clearfix">|</div>
+	}
+	tt_content = COA
+	tt_content {
+		10 = TEXT
+		10.field = header
+		10.typolink.parameter.dataWrap = {field:pid}#{field:uid}
+		10.wrap = <div>|</div>
+		20  = TEXT
+		20.field = bodytext
+		20.parseFunc < lib.parseFunc_RTE
+		20.wrap = <div>|</div>
+		30  = TEXT
+		30.value = more
+		30.typolink.parameter.dataWrap = {field:pid}#{field:uid}
+		30.wrap = <div>|</div>
+	}
+}
