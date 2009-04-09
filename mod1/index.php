@@ -103,8 +103,6 @@
 				$this->tpm = t3lib_div::_GP('tpm');
 				$this->tpm = $this->tpm ? $this->tpm : $BE_USER->getModuleData('user_txtagpackM1/tpm');
 				
-				t3lib_div::debug($this->tpm);
-				
 				$BE_USER->pushModuleData('user_txtagpackM1/tpm',$this->tpm);
 				$this->tagContainer = tx_tagpack_api::getTagContainer();
 				
