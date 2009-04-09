@@ -1,3 +1,10 @@
+0.7.1	09-04-09 JoH asenau  <jh@eqony.com>
+	
+	Tag manager module is close to stable now.
+	Merging of tags is now possible while assigning their relations to the replacement tag.
+	"Translate" will be a feature for the 1.x branch though.
+	Bugfix: If one of the tags to be merged and the replacement tag are the same, the tag still was deleted
+
 0.7.0	09-04-09 JoH asenau  <jh@eqony.com>
 	
 	Tag manager module is close to stable now.

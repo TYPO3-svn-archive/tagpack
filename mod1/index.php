@@ -279,13 +279,13 @@
 		* @return void
 		*/
 		function moduleContentTab4() {
-			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Left'));
-			$tab4Content .= $this->makeDefaultFormFields(4);
-			$tab4Content .= $this->makeLimitField(4);
+			$tab4Content .= '<div class="tabscreenback1"><!--BACKGROUND--></div><div class="tabcontent tabscreen_left">'.$this->doc->header('Coming soon! '.$GLOBALS['LANG']->getLL('Tab4_Left'));
+			/*$tab4Content .= $this->makeDefaultFormFields(4);
+			$tab4Content .= $this->makeLimitField(4);*/
 			$tab4Content .= '<div class="submitbox"><input type="submit" class="submit" value="'.$GLOBALS['LANG']->getLL('find').'" /></div>';
 			$tab4Content .= '</div>';
-			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header($GLOBALS['LANG']->getLL('Tab4_Right'));
-			$tab4Content .= $this->makeResultList(4);
+			$tab4Content .= '<div class="tabscreenback2"><!--BACKGROUND--></div><div class="tabcontent tabscreen_right">'.$this->doc->header('Coming soon! '.$GLOBALS['LANG']->getLL('Tab4_Right'));
+			/*$tab4Content .= $this->makeResultList(4);*/
 			$tab4Content .= '</div>';
 			return $tab4Content;
 		}
@@ -383,7 +383,7 @@
 			}
 			if($newId) {
 			    foreach($tagsToMerge as $tagToMergeId => $tagToMergeName) {
-				if(tx_tagpack_api::tagExists($tagToMergeId)) {
+				if(tx_tagpack_api::tagExists($tagToMergeId) && $tagToMergeId != $newId) {
 				    tx_tagpack_api::removeTag($tagToMergeId,FALSE,$newId);
 				}
 			    }			    
