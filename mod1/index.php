@@ -382,7 +382,6 @@
 			    $newId = tx_tagpack_api::addTag($newName,intval($pid),TRUE);
 			}
 			if($newId) {
-			    echo 'newId ist da';
 			    foreach($tagsToMerge as $tagToMergeId => $tagToMergeName) {
 				if(tx_tagpack_api::tagExists($tagToMergeId)) {
 				    tx_tagpack_api::removeTag($tagToMergeId,FALSE,$newId);

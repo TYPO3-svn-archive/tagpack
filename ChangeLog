@@ -1,3 +1,23 @@
+0.7.0	09-04-09 JoH asenau  <jh@eqony.com>
+	
+	Tag manager module is close to stable now.
+	Merging of tags is now possible while assigning their relations to the replacement tag.
+	"Translate" will be a feature for the 1.x branch though.
+
+0.6.2	09-04-08 JoH asenau  <jh@eqony.com>
+	
+	Fixed a small bug (removed JS debug alert from date fields)
+
+0.6.1	09-04-08 JoH asenau  <jh@eqony.com>
+	
+	Fixed a small bug (ext_tables.php including wrong typoscript statics)
+
+0.6.0	09-04-08 JoH asenau  <jh@eqony.com>
+	
+	The new tag manager module is close to completion now - "Examine" and "Edit" are already available, "Merge" will be finished soon, "Translate" is planned for this summer
+	There's a new tagpack api class for backend and frontend functionality (thanx to Benjamin Mack)
+	Backend functions have been adapted to work with the new api as far as possible, frontend plugins will follow
+
 0.5.5	09-02-06 JoH asenau  <jh@eqony.com>
 	
 	added a check for an empty enabledRecords section in result list configuration to avoid a TCA bug shown in the frontend
