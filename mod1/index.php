@@ -356,7 +356,7 @@
 		
 		function makeMergeForm($tab) {
 		    $mergeForm = '<div id="merge_form">';
-		    $mergeForm .= '<label for="tags_to_merge">'.$GLOBALS['LANG']->getLL('as_replacement').'</label><select id="tags_to_merge" name="tpm[tags_to_merge]" size="'.(($size = count($this->tpm['to_be_merged'])) > 3 ? $size+1 : 4).'" onclick="changeSelectedState(this);return false;">
+		    $mergeForm .= '<label for="tags_to_merge">'.$GLOBALS['LANG']->getLL('as_replacement').'</label><select id="tags_to_merge" name="tpm[tags_to_merge]" size="'.(($size = count($this->tpm['to_be_merged'])) > 3 ? $size+1 : 4).'" onclick="changeSelectedState(this);return false;" ondblclick="document.getElementById(\'tpm_merge_submit\').value = \'submit\'; submit(); return true;">
 			<option value="" style="background:#CCC;">'.$GLOBALS['LANG']->getLL('select_master').'</option>';
 			if($size) {
 			    $selectedTags = $this->tpm['to_be_merged'];

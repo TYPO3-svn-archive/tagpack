@@ -35,10 +35,10 @@
 			<label index="Tab3_Right">Matching tags to be merged</label>
 			<label index="Merge">Merge</label>
 			<label index="merge_now">Merge now!</label>
-			<label index="as_replacement">Select the tags you want to merge by activating the checkboxes. Then replace the selected tags by clicking on a tag from the list or with another tag that you type into the input field.</label>
+			<label index="as_replacement">Select the tags you want to merge by activating the checkboxes. Then replace the selected tags by doubleclicking on a tagname in the selectbox below or typing the name of another tag into the input field to the right of it.</label>
 			<label index="merge_success1">tag has successfully been replaced!</label>
 			<label index="merge_success">tags have successfully been merged!</label>
-			<label index="select_master">Click on a tag or type it here =></label>
+			<label index="select_master">Doubleclick a tag or type here =></label>
 			<label index="leveltitle"> related tag on level</label>
 			<label index="leveltitles"> related tags on level</label>
 			<label index="TabLabel4">Translate</label>
@@ -81,10 +81,10 @@
 			<label index="Tab3_Right">Passende Tags</label>
 			<label index="Merge">Zusammen- fassen</label>
 			<label index="merge_now">Jetzt zusammenfassen!</label>
-			<label index="as_replacement">Wählen Sie ein Tag zum Zusammenfassen aus, indem Sie dessen Checkbox aktivieren. Danach ersetzen Sie die aktivierten Tags durch einen Klick auf eines aus der Liste oder durch ein weiteres, das Sie ins Input-Feld eingeben.</label>
+			<label index="as_replacement">Wählen Sie ein Tag zum Zusammenfassen aus, indem Sie dessen Checkbox aktivieren. Danach ersetzen Sie die aktivierten Tags durch einen Doppelklick auf eines aus der Liste oder durch ein weiteres, das Sie ins Input-Feld eingeben.</label>
 			<label index="merge_success1">Tag wurde erfolgreich umgenannt!</label>
 			<label index="merge_success">Tags wurden erfolgreich zusammengefasst!</label>
-			<label index="select_master">Auf ein Tag klicken oder hierhin schreiben =></label>
+			<label index="select_master">Ein Tag doppelklicken oder schreiben =></label>
 			<label index="leveltitle"> verwandtes Tag auf Ebene </label>
 			<label index="leveltitles"> verwandte Tags auf Ebene </label>
 			<label index="TabLabel4">Übersetzen</label>
