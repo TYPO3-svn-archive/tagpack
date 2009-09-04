@@ -46,6 +46,7 @@
  * @return	The		content that is displayed on the website
  */
 		function main($content, $conf) {
+			$this->conf = $conf;
 			$this->pi_loadLL();
 			$this->pi1Vars = t3lib_div::_GP('tx_tagpack_pi1');
 			$tagUidArray = t3lib_div::intExplode(',', $this->pi1Vars['uid']);
