@@ -215,7 +215,7 @@ class tx_tagpack_api {
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	array		the result row from the DB or an empty array if nothing was found
 	 */
-	function getTagDataByTagName($tagName,$storagePID='',$limit=1,$showHidden=FALSE,$fromDate=FALSE,$toDate=FALSE) {
+	function getTagDataByTagName($tagName, $storagePID='', $limit=1, $showHidden=FALSE, $fromDate=FALSE, $toDate=FALSE, $pid = 0) {
 		$tagName = trim($tagName);
 		$limitArray = t3lib_div::trimExplode(',',$limit);
 		if($limitArray[1]) {
@@ -229,7 +229,7 @@ class tx_tagpack_api {
 		    $timeFrame = ' AND crdate > '.intval($fromDate).' AND crdate < '.intval($toDate);
 		}
 		if (!empty($tagName)) {
-			$storagePID = $storagePID ? $storagePID : tx_tagpack_api::getTagStoragePID();
+			$storagePID = $storagePID ? $storagePID : tx_tagpack_api::getTagStoragePID(intval($pid));
 			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				'*',
 				tx_tagpack_api::tagTable,
@@ -398,7 +398,7 @@ class tx_tagpack_api {
 	function attachTagToElement($tagUid=0, $tagName='', $elementUid, $elementTable, $pid) {
 		// create the tag if it doesn't exist yet
 		if($tagName && !$tagUid) {
-		    $tagData = tx_tagpack_api::getTagDataByTagName($tagName);
+		    $tagData = tx_tagpack_api::getTagDataByTagName($tagName, '', 1, FALSE, FALSE, FALSE, $pid);
 		}
 		if (!count($tagData) && !$tagUid) {
 			$tagUid = tx_tagpack_api::addTag($tagName,$pid);
