@@ -8,14 +8,14 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="ajaxgroupsearch_error_noTablesConfigured">No tables configured</label>
-			<label index="ajaxgroupsearch_error_noResults">No results! - Tag will be newly created on saving!</label>
-			<label index="ajaxgroupsearch_error_notAllowed">No results - Please use existing tags only!</label>
+			<label index="ajaxgroupsearch_error_noResults">Tag does not exist yet and will be newly created on saving!</label>
+			<label index="ajaxgroupsearch_error_notAllowed">Tag does not exist yet! - Please use existing tags only!</label>
 			<label index="ajaxgroupsearch_error_typeUnsupported">Type unsupported...</label>		
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="ajaxgroupsearch_error_noTablesConfigured">Keine Tabellen konfiguriert</label>
-			<label index="ajaxgroupsearch_error_noResults">Nichts gefunden! - Tag wird beim Speichern neu angelegt!</label>
-			<label index="ajaxgroupsearch_error_notAllowed">Nichts gefunden! - Bitte verwenden Sie nur bereits existierende Tags!</label>
+			<label index="ajaxgroupsearch_error_noResults">Dieses Tag existiert noch nicht und wird beim Speichern neu angelegt!</label>
+			<label index="ajaxgroupsearch_error_notAllowed">Dieses Tag existiert nicht! - Bitte verwenden Sie nur bereits existierende Tags!</label>
 			<label index="ajaxgroupsearch_error_typeUnsupported">Auswahltyp nicht unterstützt...</label>
 		</languageKey>
 	</data>

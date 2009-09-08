@@ -123,7 +123,7 @@ function tx_tagpack_ajaxsearch_observer(el,creator,params) {
 					    this.current = false;
 					}
 				} else {
-				    if(this.results.firstChild.className=='allowed') {
+				    if(this.results.lastChild.className=='allowed') {
 					setFormValueFromBrowseWin(this.el.id.replace(/_ajaxsearch/g,''),'new_'+this.el.value,this.el.value,'');
 				    }
 				    this.el.value='';

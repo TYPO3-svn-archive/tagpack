@@ -71,6 +71,6 @@ ul.results li a:focus, ul.results li.focus a {
 	background-color:#0a246a;
 }
 
-ul.results li.forbidden {
+ul.results li.forbidden, ul.results li.allowed {
 	color:#F00;
 }

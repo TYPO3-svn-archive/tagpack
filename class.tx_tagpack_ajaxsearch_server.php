@@ -235,6 +235,8 @@
 		function renderResults($data = array(), $tableConfig, $id, $searchWord) {
 			global $LANG;
 			 
+			$allowed = $GLOBALS['BE_USER']->check('tables_modify','tx_tagpack_tags');
+
 			if (0 == count($data))
 				return '<li><em class="error">'.$LANG->getLL('ajaxgroupsearch_error_noTablesConfigured').'</em></li>';
 			 
@@ -259,7 +261,9 @@
 						$label = htmlspecialchars(strip_tags(t3lib_BEfunc::getRecordTitle($table, $row, 1)));
 					}
 					
-					
+					if(strtolower($label)==strtolower($searchWord)) {
+					    $wordFound = true;
+					}
 					 
 					 
 					// build title as concatenation of all search fields (so you know why you found it)
@@ -289,12 +293,11 @@
 					}
 					$label = str_replace($searchWord,'<b>'.$searchWord.'</b>',$label);
 					$label = str_replace(strtolower($searchWord),'<b>'.strtolower($searchWord).'</b>',$label);
-					$content .= '<li title="'.$value.'"><a href="#" title="'.$title.'" onclick="'.$onclick.'" >'.$icon.'<span title="'.$title.'">'.$label.'</span></a></li>';
+					$content .= '<li class="allowed" title="'.$value.'"><a href="#" title="'.$title.'" onclick="'.$onclick.'" >'.$icon.'<span title="'.$title.'">'.$label.'</span></a></li>';
 				}
 			}
-			if (!$content) {
-				$allowed = $GLOBALS['BE_USER']->check('tables_modify','tx_tagpack_tags');
-				$content = '<li class="'.($allowed ? 'allowed' : 'forbidden').'"><em>'.($allowed ? $LANG->getLL('ajaxgroupsearch_error_noResults') : $LANG->getLL('ajaxgroupsearch_error_notAllowed')).'</em></li>';
+			if (!$wordFound) {
+				$content .= '<li class="'.($allowed ? 'allowed' : 'forbidden').'"><em>'.($allowed ? $LANG->getLL('ajaxgroupsearch_error_noResults') : $LANG->getLL('ajaxgroupsearch_error_notAllowed')).'</em></li>';
 			}
 			return $content;
 			 
