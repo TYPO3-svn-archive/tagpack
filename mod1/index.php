@@ -93,65 +93,44 @@
 		function main() {
 			global $BE_USER, $LANG, $BACK_PATH, $TCA_DESCR, $TCA, $CLIENT, $TYPO3_CONF_VARS;
 			 
-			// Access check!
-			// The page will show only if there is a valid page and if this page may be viewed by the user
-			$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
-			$access = is_array($this->pageinfo) ? 1 : 0;
+			$this->tpm = t3lib_div::_GP('tpm');
+			$this->tpm = $this->tpm ? $this->tpm : $BE_USER->getModuleData('user_txtagpackM1/tpm');
+			
+			$BE_USER->pushModuleData('user_txtagpackM1/tpm',$this->tpm);
+			$this->tagContainer = tx_tagpack_api::getTagContainer();
+			
+			if($this->tpm['merge_now']['submit'] && $this->tpm['merge_now']['new_name'] && count($this->tpm['to_be_merged'])) {
+			    $this->mergeNow = $this->mergeTags($this->tpm['to_be_merged'],$this->tpm['merge_now']['new_id'],$this->tpm['merge_now']['new_name'],$this->tpm['container_page'][3][0]);
+			    unset($this->tpm['to_be_merged']);
+			    unset($this->tpm['merge_now']);
+			}
+			
+			// Draw the header.
+			$this->doc = t3lib_div::makeInstance('bigDoc');
+			$this->doc->backPath = $BACK_PATH;
+			$this->doc->JScode .= '
+			<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
+			$this->doc->JScode .= '
+			<script type="text/javascript" src="/typo3/contrib/prototype/prototype.js"><!--PROTOTYPE--></script>';
+			$this->doc->JScode .= '
+			<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';
+			$this->doc->JScode .= '
+			<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
+			$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
 			 
-			if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id)) {
-				
-				$this->tpm = t3lib_div::_GP('tpm');
-				$this->tpm = $this->tpm ? $this->tpm : $BE_USER->getModuleData('user_txtagpackM1/tpm');
-				
-				$BE_USER->pushModuleData('user_txtagpackM1/tpm',$this->tpm);
-				$this->tagContainer = tx_tagpack_api::getTagContainer();
-				
-				if($this->tpm['merge_now']['submit'] && $this->tpm['merge_now']['new_name'] && count($this->tpm['to_be_merged'])) {
-				    $this->mergeNow = $this->mergeTags($this->tpm['to_be_merged'],$this->tpm['merge_now']['new_id'],$this->tpm['merge_now']['new_name'],$this->tpm['container_page'][3][0]);
-				    unset($this->tpm['to_be_merged']);
-				    unset($this->tpm['merge_now']);
-				}
-				
-			 
-				// Draw the header.
-				$this->doc = t3lib_div::makeInstance('bigDoc');
-				$this->doc->backPath = $BACK_PATH;
-				$this->doc->JScode .= '
-				<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
-				$this->doc->JScode .= '
-				<script type="text/javascript" src="/typo3/contrib/prototype/prototype.js"><!--PROTOTYPE--></script>';
-				$this->doc->JScode .= '
-				<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';
-				$this->doc->JScode .= '
-				<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
-				$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
-				 
-				$this->content .= $this->doc->startPage($LANG->getLL('title'));
+			$this->content .= $this->doc->startPage($LANG->getLL('title'));
 
-				if ($this->tagpack['save']) {
-					//Save Pagetree
-					$this->savePageTree();
-				} else {
-					// Render content:
-					$this->moduleContentDynTabs();
-				}
-				 
-				 
-				// ShortCut
-				if ($BE_USER->mayMakeShortcut()) {
-					$this->content .= '<div id="shortcuticon">'.$this->doc->section('', $this->doc->makeShortcutIcon('id', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name'])).'</div>';
-				}
-				 
+			if ($this->tagpack['save']) {
+				//Save Pagetree
+				$this->savePageTree();
 			} else {
-				// If no access or if ID == zero
-				 
-				$this->doc = t3lib_div::makeInstance('mediumDoc');
-				$this->doc->backPath = $BACK_PATH;
-				 
-				$this->content .= $this->doc->startPage($LANG->getLL('title'));
-				$this->content .= $this->doc->header($LANG->getLL('title'));
-				$this->content .= $this->doc->spacer(5);
-				$this->content .= $this->doc->spacer(10);
+				// Render content:
+				$this->moduleContentDynTabs();
+			}
+			 
+			// ShortCut
+			if ($BE_USER->mayMakeShortcut()) {
+				$this->content .= '<div id="shortcuticon">'.$this->doc->section('', $this->doc->makeShortcutIcon('id', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name'])).'</div>';
 			}
 		}
 		 
