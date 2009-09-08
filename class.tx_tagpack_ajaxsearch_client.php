@@ -44,7 +44,7 @@
 		* @return html of the wizard
 		**/
 		function renderAjaxSearch($PA, $fobj) {
-			
+		
 			if($PA['table'] == 'pages') {
 			    $TSCpid = $PA['uid'];
 			} else {

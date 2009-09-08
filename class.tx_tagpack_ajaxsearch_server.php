@@ -292,8 +292,10 @@
 					$content .= '<li title="'.$value.'"><a href="#" title="'.$title.'" onclick="'.$onclick.'" >'.$icon.'<span title="'.$title.'">'.$label.'</span></a></li>';
 				}
 			}
-			if (!$content)
-				$content = '<li><em>'.$LANG->getLL('ajaxgroupsearch_error_noResults').'</em></li>';
+			if (!$content) {
+				$allowed = $GLOBALS['BE_USER']->check('tables_modify','tx_tagpack_tags');
+				$content = '<li class="'.($allowed ? 'allowed' : 'forbidden').'"><em>'.($allowed ? $LANG->getLL('ajaxgroupsearch_error_noResults') : $LANG->getLL('ajaxgroupsearch_error_notAllowed')).'</em></li>';
+			}
 			return $content;
 			 
 		}

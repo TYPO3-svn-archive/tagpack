@@ -70,3 +70,7 @@ ul.results li a:focus, ul.results li.focus a {
 	color:#fff;
 	background-color:#0a246a;
 }
+
+ul.results li.forbidden {
+	color:#F00;
+}
