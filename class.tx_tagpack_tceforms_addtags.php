@@ -76,13 +76,18 @@ class tx_tagpack_tceforms_addtags {
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
-			$TCA[$table]['columns']['tx_tagpack_tags']['label'] = 'Tags';
+			$TCA[$table]['columns']['tx_tagpack_tags']['label'] = $TCA['tx_tagpack_tags']['ctrl']['title'];
 			 
-			// lets make sure the new virtual field shows up for every type of this table
+			// Make sure the new virtual field shows up for every type of this table
 			if (count($TCA[$table]['types'])) {
+				$hasMainPalette = !empty($TCA[$table]['ctrl']['mainpalette']);
 				foreach ($TCA[$table]['types'] as $key => $val) {
-					if (strpos($TCA[$table]['types'][$key]['showitem'], 'tx_tagpack_tags') === FALSE) {
-						$TCA[$table]['types'][$key]['showitem'] .= ',--div--;Tags;;;5-5-5,tx_tagpack_tags,--div--;Groups,';
+					if (strpos($TCA[$table]['types'][$key]['showitem'], 'tx_tagpack_tags') === false) {
+						$showItem = ',--div--;' . $TCA['tx_tagpack_tags']['ctrl']['title'] . ';;;5-5-5,tx_tagpack_tags,';
+						if ($hasMainPalette) {
+							$showItem .= ',--div--;LLL:EXT:lang/locallang_core.xml:labels.generalOptions';
+						}
+						$TCA[$table]['types'][$key]['showitem'] .= $showItem;
 					}
 				}
 			}
