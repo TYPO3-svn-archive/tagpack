@@ -180,8 +180,8 @@
 								}
 							}
 						}
-						$typolink['title'] = $tagValues['relations'] > 1 ? $tagValues['relations'].' items tagged with '.$text :
-						$tagValues['relations'].' item tagged with '.$text;
+						$typolink['title'] = $tagValues['relations'] > 1 ? $tagValues['relations'].' '.$conf['linkLabel.']['plural'].' '.$text :
+						$tagValues['relations'].' '.$conf['linkLabel.']['singular'].' '.$text;
 						$difference = $max-$min;
 						$difference = $difference > 1 ? $difference :
 						1;

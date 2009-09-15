@@ -30,6 +30,10 @@ plugin {
 					linkStdWrap {
 						wrap = <span>|</span>
 					}
+					linkLabel {
+						singular = {$plugin.tx_tagpack_pi1.label.taggedWith.singular} 
+						plural = {$plugin.tx_tagpack_pi1.label.taggedWith.plural}
+					}
 					modeSwitchStdWrap {
 						wrap = {$plugin.tx_tagpack_pi1.label.modeSwitch}<div class="tx-tagpack-pi1-modeswitch">|</div>
 					}
