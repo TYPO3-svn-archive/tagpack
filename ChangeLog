@@ -1,3 +1,13 @@
+0.10.0 09-09-20 JoH asenau  <info@cybercraft.de>
+
+	Added a new DESCRIPTOR mode for two level tagging. When this mode is activated during installation, only tags of the type DESCRIPTOR can be used to tag records of other tables, while only tags of the type NON DESCRIPTOR can be used to tag tag records.
+	Added new fields tagtype (necessary for the DESCRIPTOR mode), category, quodvide and description to the tag table.
+	Added a new table for categories. Relations are using a simple foreign table select field in the tag table.
+	Modified the search-while-you-type-interface to recognize the DESCRIPTOR mode and show a list of additional information when tagging records of other tables. The category and description are inserted into the title attribute of each tag so that users can read them on mouseover.
+	Tags will automatically get the tagtype 1 when they are created as subtags of another tag.
+	quodvide (or "see also") will connect tags to other tags with related topics without making them part of the actual tagcloud. This is done with another MM table to make sure that connections and relations can be found quickly later on.
+	The quodvide field is not being used by any FE plugin yet.
+	
 0.9.3 09-09-15 JoH asenau  <info@cybercraft.de>
 
 	Added a check for the modification of the tag table so that users can not create new tags but only assign existing ones if they have insufficient rights (issue #3321)
