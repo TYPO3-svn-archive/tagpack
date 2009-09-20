@@ -77,11 +77,12 @@
 			// scary, but splits $_GET['id'] in to the needed fields
 			$request['id'] = str_replace ('_ajaxsearch', '', $request['id']);
 			$idArr = array_map(array(&$this, 'trim'), t3lib_div::trimExplode('[', $request['id']));
-			 
+			
 			array_shift($idArr);
 			$this->parentTable = array_shift($idArr);
 			$this->uid = array_shift($idArr);
 			$this->field = array_shift($idArr);
+			$this->enableDescriptorMode = array_shift($idArr);
 			$this->flexPath = $idArr;
 			 
 			t3lib_div::loadTCA('tx_tagpack_tags');
@@ -93,8 +94,9 @@
 			$fieldConfig['wizards']['_VALIGN'] = 'top';
 			$fieldConfig['wizards']['ajax_search']['type'] = 'userFunc';
 			$fieldConfig['wizards']['ajax_search']['userFunc'] = 'tx_tagpack_ajaxsearch_client->renderAjaxSearch';
-			$fieldConfig['wizards']['ajax_search']['params']['client']['startLength'] = 2;
+			$fieldConfig['wizards']['ajax_search']['params']['client']['startLength'] = 3;
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
+			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enableDescriptorMode'] = $this->enableDescriptorMode ? true : false;
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['additionalWhere'] = 'tx_tagpack_tags.pid IN('.$request['pid'].')';
 			$fieldConfig['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
@@ -158,7 +160,7 @@
 				}
 				break;
 				default:
-				return '<li><em class="error">'.$LANG->getLL('ajaxgroupsearch_error_typeUnsupported').'</em>'.t3lib_div::debug($fieldConfig).'</li>';
+				return '<dt><em class="error">'.$LANG->getLL('ajaxgroupsearch_error_typeUnsupported').'</em>'.t3lib_div::debug($fieldConfig).'</dt>';
 				 
 			}
 			foreach ($lookupTables as $lookupTable) {
@@ -193,8 +195,10 @@
 			}
 			$conditions[] = $GLOBALS['BE_USER']->getPagePermsClause(1); //check read access
 			 
-			 
-			$conditions[] = $this->db->searchQuery(array($searchWord), $searchFields, $table);
+			$data = array();
+			
+			$limit = intval($config['limit']) ? $config['limit'] : 1000;
+			
 			$conditions[] = '1=1'.t3lib_BEfunc::deleteClause($table);
 			 
 			if ($config['enabledOnly']) {
@@ -203,23 +207,76 @@
 			if ($config['additionalWhere']) {
 				$conditions[] = $config['additionalWhere'];
 			}
-			 
-			$data = array();
 			
-			$limit = intval($config['limit']) ? $config['limit'] : 10;
-			$tagQuery = array(
-				$table.'.*',
-				$tableStatement,
-				join(' AND ', $conditions),
-				'',
-				'',
-				$limit
-			);
+			$conditions[] = $this->db->searchQuery(array($searchWord), $searchFields, $table);
 			
-			$res = $this->db->exec_SELECTquery($tagQuery[0], $tagQuery[1], $tagQuery[2], $tagQuery[3], $tagQuery[4], $tagQuery[5]);
-			while ($row = $this->db->sql_fetch_assoc($res)) {
-				$data[] = $row;
+			if($config['enableDescriptorMode'] && $this->parentTable!='tx_tagpack_tags') {
+				$tagQuery = array(
+					'tx_tagpack_tags.*,tx_tagpack_categories.name AS categoryname',
+					'tx_tagpack_tags LEFT JOIN tx_tagpack_categories ON (tx_tagpack_tags.category=tx_tagpack_categories.uid)',
+					join(' AND ', $conditions),
+					'',
+					'tx_tagpack_tags.name',
+					''
+				);
+				$res = $this->db->exec_SELECTquery($tagQuery[0], $tagQuery[1], $tagQuery[2], $tagQuery[3], $tagQuery[4], $tagQuery[5]);
+				while ($row = $this->db->sql_fetch_assoc($res)) {
+					if($row['tagtype']==1) {
+						$uidList .= $uidList ? ','.$row['uid'] : $row['uid'];
+					} else {
+						if(count($data)<=$limit) {
+							$data[$row['name']] = $row;
+						}
+					}
+				}
+				if($uidList) {
+					$tagQuery = array(
+						't2.*,t3.name AS subname',
+						'tx_tagpack_tags AS t3 LEFT OUTER JOIN tx_tagpack_tags_relations_mm AS t1 ON (t3.uid=t1.uid_local) LEFT OUTER JOIN tx_tagpack_tags t2 ON (t2.uid=t1.uid_foreign AND t2.tagtype=0)',
+						't3.uid IN ('.$uidList.')',
+						'',
+						'subname',
+						$limit
+					);
+					$res = $this->db->exec_SELECTquery($tagQuery[0], $tagQuery[1], $tagQuery[2], $tagQuery[3], $tagQuery[4], $tagQuery[5]);
+					while ($row = $this->db->sql_fetch_assoc($res)) {						
+						if(count($data)<=$limit) {
+							$data[$row['name']] = is_array($data[$row['name']]) ? $data[$row['name']] : $row;
+							if($data[$row['name']]['subname'] != $row['subname']) {
+							    $data[$row['name']]['subname'] .= $data[$row['name']]['subname'] ? '<br />'.$row['subname'] : $row['subname'];
+							};
+						}
+					}
+				}
+			} else if($config['enableDescriptorMode'] && $this->parentTable=='tx_tagpack_tags') {
+				$tagQuery = array(
+					'tx_tagpack_tags.*',
+					'tx_tagpack_tags',
+					join(' AND ', $conditions).' AND tx_tagpack_tags.tagtype=1',
+					'',
+					'tx_tagpack_tags.name',
+					$limit
+				);
+				$res = $this->db->exec_SELECTquery($tagQuery[0], $tagQuery[1], $tagQuery[2], $tagQuery[3], $tagQuery[4], $tagQuery[5]);
+				while ($row = $this->db->sql_fetch_assoc($res)) {
+					$data[] = $row;
+				}
+			} else {
+				$tagQuery = array(
+					'tx_tagpack_tags.*',
+					'tx_tagpack_tags',
+					join(' AND ', $conditions),
+					'',
+					'tx_tagpack_tags.name',
+					$limit
+				);
+				$res = $this->db->exec_SELECTquery($tagQuery[0], $tagQuery[1], $tagQuery[2], $tagQuery[3], $tagQuery[4], $tagQuery[5]);
+				while ($row = $this->db->sql_fetch_assoc($res)) {
+					$data[] = $row;
+				}
 			}
+			
+			ksort($data);
 			 
 			return $data;
 		}
@@ -238,11 +295,11 @@
 			$allowed = $GLOBALS['BE_USER']->check('tables_modify','tx_tagpack_tags');
 
 			if (0 == count($data))
-				return '<li><em class="error">'.$LANG->getLL('ajaxgroupsearch_error_noTablesConfigured').'</em></li>';
+				return '<dt><em class="error">'.$LANG->getLL('ajaxgroupsearch_error_noTablesConfigured').'</em></dt>';
 			 
 			 
 			$content = '';
-			$fieldId = 'data'.substr($id, strpos($id, '['));
+			$fieldId = substr('data'.substr($id, strpos($id, '[')),0,-3);
 			foreach($data as $table => $rows) {
 				$tableTCActrl = $GLOBALS['TCA'][$table]['ctrl'];
 				$config = $tableConfig[$table];
@@ -291,13 +348,21 @@
 					} else {
 					    $onclick = 'setTpmFormValue(this,\''.$title.'\');return true;';					
 					}
-					$label = str_replace($searchWord,'<b>'.$searchWord.'</b>',$label);
-					$label = str_replace(strtolower($searchWord),'<b>'.strtolower($searchWord).'</b>',$label);
-					$content .= '<li class="allowed" title="'.$value.'"><a href="#" title="'.$title.'" onclick="'.$onclick.'" >'.$icon.'<span title="'.$title.'">'.$label.'</span></a></li>';
+					$label = str_replace($searchWord,'<strong>'.$searchWord.'</strong>',$label);
+					$label = str_replace(ucwords($searchWord),'<strong>'.ucwords($searchWord).'</strong>',$label);
+					$label = str_replace(strtolower($searchWord),'<strong>'.strtolower($searchWord).'</strong>',$label);
+					$title = $row['categoryname'] ? $row['categoryname'].' - '.$row['description'] : $row['description'];
+					$content .= '<dt class="allowed" title="'.$value.'"><a href="#" title="'.$title.'" onclick="'.$onclick.'" >'.$icon.'<span title="'.$title.'">'.$label.'</span></a></dt>';
+					if($row['subname']) {
+						$label = str_replace($searchWord,'<strong>'.$searchWord.'</strong>',$row['subname']);
+						$label = str_replace(ucwords($searchWord),'<strong>'.ucwords($searchWord).'</strong>',$label);
+						$label = str_replace(strtolower($searchWord),'<strong>'.strtolower($searchWord).'</strong>',$label);
+						$content .= '<dd>'.$label.'</dd>';
+					}
 				}
 			}
 			if (!$wordFound) {
-				$content .= '<li class="'.($allowed ? 'allowed' : 'forbidden').'"><em>'.($allowed ? $LANG->getLL('ajaxgroupsearch_error_noResults') : $LANG->getLL('ajaxgroupsearch_error_notAllowed')).'</em></li>';
+				$content .= '<dt class="'.($allowed ? 'allowed' : 'forbidden').'"><em>'.($allowed ? $LANG->getLL('ajaxgroupsearch_error_noResults') : $LANG->getLL('ajaxgroupsearch_error_notAllowed')).'</em></dt>';
 			}
 			return $content;
 			 

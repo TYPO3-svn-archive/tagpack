@@ -53,6 +53,7 @@
 		
 			$TSconfig = t3lib_befunc::getPagesTSConfig($TSCpid);
 			$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'] ? $TSconfig['tx_tagpack_tags.']['getTagsFromPid'] : 0;
+			$enableDescriptorMode = $TSconfig['tx_tagpack_tags.']['enableDescriptorMode'] ? '[1]' : '[0]';
 		
 			$this->init();
 			 
@@ -60,8 +61,8 @@
 			 
 			$row = $PA['row'];
 			 
-			$name = $PA['itemName'];
-			 
+			$name = $PA['itemName'].$enableDescriptorMode;
+			
 			if (!$params['client']['startLength']) $params['client']['startLength'] = 3;
 			$jsParams = $this->getJSON($params['client']);
 			 
@@ -71,7 +72,7 @@
 				id="'.$name.'_ajaxsearch" style="'.$params['inputStyle'].'" type="text"
 				onfocus=\'window.tx_tagpack_ajaxsearch_lazyCreator.get(this,'.$jsParams.').onfocus();\'
 				size="20" autocomplete="off" class="search" value="" title="Tags'.$getTagsFromPid.'" />
-				<ul class="results" style="'.$params['itemListStyle'].'" id="'.$name.'_ajaxsearch_results"></ul>
+				<dl class="results" style="'.$params['itemListStyle'].'" id="'.$name.'_ajaxsearch_results"></dl>
 				</div>';
 		}
 		 

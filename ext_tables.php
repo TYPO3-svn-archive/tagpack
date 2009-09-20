@@ -2,9 +2,10 @@
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
 t3lib_extMgm::allowTableOnStandardPages('tx_tagpack_tags');
-
-
 t3lib_extMgm::addToInsertRecords('tx_tagpack_tags');
+
+t3lib_extMgm::allowTableOnStandardPages('tx_tagpack_categories');
+t3lib_extMgm::addToInsertRecords('tx_tagpack_categories');
 
 $TCA['tx_tagpack_tags'] = array (
 	'ctrl' => array (
@@ -28,7 +29,33 @@ $TCA['tx_tagpack_tags'] = array (
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_tagpack_tags.gif',
 	),
 	'feInterface' => array (
-		'fe_admin_fieldList' => 'sys_language_uid, l18n_parent, l18n_diffsource, hidden, starttime, endtime, fe_group, name, relations',
+		'fe_admin_fieldList' => 'sys_language_uid, l18n_parent, l18n_diffsource, hidden, starttime, endtime, fe_group, tagtype, category, name, description, quodvide, relations',
+	)
+);
+
+$TCA['tx_tagpack_categories'] = array (
+	'ctrl' => array (
+		'title'     => 'LLL:EXT:tagpack/locallang_db.xml:tx_tagpack_categories',		
+		'label'     => 'name',	
+		'tstamp'    => 'tstamp',
+		'crdate'    => 'crdate',
+		'cruser_id' => 'cruser_id',
+		'languageField'            => 'sys_language_uid',	
+		'transOrigPointerField'    => 'l18n_parent',	
+		'transOrigDiffSourceField' => 'l18n_diffsource',	
+		'default_sortby' => 'ORDER BY name',	
+		'delete' => 'deleted',	
+		'enablecolumns' => array (		
+			'disabled' => 'hidden',	
+			'starttime' => 'starttime',	
+			'endtime' => 'endtime',	
+			'fe_group' => 'fe_group',
+		),
+		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_tagpack_categories.gif',
+	),
+	'feInterface' => array (
+		'fe_admin_fieldList' => 'sys_language_uid, l18n_parent, l18n_diffsource, hidden, starttime, endtime, fe_group, name',
 	)
 );
 

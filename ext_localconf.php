@@ -5,6 +5,7 @@ $lConf = unserialize($_EXTCONF);
 t3lib_extMgm::addPageTSConfig('
 	tx_tagpack_tags.taggedTables = '.$lConf['taggedTables'].'
 	tx_tagpack_tags.getTagsFromPid = '.$lConf['getTagsFromPid'].'
+	tx_tagpack_tags.enableDescriptorMode = '.$lConf['enableDescriptorMode'].'
 ');
 
 t3lib_extMgm::addUserTSConfig('

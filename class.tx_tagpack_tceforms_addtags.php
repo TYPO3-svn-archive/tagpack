@@ -53,9 +53,10 @@ class tx_tagpack_tceforms_addtags {
 		$TSconfig = t3lib_befunc::getPagesTSconfig($TSCpid);
 		$allowedPages = $TSconfig['tx_tagpack_tags.']['taggedTables'];
 		$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'];
-		 
+		$enableDescriptorMode = $TSconfig['tx_tagpack_tags.']['enableDescriptorMode'];
+		
 		// if tagging is allowed set the appropriate TCA values
-		if (t3lib_div::inList($allowedPages, $table)) {
+		if (t3lib_div::inList($allowedPages, $table) && !($enableDescriptorMode && $table=='tx_tagpack_tags' && $row['tagtype']==1)) {
 			 
 			// first lets fetch the TCA of the tag table
 			t3lib_div::loadTCA('tx_tagpack_tags');
@@ -67,13 +68,13 @@ class tx_tagpack_tceforms_addtags {
 			$TCA[$table]['columns']['tx_tagpack_tags'] = $TCA['tx_tagpack_tags']['columns']['relations'];
 			$TCA[$table]['columns']['tx_tagpack_tags']['exclude'] = 0;
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['allowed'] = 'tx_tagpack_tags';
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['MM_table_where'] = ($getTagsFromPid ? 'tx_tagpack_tags.pid = ' . intval($getTagsFromPid) : '');
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['prepend_tname'] = 0;
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['_VALIGN'] = 'top';
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['type'] = 'userFunc';
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['userFunc'] = 'tx_tagpack_ajaxsearch_client->renderAjaxSearch';
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['client']['startLength'] = 2;
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['client']['startLength'] = 3;
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enableDescriptorMode'] = $enableDescriptorMode ? TRUE : FALSE;
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
 			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
 			$TCA[$table]['columns']['tx_tagpack_tags']['label'] = $TCA['tx_tagpack_tags']['ctrl']['title'];
@@ -407,7 +408,7 @@ class tx_tagpack_tceforms_addtags {
 							$where,
 							$relations );
 					} else {
-						// in any other case we simply have to update all related tags with the valuleArray we have built before
+						// in any other case we simply have to update all related tags with the valueArray we have built before
 						$where = 'uid_local='.$valueArray['uid_local'].' AND uid_foreign='.$valueArray['uid_foreign'].' AND tablenames=\''.$valueArray['tablenames'].'\'';
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 						    tx_tagpack_api::relationsTable,

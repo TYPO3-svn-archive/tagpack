@@ -97,11 +97,13 @@ function tx_tagpack_ajaxsearch_observer(el,creator,params) {
 		switch (e.keyCode) {
 			case Event.KEY_DOWN:
 				// take the next or the first
-				this.current = this.current ? this.current.next() : this.results.down('li');
+				this.current = this.current ? this.current.next() : this.results.down('dt');
+				this.current = this.current.className ? this.current : this.current.next();
 				break;
 			case Event.KEY_UP:
-				// take the previos or the first
-				this.current = this.current ? this.current.previous() : this.results.down('li');
+				// take the previous or the first
+				this.current = this.current ? this.current.previous() : this.results.down('dt');
+				this.current = this.current.className ? this.current : this.current.previous();
 				break;
 			
 			case 10: // prototype doesn't care for *ix*
@@ -124,7 +126,7 @@ function tx_tagpack_ajaxsearch_observer(el,creator,params) {
 					}
 				} else {
 				    if(this.results.lastChild.className=='allowed') {
-					setFormValueFromBrowseWin(this.el.id.replace(/_ajaxsearch/g,''),'new_'+this.el.value,this.el.value,'');
+					setFormValueFromBrowseWin(this.el.id.replace(/\D\d\D_ajaxsearch/g,''),'new_'+this.el.value,this.el.value,'');
 				    }
 				    this.el.value='';
 				    this.el.blur();
@@ -135,11 +137,11 @@ function tx_tagpack_ajaxsearch_observer(el,creator,params) {
 				break;
 
 			case Event.KEY_HOME:
-				this.current = this.results.down('li');
+				this.current = this.results.down('dt');
 				Event.stop(e);
 				break;
 			case Event.KEY_END:
-				this.current = this.results.down('li');
+				this.current = this.results.down('dt');
 				this.current = this.current.nextSiblings().last();
 				Event.stop(e);
 				break;

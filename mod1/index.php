@@ -2,7 +2,7 @@
 	/***************************************************************
 	*  Copyright notice
 	*
-	*  (c) 2009 JoH asenau <jh@eqony.com>
+	*  (c) 2009 JoH asenau <info@cybercraft.de>
 	*  All rights reserved
 	*
 	*  This script is part of the TYPO3 project. The TYPO3 project is
@@ -43,7 +43,7 @@
 	/**
 	* Module 'Site Generator' for the 'tagpack' extension.
 	*
-	* @author JoH asenau <jh@eqony.com>
+	* @author JoH asenau <info@cybercraft.de>
 	* @package TYPO3
 	* @subpackage tx_tagpack
 	*/

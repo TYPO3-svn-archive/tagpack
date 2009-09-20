@@ -1,3 +1,13 @@
+0.9.3 09-09-15 JoH asenau  <info@cybercraft.de>
+
+	Added a check for the modification of the tag table so that users can not create new tags but only assign existing ones if they have insufficient rights (issue #3321)
+	Changed label and tab handling (issue #3895)
+	Changed title tags for links in the tagcloud from hardcoded text to a typoscript value
+	Removed the default page access check for non admin users so the tag manager will work for them
+	Changed wrong label for the tagcloud element
+	Enabled LOCAL_LANG settings in tx_tagpack_pi3 (issue #4378)
+	Fixed a bug with TSconfig getTagsFromPid being ignored (issue #4234)	
+	
 0.9.2 09-05-30 JoH asenau  <jh@eqony.com>
 	A new test regarding the manual. Should be better than the last one and contains more useful stuff now ;-)
 

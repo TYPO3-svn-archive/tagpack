@@ -64,6 +64,31 @@ class tx_tagpack_api {
 		return intval($storagePID);
 	}
 
+	/**
+	 * Fetches the Descriptor Mode from the configuration, based on the Descriptor Mode
+	 * that is set through the pages TSconfig
+	 * It uses a one-time mechanism to only fetch the Descriptor Mode once and then
+	 * stores it as a static variable
+	 *
+	 * @param	$pid	the integer to the page where the tsconfig is stored, needed for the backend
+	 * @return	boolean		the Descriptor Mode to be used
+	 */
+	function getDescriptorMode($pid = 0) {
+		static $descriptorMode;
+		if (!$descriptorMode) {
+			if (is_object($GLOBALS['TSFE'])) {
+				// get the storage PID in the frontend
+				$GLOBALS['TSFE']->getPagesTSconfig();
+				$$descriptorMode = $GLOBALS['TSFE']->pagesTSconfig['tx_tagpack_tags.']['enableDescriptorMode'] ? TRUE : FALSE;
+			} else {
+				// get storage PID in the backend
+				$TSconfig = t3lib_BEfunc::getPagesTSconfig($pid);
+				$descriptorMode = $TSconfig['tx_tagpack_tags.']['enableDescriptorMode'] ? TRUE : FALSE;
+			}
+		}
+		return $descriptorMode;
+	}
+
 
 	/**
 	 * Fetches all pages that are containing at least one tag
@@ -116,10 +141,11 @@ class tx_tagpack_api {
 	 * @param	$tagName	a string containing the name of the tag
 	 * @return	int			the uid of the newly added tag, or zero if the tagName was empty
 	 */
-	function addTag($tagName,$pid=0,$isStoragePID=FALSE) {
+	function addTag($tagName,$pid=0,$isStoragePID=FALSE,$elementTable='') {
 		$tagName = trim($tagName);
 		if (!empty($tagName) && !tx_tagpack_api::tagNameExists($tagName)) {
 			$storagePID = $isStoragePID ? $pid : tx_tagpack_api::getTagStoragePID($pid);
+			$descriptorMode = tx_tagpack_api::getDescriptorMode($pid);
 
 			// now we have to build the value array for the following insert action
 			$newTagRow = array(
@@ -133,6 +159,11 @@ class tx_tagpack_api {
 				'hidden'		   => 0,
 				'relations'		   => 0
 			);
+			if($descriptorMode && $elementTable=='tx_tagpack_tags') {
+			    $newTagRow['tagtype'] = 1;
+			} else {
+			    $newTagRow['tagtype'] = 0;
+			}
 			$GLOBALS['TYPO3_DB']->exec_INSERTquery(tx_tagpack_api::tagTable, $newTagRow);
 			return $GLOBALS['TYPO3_DB']->sql_insert_id();
 		} else {
@@ -401,7 +432,7 @@ class tx_tagpack_api {
 		    $tagData = tx_tagpack_api::getTagDataByTagName($tagName, '', 1, FALSE, FALSE, FALSE, $pid);
 		}
 		if (!count($tagData) && !$tagUid) {
-			$tagUid = tx_tagpack_api::addTag($tagName,$pid);
+			$tagUid = tx_tagpack_api::addTag($tagName,$pid,FALSE,$elementTable);
 		} else if (!$tagUid) {
 			$tagUid = $tagData['uid'];
 		}

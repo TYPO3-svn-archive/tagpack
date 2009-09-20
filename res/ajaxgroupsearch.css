@@ -24,7 +24,7 @@ div.typoSuggest input.loading {
 * html div.typoSuggest input.search {height:13px;}
 
 
-ul.results {
+dl.results {
 	width:220px;
 	position:absolute;
 	top:18px;
@@ -40,37 +40,59 @@ ul.results {
 	z-index:10000;
 }
 
-* html ul.results {left:2px;}
+* html dl.results {left:2px;}
 
-ul.results li {
+dl.results dt {
 	display:block;
 	margin:0;
 	padding:0;
+	font-weight:bold;
+	border-top:1px solid #CCC;
+	margin-top:0.2em;
+	padding-top:0.2em;
+	padding-bottom:0.2em;
 }
 
-ul.results li a img {
+dl.results dt a img {
 	padding-right:3px;
 	vertical-align:text-bottom;
 }
 
-ul.results li a {
+dl.results dt a {
 	cursor:default;
 	display:block;
 	padding:1px 3px;
 	white-space:nowrap;
-	color:#212424;
+	color:#666;
 }
 
-ul.results li a:hover {
+dl.results dt a strong {
+	color:#060;
+}
+
+dl.results dt a:hover {
 	color:#fff;
-	background-color:#0a246a;
+	background-color:#889988;
 }
 
-ul.results li a:focus, ul.results li.focus a { 
+dl.results dt a:focus, dl.results dt.focus a { 
 	color:#fff;
-	background-color:#0a246a;
+	background-color:#889988;
 }
 
-ul.results li.forbidden, ul.results li.allowed {
-	color:#F00;
+dl.results dt.forbidden, dl.results dt.allowed {
+	color:#600;
 }
+
+dl.results dd  {
+	color:#666;
+	padding-left:1em;
+	margin-left:0;
+	padding-bottom:0.2em;
+}
+
+dl.results dd strong {
+	color:#060;
+	font-weight:normal;
+}
+
