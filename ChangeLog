@@ -1,3 +1,6 @@
+0.10.1 09-09-20 JoH asenau  <info@cybercraft.de>
+	Fixed an SQL error happening in the backend search-while-you-type-interface for non amdin users
+
 0.10.0 09-09-20 JoH asenau  <info@cybercraft.de>
 
 	Added a new DESCRIPTOR mode for two level tagging. When this mode is activated during installation, only tags of the type DESCRIPTOR can be used to tag records of other tables, while only tags of the type NON DESCRIPTOR can be used to tag tag records.
