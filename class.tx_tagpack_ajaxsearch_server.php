@@ -188,12 +188,13 @@
 			$tableTCActrl['label'].','.$tableTCActrl['label_alt'];
 			$searchFields = t3lib_div::trimExplode(',', $searchFieldsCSV, 1);
 			 
-			//access management
-			$tableStatement = $table;
-			if ($table != 'pages') {
-				$tableStatement = $table.' JOIN pages ON ('.$table.'.pid = pages.uid)';
+				// Access rights management
+				// Join to the pages table, if necessary (i.e. if user is not admin)
+			$pageJoin = '';
+			if (!$GLOBALS['BE_USER']->isAdmin()) {
+				$conditions[] = $GLOBALS['BE_USER']->getPagePermsClause(1); //check read access
+				$pageJoin = ' JOIN pages ON (tx_tagpack_tags.pid = pages.uid)';
 			}
-			$conditions[] = $GLOBALS['BE_USER']->getPagePermsClause(1); //check read access
 			 
 			$data = array();
 			
@@ -213,7 +214,7 @@
 			if($config['enableDescriptorMode'] && $this->parentTable!='tx_tagpack_tags') {
 				$tagQuery = array(
 					'tx_tagpack_tags.*,tx_tagpack_categories.name AS categoryname',
-					'tx_tagpack_tags LEFT JOIN tx_tagpack_categories ON (tx_tagpack_tags.category=tx_tagpack_categories.uid)',
+					'tx_tagpack_tags LEFT JOIN tx_tagpack_categories ON (tx_tagpack_tags.category=tx_tagpack_categories.uid)'. $pageJoin,
 					join(' AND ', $conditions),
 					'',
 					'tx_tagpack_tags.name',
@@ -251,7 +252,7 @@
 			} else if($config['enableDescriptorMode'] && $this->parentTable=='tx_tagpack_tags') {
 				$tagQuery = array(
 					'tx_tagpack_tags.*',
-					'tx_tagpack_tags',
+					'tx_tagpack_tags'. $pageJoin,
 					join(' AND ', $conditions).' AND tx_tagpack_tags.tagtype=1',
 					'',
 					'tx_tagpack_tags.name',
@@ -264,7 +265,7 @@
 			} else {
 				$tagQuery = array(
 					'tx_tagpack_tags.*',
-					'tx_tagpack_tags',
+					'tx_tagpack_tags'. $pageJoin,
 					join(' AND ', $conditions),
 					'',
 					'tx_tagpack_tags.name',
