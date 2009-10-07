@@ -51,12 +51,12 @@ class tx_tagpack_tceforms_addtags {
 		$TSCpid = ($table == 'pages' ? $row['uid'] : $row['pid']);
 		 
 		$TSconfig = t3lib_befunc::getPagesTSconfig($TSCpid);
-		$allowedPages = $TSconfig['tx_tagpack_tags.']['taggedTables'];
+		$allowedTables = str_replace(' ','',$TSconfig['tx_tagpack_tags.']['taggedTables']);
 		$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'];
 		$enableDescriptorMode = $TSconfig['tx_tagpack_tags.']['enableDescriptorMode'];
 		
 		// if tagging is allowed set the appropriate TCA values
-		if (t3lib_div::inList($allowedPages, $table) && !($enableDescriptorMode && $table=='tx_tagpack_tags' && $row['tagtype']==1)) {
+		if (t3lib_div::inList($allowedTables, $table) && !($enableDescriptorMode && $table=='tx_tagpack_tags' && $row['tagtype']==1)) {
 			 
 			// first lets fetch the TCA of the tag table
 			t3lib_div::loadTCA('tx_tagpack_tags');
