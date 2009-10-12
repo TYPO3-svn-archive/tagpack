@@ -166,8 +166,6 @@
 				}
 			}
 			if (count($taggedElements)) {
-				if($conf['taggedElements.']['maxItems']) {
-					$taggedElements = array_slice($taggedElements,0,$conf['taggedElements.']['maxItems']);
 				if ($conf['taggedElements.']['additionalFilters.'][$table.'.']) {
 					$filters = $conf['taggedElements.']['additionalFilters.'][$table.'.'];
 					foreach($taggedElements as $key => $taggedElement) {
