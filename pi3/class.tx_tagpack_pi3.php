@@ -179,7 +179,7 @@
 								$getVar = $getVar[$filterSettings['GETvar.']['key']];
 							}
 							$fieldName = str_replace('.', '', $fieldName);
-							if (!$taggedElement[$fieldName] && $getVar) {
+							if ((!$taggedElement[$fieldName] && $getVar) || ($taggedElement[$fieldName]!= $getVar) && $getVar) {
 								unset($taggedElements[$key]);
 							}
 							else if($getVar && $filterSettings['foreign_table'] && !$filterSettings['mm_table'] && !t3lib_div::inList($taggedElement[$fieldName], $getVar)) {
