@@ -121,6 +121,11 @@
 			}
 
 			if ($tagUid) {
+				if ($conf['taggedElements.']['additionalFilters.'][$table.'.']) {
+					$limit = '';
+				} else {
+					$limit = $conf['taggedElements.']['maxItems'];
+				}
 				$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 				$table.'.*,COUNT(mm.uid_foreign) AS counter',
 					$table.' JOIN tx_tagpack_tags_relations_mm AS mm',
@@ -131,7 +136,7 @@
 					'.$calendarSettings.$searchSettings.$tagsSelected,
 					'mm.uid_foreign',
 					'counter DESC,'.$table.'.uid,'.$table.'.'.$sortingTime.' DESC',
-					$conf['taggedElements.']['maxItems'] );
+					$limit );
 			} else {
 				if (count($this->pi1Vars)) {
 					foreach($this->pi1Vars as $value) {
@@ -161,6 +166,8 @@
 				}
 			}
 			if (count($taggedElements)) {
+				if($conf['taggedElements.']['maxItems']) {
+					$taggedElements = array_slice($taggedElements,0,$conf['taggedElements.']['maxItems']);
 				if ($conf['taggedElements.']['additionalFilters.'][$table.'.']) {
 					$filters = $conf['taggedElements.']['additionalFilters.'][$table.'.'];
 					foreach($taggedElements as $key => $taggedElement) {
