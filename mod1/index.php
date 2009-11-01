@@ -111,9 +111,9 @@
 			$this->doc->JScode .= '
 			<link rel="stylesheet" type="text/css" href="css/tagmanager.css" />';
 			$this->doc->JScode .= '
-			<script type="text/javascript" src="/typo3/contrib/prototype/prototype.js"><!--PROTOTYPE--></script>';
+			<script type="text/javascript" src="'.$BACK_PATH.'contrib/prototype/prototype.js"><!--PROTOTYPE--></script>';
 			$this->doc->JScode .= '
-			<script type="text/javascript" src="/typo3/contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';
+			<script type="text/javascript" src="'.$BACK_PATH.'contrib/scriptaculous/scriptaculous.js"><!--SCRIPTACULOUS--></script>';
 			$this->doc->JScode .= '
 			<script type="text/javascript" src="js/tabMenuFunctions.js"><!--TABMENU--></script>';
 			$this->doc->form = '<form id="tagmanager_form" action="index.php" method="POST">';
@@ -167,7 +167,7 @@
 			'.$this->moduleContentTab4().'
 		    </div>
 		    <div id="iframe_container" style="display:none;">
-			<iframe id="inner_frame" name="inner_frame" src="/typo3/alt_doc.php" onblur="tpmIframeHide();return false;"><!--//IFRAME FOR TCE-FORM//--></iframe>
+			<iframe id="inner_frame" name="inner_frame" src="'.$BACK_PATH.'alt_doc.php" onblur="tpmIframeHide();return false;"><!--//IFRAME FOR TCE-FORM//--></iframe>
 		    </div>';
 		    
 		}

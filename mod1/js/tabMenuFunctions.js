@@ -17,17 +17,17 @@ function triggerTab(triggerItem,triggeredContent) {
 
 function switchStatus(triggerItem) {
     if(triggerItem.checked) {
-	self.location.href = '/typo3/tce_db.php?' + triggerItem.name + '=0&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
+	self.location.href = '../../../../typo3/tce_db.php?' + triggerItem.name + '=0&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
 	return false;
     } else {
-	self.location.href = '/typo3/tce_db.php?' + triggerItem.name + '=1&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
+	self.location.href = '../../../../typo3/tce_db.php?' + triggerItem.name + '=1&redirect=' + self.location.pathname + '#' + triggerItem.parentNode.parentNode.id;
 	return false;
     }
 }
 
 function tpmEditItem(triggerItem) {
     if(triggerItem) {
-	window.inner_frame.location.href = '/typo3/alt_doc.php?edit[tx_tagpack_tags][' + triggerItem + ']=edit';
+	window.inner_frame.location.href = '../../../../typo3/alt_doc.php?edit[tx_tagpack_tags][' + triggerItem + ']=edit';
 	Effect.Grow('iframe_container');
 	top.iframeOn = true;
 	window.inner_frame.focus();
