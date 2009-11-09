@@ -3,7 +3,7 @@
  * Script Class, creating the content for the dummy script - which is just blank output. *
  *  
  * @author    Kasper Skaarhoj <kasperYYYY@typo3.com>
- * @author    JoH asenau <jh@eqony.com>
+ * @author    JoH asenau <info@cybercraft.de>
  * @package TYPO3 
  * @subpackage core
  */
