@@ -84,7 +84,7 @@ class tx_tagpack_tceforms_addtags {
 			if (count($TCA[$table]['types'])) {
 				$hasMainPalette = !empty($TCA[$table]['ctrl']['mainpalette']);
 				foreach ($TCA[$table]['types'] as $key => $val) {
-					if (strpos($TCA[$table]['types'][$key]['showitem'], 'tx_tagpack_tags') === false && (t3lib_div::inList($tableSettings[$table.'.']['specificTypesList'],$val) || !$tableSettings[$table.'.']['specificTypesList'])) {
+					if (strpos($TCA[$table]['types'][$key]['showitem'], 'tx_tagpack_tags') === false && (t3lib_div::inList($tableSettings[$table.'.']['specificTypesList'],$key) || !$tableSettings[$table.'.']['specificTypesList'])) {
 						if($tableSettings[$table.'.']['noTab']) {
 							$showItem = 'tx_tagpack_tags';
 						} else {
@@ -93,8 +93,8 @@ class tx_tagpack_tceforms_addtags {
 								$showItem .= ',--div--;LLL:EXT:lang/locallang_core.xml:labels.generalOptions';
 							}
 						}
-						$position = $tableSettings[$table.'.']['position.'][$val] ? $tableSettings[$table.'.']['position.'][$val] : $tableSettings[$table.'.']['position'];
-						t3lib_extMgm::addToAllTCAtypes($table,$showItem,$val,$position);
+						$position = $tableSettings[$table.'.']['position.'][$key] ? $tableSettings[$table.'.']['position.'][$key] : $tableSettings[$table.'.']['position'];
+						t3lib_extMgm::addToAllTCAtypes($table,$showItem,$key,$position);
 					}
 				}
 			}
