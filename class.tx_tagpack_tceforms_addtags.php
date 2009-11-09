@@ -54,6 +54,7 @@ class tx_tagpack_tceforms_addtags {
 		$allowedTables = str_replace(' ','',$TSconfig['tx_tagpack_tags.']['taggedTables']);
 		$getTagsFromPid = $TSconfig['tx_tagpack_tags.']['getTagsFromPid'];
 		$enableDescriptorMode = $TSconfig['tx_tagpack_tags.']['enableDescriptorMode'];
+		$tableSettings = $TSconfig['tx_tagpack_tags.']['table.'];
 		
 		// if tagging is allowed set the appropriate TCA values
 		if (t3lib_div::inList($allowedTables, $table) && !($enableDescriptorMode && $table=='tx_tagpack_tags' && $row['tagtype']==1)) {
@@ -83,16 +84,20 @@ class tx_tagpack_tceforms_addtags {
 			if (count($TCA[$table]['types'])) {
 				$hasMainPalette = !empty($TCA[$table]['ctrl']['mainpalette']);
 				foreach ($TCA[$table]['types'] as $key => $val) {
-					if (strpos($TCA[$table]['types'][$key]['showitem'], 'tx_tagpack_tags') === false) {
-						$showItem = ',--div--;' . $TCA['tx_tagpack_tags']['ctrl']['title'] . ';;;5-5-5,tx_tagpack_tags,';
-						if ($hasMainPalette) {
-							$showItem .= ',--div--;LLL:EXT:lang/locallang_core.xml:labels.generalOptions';
+					if (strpos($TCA[$table]['types'][$key]['showitem'], 'tx_tagpack_tags') === false && (t3lib_div::inList($tableSettings[$table.'.']['specificTypesList'],$val) || !$tableSettings[$table.'.']['specificTypesList'])) {
+						if($tableSettings[$table.'.']['noTab']) {
+							$showItem = 'tx_tagpack_tags';
+						} else {
+							$showItem = ',--div--;' . $TCA['tx_tagpack_tags']['ctrl']['title'] . ';;;5-5-5,tx_tagpack_tags,';
+							if ($hasMainPalette) {
+								$showItem .= ',--div--;LLL:EXT:lang/locallang_core.xml:labels.generalOptions';
+							}
 						}
-						$TCA[$table]['types'][$key]['showitem'] .= $showItem;
+						$position = $tableSettings[$table.'.']['position.'][$val] ? $tableSettings[$table.'.']['position.'][$val] : $tableSettings[$table.'.']['position'];
+						t3lib_extMgm::addToAllTCAtypes($table,$showItem,$val,$position);
 					}
 				}
 			}
-			 
 		}
 	}
 	 
