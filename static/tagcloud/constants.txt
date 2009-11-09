@@ -1,0 +1,40 @@
+#cat = tagpack - tag cloud/enable/1; type=text; label=Enabled Content:Comma separated list of content element types to be used by tagclouds and lists (i.e. text,textpic)
+plugin.tx_tagpack_pi1.enabledContent = text
+#cat = tagpack - tag cloud/enable/2; type=text; label=Enabled Records:Comma separated list of table names that contain records to be used by tagclouds and lists (i.e. pages,tt_news)
+plugin.tx_tagpack_pi1.enabledRecords = pages
+#cat = tagpack - tag cloud/enable/3; type=text; label=Fetch tags from these folders:Comma separated list of IDs (uid) of folders to get the tags from
+plugin.tx_tagpack_pi1.tagPidList = 
+#cat = tagpack - tag cloud/enable/4; type=int+; label=Target page ID:The uid of the page that contains the plugin for the result list
+plugin.tx_tagpack_pi1.targetPid = 
+#cat = tagpack - tag cloud/typo/1; type=int+; label=Minimum font size:Enter the size in px for the smallest available font size to be used by the tagcloud
+plugin.tx_tagpack_pi1.minFontSize = 8
+#cat = tagpack - tag cloud/typo/2; type=int+; label=Maximum font size:Enter the size in px for the biggest available font size to be used by the tagcloud
+plugin.tx_tagpack_pi1.maxFontSize = 20
+#cat = tagpack - tag cloud/dims; type=int+; label=Maximum number of  sizes:Enter the maximum number of different sizes to be used by the tagcloud
+plugin.tx_tagpack_pi1.maxNumberOfSizes = 20
+#cat = tagpack - tag cloud/enable; type=text; label=Keep GET vars:Comma separated list of GET parameters that should always be available within links of the tagcloud
+plugin.tx_tagpack_pi1.keepGetVars = 
+#cat = tagpack - tag cloud/enable/6; type=boolean; label=Enable search box:Check this box, if you want to make use of a fulltext search box
+plugin.tx_tagpack_pi1.searchBox = 
+#cat = tagpack - tag cloud/enable/5; type=boolean; label=Enable mode switch:Check this box, if you want to enable the mode switch to change the behaviour of the tag cloud from surf-mode to filter-mode
+plugin.tx_tagpack_pi1.modeSwitch = 
+#cat = tagpack - tag cloud/enable/7; type=boolean; label=Enable calendar:Check this box, if you want to make use of start and end dates to refine the search results (requires installation rlmp_dateselectlib)
+plugin.tx_tagpack_pi1.calendar = 
+#cat = tagpack - tag cloud/color; type=color; label=Font color:Default font color for links of the tagcloud
+plugin.tx_tagpack_pi1.fontColor = #000000
+#cat = tagpack - tag cloud/other/5; type=text; label=Search Box Label:You can even add HTML-Code if you like
+plugin.tx_tagpack_pi1.label.searchBox = <h3>Search-Words</h3>
+#cat = tagpack - tag cloud/other/4; type=text; label=Mode Switch Label:You can even add HTML-Code if you like
+plugin.tx_tagpack_pi1.label.modeSwitch = <h3>Tag-Crumb</h3>
+#cat = tagpack - tag cloud/other/1; type=text; label=Tag Cloud Label:You can even add HTML-Code if you like
+plugin.tx_tagpack_pi1.label.tagCloud = <h3>Tag-Cloud</h3>
+#cat = tagpack - tag cloud/other/2; type=text; label=Tag Link Title: For many tagged items
+plugin.tx_tagpack_pi1.label.taggedWith.singular = item tagged with
+#cat = tagpack - tag cloud/other/3; type=text; label=Tag Link Title: For one tagged item
+plugin.tx_tagpack_pi1.label.taggedWith.plural = items tagged with
+#cat = tagpack - tag cloud/other/4; type=text; label=Calendar Label:You can even add HTML-Code if you like
+plugin.tx_tagpack_pi1.label.calendar = <h3>Calendar</h3>
+#cat = tagpack - tag cloud/other/6; type=text; label=Calendar Label From:You can even add HTML-Code if you like
+plugin.tx_tagpack_pi1.label.calendarFrom = From
+#cat = tagpack - tag cloud/other/7; type=text; label=Calendar Label To:You can even add HTML-Code if you like
+plugin.tx_tagpack_pi1.label.calendarTo = To
