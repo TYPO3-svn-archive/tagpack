@@ -1,8 +1,0 @@
-# cat=basic/enable; type=text; label=Tagged Tables:Fill in a list of all tables that you want backend users to be able to tag - can be refined by TSconfig later on, but users will not be able to tag a table unless it is at least defined in this list or in TSconfig. This is due to the fact that there are no additional database fields available for any of the tables, since the tagpack is using so called "virtual fields".
-taggedTables = pages,tt_content,tx_tagpack_tags
-
-# cat=basic/enable; type=int+; label=Tag Container ID:If you already created a sysfolder as a container for tags, you can enter the ID of this folder here. Can be refined by TSconfig later on. If you do not enter a value here, all the tags will be saved in the root folder (ID=0)
-getTagsFromPid = 0
-
-# cat=basic/enable; type=boolean; label=Enable DESCRIPTOR Mode:Will use DESCRIPTOR type tags for the tagging of records, while the NON DESCRIPTOR type will be used for more detailed tagging of tx_tagpack_tag records only. Tagging will be automatically disabled for the NON DESCRIPTOR type. This means that only DESCRIPTOR type tags can be tagged on a second level and only NON DESCRIPTOR type tags can be used to tag them.
-enableDescriptorMode = 0
