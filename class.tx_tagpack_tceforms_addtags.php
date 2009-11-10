@@ -175,9 +175,9 @@ class tx_tagpack_tceforms_addtags {
 					$selectedTagUids[$selectedUid] = 1;
 				}
 			}
-			// now lets call the DB action
-			$this->delete_update_insert_relations($selectedTagUids, $table, $id, $pid, $command, $caller);				 
 		}
+		// now lets call the DB action
+		$this->delete_update_insert_relations($selectedTagUids, $table, $id, $pid, $command, $caller);
 	}
 	 
 	/**
@@ -340,7 +340,6 @@ class tx_tagpack_tceforms_addtags {
 				// if there are no tags in the taglist anymore or some tags have been removed from thelist we have to make sure they are removed or marked deleted
 				
 				if (!$selectedTagUids[$valueArray['uid_local']]) {
-				
 					// now we must get the number of relations of this tag and decrement it
 					$currentRelations = tx_tagpack_api::getAttachedElementsForTagId(intval($valueArray['uid_local']));
 					$relations['relations'] = count($currentRelations) ? count($currentRelations)-1 : 0 ;
@@ -446,7 +445,7 @@ class tx_tagpack_tceforms_addtags {
 
 		// if there are still uids left in the selectedTagUidsArray
 		// this means we have to create new items and additional relations for them
-		// because they didn exist as a tag before
+		// because they didn't exist as a tag before
 		if (count($selectedTagUids)) {
 			$TSconfig = t3lib_befunc::getPagesTSconfig($pid);
 			$getTagsFromPid = ($TSconfig['tx_tagpack_tags.']['getTagsFromPid'] ? 'AND pid='.intval($TSconfig['tx_tagpack_tags.']['getTagsFromPid']) : '');
