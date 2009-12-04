@@ -1,5 +1,6 @@
 0.10.6 09-12-04 JoH asenau  <info@cybercraft.de>
-	Optimized performance by changing SQL queries to exec_SELECTquery to get rid of double while/foreach loops when using exec_SELECTgetRows
+	Optimized performance by changing SQL queries to exec_SELECTquery to get rid of double while/foreach loops when using exec_SELECTgetRows and moving parts of the WHERE clause of JOIN to ON
+	Changed the KEY of both MM tables after analysing the usage
 
 0.10.5 09-11-10 JoH asenau  <info@cybercraft.de>
 	Fixed a bug that ignored removing of all tags from a previously tagged item
