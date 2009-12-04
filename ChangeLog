@@ -1,3 +1,43 @@
+0.10.6 09-12-04 JoH asenau  <info@cybercraft.de>
+	Optimized performance by changing SQL queries to exec_SELECTquery to get rid of double while/foreach loops when using exec_SELECTgetRows
+
+0.10.5 09-11-10 JoH asenau  <info@cybercraft.de>
+	Fixed a bug that ignored removing of all tags from a previously tagged item
+
+0.10.4 09-11-09 JoH asenau  <info@cybercraft.de>
+	Define position and appearance of the form element in forms
+	Additional TSconfig syntax
+	tx_tagpack_tags.table.[tablename] {
+		specificTypesList = [typelist]
+		position = [after:field|before:field] //<=default
+		position.[type] = [after:field|before:field] //<= config for a specific type
+		noTab = 1
+	}
+	
+	Fixed a bug that prevented the above feature from working
+
+
+0.10.3 09-11-09 JoH asenau  <info@cybercraft.de>
+	Removed non existing email address
+
+0.10.2 09-11-09 JoH asenau  <info@cybercraft.de>
+	Renamed the variable allowedPages to allowedTables - spaces in the CSV list are removed now
+
+	Bugfix pi3 - additionalFilters didn't work when maxItems were set and no item met the filter criteria - this is a quick and dirty workaround that must be refactored performancewise later on
+ 
+	Fixed a bug with multiple get vars not being recognized correctly
+ 
+	changed paths from absolute to relative to fix a bug when tagpack is used with TYPO3 installed in a subfolder
+ 
+	Define position and appearance of the form element in forms
+	Additional TSconfig syntax
+	tx_tagpack_tags.table.[tablename] {
+		specificTypesList = [typelist]
+		position = [after:field|before:field] //<=default
+		position.[type] = [after:field|before:field] //<= config for a specific type
+		noTab = 1
+	}
+
 0.10.1 09-09-20 JoH asenau  <info@cybercraft.de>
 	Fixed an SQL error happening in the backend search-while-you-type-interface for non amdin users
 

@@ -76,30 +76,26 @@
 			$record = t3lib_div::trimExplode(':', $this->cObj->currentRecord);
 			$getTagsFromPidList = $conf['tagPidList'] ? $conf['tagPidList'] : 0;
 			$getTagsFromPidList = implode(',',t3lib_div::trimExplode(',',$getTagsFromPidList));
-			$pid = 'tt.pid IN ('.$getTagsFromPidList.') AND ';
+			$pid = 'tx_tagpack_tags.pid IN ('.$getTagsFromPidList.') AND ';
 			if ($conf['singleItemCloud']) {
-				$table = 'tablenames=\''.$conf['tableName'].'\' AND ';
-				$uid = 'mm.uid_foreign IN('.$this->cObj->data['uid'].') AND ';
+				$table = 'tx_tagpack_tags_relations_mm.tablenames=\''.$conf['tableName'].'\' AND ';
+				$uid = 'tx_tagpack_tags_relations_mm.uid_foreign='.$this->cObj->data['uid'].' AND ';
 			}
 			if (count($conf)) {
 				if ($this->piVars['filtermode'] === 'on' && !$conf['singleItemCloud'] && $this->piVars['uid']) {
 					$selectedTags = t3lib_div::intExplode(',', $this->piVars['uid']);
 					foreach($selectedTags as $key => $selectedUid) {
 						if ($selectedUid != t3lib_div::_GET('tx_tagpack_pi3_removeItems')) {
-							$taggedItems = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-							'uid_foreign,tablenames',
-								'tx_tagpack_tags_relations_mm AS mm, tx_tagpack_tags AS tt',
-								$table.$uid.$pid.'mm.uid_local=tt.uid
-								AND mm.uid_local='.intval($selectedUid).'
-								AND NOT mm.deleted
-								AND NOT mm.hidden
-								AND NOT tt.deleted
-								AND NOT tt.hidden',
+							$taggedItems = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+							'tx_tagpack_tags_relations_mm.uid_foreign,tx_tagpack_tags_relations_mm.tablenames',
+								'tx_tagpack_tags_relations_mm JOIN tx_tagpack_tags ON ('.$table.$uid.'tx_tagpack_tags.uid=tx_tagpack_tags_relations_mm.uid_local AND tx_tagpack_tags_relations_mm.uid_local='.intval($selectedUid).')',
+								$pid.'NOT tx_tagpack_tags.deleted AND NOT tx_tagpack_tags.hidden AND NOT tx_tagpack_tags_relations_mm.deleted AND NOT tx_tagpack_tags_relations_mm.hidden',
 								'' );
-							if (count($taggedItems)) {
-								foreach ($taggedItems as $item) {
+							if (!$GLOBALS['TYPO3_DB']->sql_error()) {
+								while($item = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($taggedItems)) {
 									$itemArray[$item['tablenames']][intval($item['uid_foreign'])]++;
 								}
+								$GLOBALS['TYPO3_DB']->sql_free_result($taggedItems);
 							}
 						} else {
 							unset($selectedTags[$key]);
@@ -111,7 +107,7 @@
 							$uidItems = '0';
 							$filteritems .= $filteritems ? ' OR ' :
 							'(';
-							$filteritems .= '(mm.tablenames=\''.$key.'\' AND mm.uid_foreign IN(';
+							$filteritems .= '(tx_tagpack_tags_relations_mm.tablenames=\''.$key.'\' AND tx_tagpack_tags_relations_mm.uid_foreign IN(';
 							foreach($valueArray as $uidValue => $isset) {
 								if ($isset >= count($selectedTags)) {
 									$uidItems .= ','.intval($uidValue);
@@ -122,43 +118,38 @@
 					}
 					$filteritems .= $filteritems ? ') AND ' : '';
 				}
-				$tagRelations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				'relations',
-					'tx_tagpack_tags_relations_mm AS mm,tx_tagpack_tags AS tt',
-					$table.$uid.$pid.$filteritems.'tt.uid=uid_local
-					AND NOT mm.deleted
-					AND NOT mm.hidden
-					AND NOT tt.deleted
-					AND NOT tt.hidden',
-					'relations',
-					'relations DESC',
+				$tagRelations = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+				'tx_tagpack_tags.relations',
+					'tx_tagpack_tags_relations_mm JOIN tx_tagpack_tags ON ('.$table.$uid.'tx_tagpack_tags.uid=tx_tagpack_tags_relations_mm.uid_local)',
+					$pid.$filteritems.'NOT tx_tagpack_tags.deleted AND NOT tx_tagpack_tags.hidden AND NOT tx_tagpack_tags_relations_mm.deleted AND NOT tx_tagpack_tags_relations_mm.hidden',
+					'tx_tagpack_tags.relations',
+					'tx_tagpack_tags.relations DESC',
 					intval($conf['maxNumberOfSizes']) );
-				if (count($tagRelations)) {
-					foreach($tagRelations as $relations) {
+				
+				if (!$GLOBALS['TYPO3_DB']->sql_error()) {
+					while($relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tagRelations)) {
+						$max = $max ? $max : intval($relations['relations']);
+						$min = intval($relations['relations']);
 						$relationRange .= $relationRange ? ','.intval($relations['relations']) :
 						intval($relations['relations']);
 					}
-				} else {
-					$relationRange = 0;
+					$GLOBALS['TYPO3_DB']->sql_free_result($tagRelations);
 				}
-				$tagArray = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				'uid,name,relations',
-					'tx_tagpack_tags_relations_mm AS mm,tx_tagpack_tags AS tt',
-					$table.$uid.$pid.$filteritems.'tt.uid=mm.uid_local
-					AND NOT mm.deleted
-					AND NOT mm.hidden
-					AND NOT tt.deleted
-					AND NOT tt.hidden
-					AND tt.relations IN('.$relationRange.')',
-					'uid',
-					'name ASC',
+				if(!$relationRange) {
+				    $relationRange = 0;
+				}
+				
+				$tagArray = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+				'tx_tagpack_tags.uid,tx_tagpack_tags.name,tx_tagpack_tags.relations',
+					'tx_tagpack_tags_relations_mm JOIN tx_tagpack_tags ON ('.$table.$uid.'tx_tagpack_tags.uid=tx_tagpack_tags_relations_mm.uid_local)',
+					$pid.$filteritems.'NOT tx_tagpack_tags.deleted AND NOT tx_tagpack_tags.hidden AND tx_tagpack_tags.relations IN('.$relationRange.') AND NOT tx_tagpack_tags_relations_mm.deleted AND NOT tx_tagpack_tags_relations_mm.hidden',
+					'tx_tagpack_tags.uid',
+					'tx_tagpack_tags.name ASC',
 					'' );
-				$max = intval($tagRelations[0]['relations']);
-				$min = intval($tagRelations[($conf['maxNumberOfSizes']-1)]['relations']);
 				$typolink['parameter'] = $conf['targetPid'];
 				$typolink['useCacheHash'] = 1;
-				if (count($tagArray)) {
-					foreach($tagArray as $tagValues) {
+				if (!$GLOBALS['TYPO3_DB']->sql_error()) {
+					while($tagValues = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tagArray)) {
 						$text = stripslashes($tagValues['name']);
 						if ($this->piVars['filtermode'] === 'on') {
 							$typolink['additionalParams'] = '&'.$this->prefixId.'[uid]='.($this->piVars['uid'] ? $this->piVars['uid'].','.$tagValues['uid'] : $tagValues['uid']);
@@ -193,6 +184,7 @@
 						$content .= '
 							'.$this->cObj->stdWrap($this->cObj->typolink($text, $typolink), $conf['linkStdWrap.']).' ';
 					}
+					$GLOBALS['TYPO3_DB']->sql_free_result($tagArray);
 				}
 
 				$content = $content ? $this->cObj->stdWrap($content, $conf['linkBoxStdWrap.']) :

@@ -97,7 +97,7 @@
 			$sortingTime = $conf['taggedElements.']['timeFields.'][$table] ? $conf['taggedElements.']['timeFields.'][$table] : 'tstamp';
 
 			if ($tagUid) {
-				$tagsSelected = ' AND mm.uid_local IN('.$tagUid.')';
+				$tagsSelected = ' AND tx_tagpack_tags_relations_mm.uid_local IN('.$tagUid.')';
 			}
 
 			if ($this->pi1Vars['from'] && $conf['taggedElements.']['timeFields.'][$table]) {
@@ -139,15 +139,13 @@
 				} else {
 					$limit = $conf['taggedElements.']['maxItems'];
 				}
-				$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				$table.'.*,COUNT(mm.uid_foreign) AS counter',
-					$table.' JOIN tx_tagpack_tags_relations_mm AS mm',
-					'mm.uid_foreign='.$table.'.uid
-					AND mm.tablenames=\''.$table.'\'
-					AND '.$table.'.pid>0
+				$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+				$table.'.*,COUNT(tx_tagpack_tags_relations_mm.uid_foreign) AS counter',
+					$table.' JOIN tx_tagpack_tags_relations_mm ON (tx_tagpack_tags_relations_mm.uid_foreign='.$table.'.uid AND tx_tagpack_tags_relations_mm.tablenames=\''.$table.'\''.$tagsSelected.')',
+					$table.'.pid>0
 					'.$this->cObj->enableFields($table).'
-					'.$calendarSettings.$searchSettings.$tagsSelected,
-					'mm.uid_foreign',
+					'.$calendarSettings.$searchSettings,
+					'tx_tagpack_tags_relations_mm.uid_foreign',
 					'counter DESC,'.$table.'.uid,'.$table.'.'.$sortingTime.' DESC',
 					$limit );
 			} else {
@@ -157,7 +155,7 @@
 					}
 				}
 				if ($enableResultList || count($getVars)) {
-					$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+					$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 					'*',
 						$table,
 						$table.'.pid>0'.$this->cObj->enableFields($table).'
@@ -166,39 +164,7 @@
 						$table.'.'.($conf['taggedElements.']['timeFields.'][$table] ? $conf['taggedElements.']['timeFields.'][$table] : 'tstamp' ).' DESC');
 				}
 			}
-			if (count($taggedElements)) {
-				if ($conf['taggedElements.']['additionalFilters.'][$table.'.']) {
-					$filters = $conf['taggedElements.']['additionalFilters.'][$table.'.'];
-					foreach($taggedElements as $key => $taggedElement) {
-						foreach($filters as $fieldName => $filterSettings) {
-							$getVar = t3lib_div::_GET($filterSettings['GETvar']);
-							if (is_array($getVar) && !$getVar[$filterSettings['GETvar.']['key']]) {
-								$getVar = false;
-							}
-							else if($getVar[$filterSettings['GETvar.']['key']]) {
-								$getVar = $getVar[$filterSettings['GETvar.']['key']];
-							}
-							$fieldName = str_replace('.', '', $fieldName);
-							if ((!$taggedElement[$fieldName] && $getVar) || ($taggedElement[$fieldName]!= $getVar) && $getVar) {
-								unset($taggedElements[$key]);
-							}
-							else if($getVar && $filterSettings['foreign_table'] && !$filterSettings['mm_table'] && !t3lib_div::inList($taggedElement[$fieldName], $getVar)) {
-								unset($taggedElements[$key]);
-							}
-							else if($getVar && $filterSettings['foreign_table'] && $filterSettings['mm_table']) {
-								$availableElementsSelect = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
-								$table.'.uid',
-									$table,
-									$filterSettings['mm_table'],
-									$filterSettings['foreign_table'],
-									' AND '.$table.'.uid='.intval($taggedElement['uid']).' AND '.$filterSettings['foreign_table'].'.uid='.intval($getVar) );
-								if (!$GLOBALS['TYPO3_DB']->sql_num_rows($availableElementsSelect)) {
-									unset($taggedElements[$key]);
-								}
-							}
-						}
-					}
-				}
+			if (!$GLOBALS['TYPO3_DB']->sql_error()) {
 				if (count($tags)) {
 					foreach($tags as $key => $tag) {
 						if ($tag['uid'] == t3lib_div::_GET('tx_tagpack_pi3_removeItems')) {
@@ -242,19 +208,50 @@
 					    }
 				    }
 				}
-				foreach($taggedElements as $itemArray) {
-					if ($itemArray['counter'] >= count($tags)) {
-						$this->localCObj = $this->cObj;
-						$this->localCObj->data = $itemArray;
-						$itemList .= $this->cObj->wrap($this->localCObj->cObjGetSingle($conf['taggedElements.'][$table], $conf['taggedElements.'][$table.'.']), $conf['taggedElements.']['itemWrap']);
-						$header = $this->pi_getLL('someItems').' '.(
-						$table == 'tt_content' ? $conf['taggedElements.']['contentLabel'] :
-						$conf['taggedElements.']['recordLabels.'][$table]).' '.(
-						$tagUid ? (
-						count($tags) > 1 ? $this->pi_getLL('taggedWith2') :
-						$this->pi_getLL('taggedWith')
-						) : '' ).' '.$tagname;
+				if ($conf['taggedElements.']['additionalFilters.'][$table.'.']) {
+					$filters = $conf['taggedElements.']['additionalFilters.'][$table.'.'];
+					while($taggedElement = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($taggedElements)) {
+						foreach($filters as $fieldName => $filterSettings) {
+							$getVar = t3lib_div::_GET($filterSettings['GETvar']);
+							if (is_array($getVar) && !$getVar[$filterSettings['GETvar.']['key']]) {
+								$getVar = false;
+							}
+							else if($getVar[$filterSettings['GETvar.']['key']]) {
+								$getVar = $getVar[$filterSettings['GETvar.']['key']];
+							}
+							$fieldName = str_replace('.', '', $fieldName);
+							if ((!$taggedElement[$fieldName] && $getVar) || ($taggedElement[$fieldName]!= $getVar) && $getVar) {
+								unset($taggedElements[$key]);
+							}
+							else if($getVar && $filterSettings['foreign_table'] && !$filterSettings['mm_table'] && !t3lib_div::inList($taggedElement[$fieldName], $getVar)) {
+								unset($taggedElements[$key]);
+							}
+							else if($getVar && $filterSettings['foreign_table'] && $filterSettings['mm_table']) {
+								$availableElementsSelect = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+								$table.'.uid',
+									$table,
+									$filterSettings['mm_table'],
+									$filterSettings['foreign_table'],
+									' AND '.$table.'.uid='.intval($taggedElement['uid']).' AND '.$filterSettings['foreign_table'].'.uid='.intval($getVar) );
+								if (!$GLOBALS['TYPO3_DB']->sql_num_rows($availableElementsSelect)) {
+									unset($taggedElements[$key]);
+								}
+							}
+						}
+						if ($taggedElement['counter'] >= count($tags)) {
+							$this->localCObj = $this->cObj;
+							$this->localCObj->data = $taggedElement;
+							$itemList .= $this->cObj->wrap($this->localCObj->cObjGetSingle($conf['taggedElements.'][$table], $conf['taggedElements.'][$table.'.']), $conf['taggedElements.']['itemWrap']);
+							$header = $this->pi_getLL('someItems').' '.(
+							$table == 'tt_content' ? $conf['taggedElements.']['contentLabel'] :
+							$conf['taggedElements.']['recordLabels.'][$table]).' '.(
+							$tagUid ? (
+							count($tags) > 1 ? $this->pi_getLL('taggedWith2') :
+							$this->pi_getLL('taggedWith')
+							) : '' ).' '.$tagname;
+						}
 					}
+					$GLOBALS['TYPO3_DB']->sql_free_result($taggedElements);
 				}
 				if (!$header) {
 					$header = $this->pi_getLL('noItems').' '.(
