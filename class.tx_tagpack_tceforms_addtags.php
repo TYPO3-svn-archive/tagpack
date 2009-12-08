@@ -122,7 +122,7 @@ class tx_tagpack_tceforms_addtags {
 
 			// get the related records that are already assigned as tags to the current record
 			$itemRows = tx_tagpack_api::getAttachedTagsForElement($row['uid'], $table);
-
+			
 			if (count($itemRows)) {
 				foreach ($itemRows as $key => $val) {
 					//create the option list
@@ -155,12 +155,27 @@ class tx_tagpack_tceforms_addtags {
 		 
 		// first we need to get the pid for the current record
 		$pid = $caller->checkValue_currentRecord['pid'];
-		 
-		// Now we get the selected tags for the current record
-		$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][key($caller->datamap[$table])]['tx_tagpack_tags']);
+		
+		if($caller->datamap[$table][$id]['hidden']!=$caller->checkValue_currentRecord['hidden']) {
+		
+			// has the record been hidden or unhidden?
+			
+			$command = $caller->datamap[$table][$id]['hidden']==1 ? 'hide' : 'unhide';
+			
+			if(array_key_exists('tx_tagpack_tags',$caller->datamap[$table][key($caller->datamap[$table])])) {
+				// are there any tags in the datamap?
+				$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][key($caller->datamap[$table])]['tx_tagpack_tags']);
+			} else {
+			    // if not, we have to get the related records that are already assigned as tags to the current record
+			    $selectedUids = tx_tagpack_api::getAttachedTagIdsForElement(intval($id),$table,TRUE,TRUE);
+			}
+		} else {
+			// Now we get the selected tags for the current record
+			$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][key($caller->datamap[$table])]['tx_tagpack_tags']);
+		}
 		
 		// if there are any we can create an array and hand it over to the function which is responsible for the DB actions
-		if (count($selectedUids)>1) {
+		if (count($selectedUids)>0) {
 			foreach($selectedUids as $selectedUid) {
 				// if there are any prefixes, we must strip them first
 				$selectedUid = str_replace('tx_tagpack_tags_', '', $selectedUid);
@@ -200,6 +215,8 @@ class tx_tagpack_tceforms_addtags {
 			// so from a tagging point of view these actions are basically the same
 			case 'copy':
 			case 'localize':
+			case 'inlineLocalizeSynchronize':
+			case 'version':
 				if (count($caller->copyMappingArray)) {
 					// any record that has been copied during the action before
 					// will be in the so called copyMappingArray
@@ -214,7 +231,7 @@ class tx_tagpack_tceforms_addtags {
 							foreach ($uidArray as $oldUid => $newUid) {
 								 
 								// first we get an array of the related tags for the old uid
-								$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($oldUid, $tablename);
+								$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($oldUid, $tablename, FALSE, TRUE, TRUE);
 								if (count($current_MM_Rows)) {
 									 
 									// now we can build the selectedTagUids array just as if somebody had selected the tags in a form
@@ -251,7 +268,7 @@ class tx_tagpack_tceforms_addtags {
 				// if the record was moved the only thing that has changed will be it's pid
 				// the rest of the relations will stay as is
 				// the new pid can be found in $value so we just have to get the related tags of the current record
-				$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($id, $table);
+				$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($id, $table, FALSE, TRUE, TRUE);
 				 
 				// fill the selectedTagUids Array
 				if (count($current_MM_Rows)) {
@@ -281,7 +298,7 @@ class tx_tagpack_tceforms_addtags {
 			case 'undelete':
 				// in case of an undelete the related records are already in the DB table but marked deleted
 				// so we just have to get them all
-				$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($id, $table);
+				$current_MM_Rows = tx_tagpack_api::getAttachedTagIdsForElement($id, $table, FALSE, TRUE, TRUE);
 				 
 				// fill the selectedTagUid Array
 				if (count($current_MM_Rows)) {
@@ -315,6 +332,7 @@ class tx_tagpack_tceforms_addtags {
 	 * @return [type]  Nothing, since it's only performing some DB operations
 	 */
 	function delete_update_insert_relations($selectedTagUids, $table, $id, $pid, $command = '', $caller='', $level = 0) {
+	
 		$table = trim(stripslashes($table));
 	
 		// level counter is used up to a maximum of 100 which should be the maximum number of recursive copies anyway
@@ -322,34 +340,48 @@ class tx_tagpack_tceforms_addtags {
 		if ($level > 100) {
 			return;
 		}
+
+		// are we dealing with a hidden or an unhidden record?
+		$hidden = ($command=='hide') ? 1 : (($command=='unhide') ? 0 : $caller->checkValue_currentRecord['hidden']);
 		 
 		// first we get all the tags that were related to the current record before the upcoming actions
 		if ($id === intval($id)) {
-			$current_MM_Rows = tx_tagpack_api::getAttachedTagIdsForElement($id, $table);
+			$current_MM_Rows = tx_tagpack_api::getAttachedTagIdsForElement($id, $table, FALSE, TRUE, TRUE);
 		};
 		
 		// this one is needed to set the current crdate and tstamp values
 		$timeNow = time();
-		 
+		
 		// if there are any related tags at all we have to check their status and probably
 		// delete some of them, if they have been removed from the parent record's tag list
+		// or mark them as hidden, if the parent record itself has been hidden
 		// or mark them as deleted, if the parent record itself has been deleted
 		if (count($current_MM_Rows)) {
 			foreach ($current_MM_Rows as $key => $valueArray) {
 				$where = 'uid = ' . intval($valueArray['uid_local']);
+				
+				// are we dealing with hidden or unhidden relations?
+				$current_MM_Rows[$key]['hidden'] = ($command=='hide') ? 1 : (($command=='unhide') ? 0 : $current_MM_Rows[$key]['hidden']);
+				
 				// if there are no tags in the taglist anymore or some tags have been removed from thelist we have to make sure they are removed or marked deleted
 				
-				if (!$selectedTagUids[$valueArray['uid_local']]) {
-					// now we must get the number of relations of this tag and decrement it
-					$currentRelations = tx_tagpack_api::getAttachedElementsForTagId(intval($valueArray['uid_local']));
-					$relations['relations'] = count($currentRelations) ? count($currentRelations)-1 : 0 ;
-					 
+				if (!$selectedTagUids[$valueArray['uid_local']] || $command=='hide' || $command=='unhide') {
+					// now we must get the number of relations of this tag and change it 
+					$tagData = tx_tagpack_api::getTagDataById(intval($valueArray['uid_local']));
+					
+					// unhide will increase the number of visible relations
+					if($command=='unhide') {
+					    $tagData['relations']++;
+					} else {
+					    // hide ore delete will decrease the number of visible relations
+					    $tagData['relations']--;
+					}
 					
 					// the new number of relations has to be saved back again
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 					tx_tagpack_api::tagTable,
 						$where,
-						$relations );
+						$tagData );
 					 
 					// if the command has been 'delete'
 					if ($command == 'delete') {
@@ -383,9 +415,9 @@ class tx_tagpack_tceforms_addtags {
 										$level );
 								}
 							}
-						}
+						} 
 						// if there was no 'delete' command, this simply means that there are no tags related to this record anymore
-					} else {
+					} else if (!$selectedTagUids[$valueArray['uid_local']]) {
 						// so we just unset the corresponding array key
 						unset($current_MM_Rows[$key]);
 						// and remove the relation from the table
@@ -403,24 +435,23 @@ class tx_tagpack_tceforms_addtags {
 						$current_MM_Rows[$key]['pid_foreign'] = $pid;
 						 
 						// now we can count the number of records currently related to the tag
-						$currentRelations = tx_tagpack_api::getAttachedElementsForTagId(intval($valueArray['uid_local']));
-						$relations['relations'] = count($currentRelations);
+						$tagData = tx_tagpack_api::getTagDataById(intval($valueArray['uid_local']));
+						$tagData['relations']++;
 						 
 						// and write back the value to the relations field of the tag
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 						tx_tagpack_api::tagTable,
 							$where,
-							$relations );
-					} else {
-						// in any other case we simply have to update all related tags with the valueArray we have built before
-						$where = 'uid_local='.$valueArray['uid_local'].' AND uid_foreign='.$valueArray['uid_foreign'].' AND tablenames=\''.$valueArray['tablenames'].'\'';
-						$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-						    tx_tagpack_api::relationsTable,
-						    $where,
-						    $current_MM_Rows[$key] );
-				 
+							$tagData );
 					}
 				}
+				
+				// now we simply have to update all related tags with the valueArray we have built before
+					$where = 'uid_local='.$valueArray['uid_local'].' AND uid_foreign='.$valueArray['uid_foreign'].' AND tablenames=\''.$valueArray['tablenames'].'\'';
+					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					    tx_tagpack_api::relationsTable,
+					    $where,
+					    $current_MM_Rows[$key] );
 				 
 				// if the uid is in the array of selected tags we have to remove it now
 				// to make sure, that it won't be inserted as a knew relation in the next step
@@ -430,6 +461,7 @@ class tx_tagpack_tceforms_addtags {
 			}
 		}
 		 
+		
 		// if there are still uids left in the selectedTagUids array
 		// this means we have to create new relations for them
 		// because they were not in the array of currently related tags before
@@ -437,7 +469,7 @@ class tx_tagpack_tceforms_addtags {
 			// for each of them we have to perform the same operations
 			foreach ($selectedTagUids as $selectedUid => $switch) {
 				if ($switch != 'new') {
-					tx_tagpack_api::attachTagToElement($selectedUid, '', $id, $table, $pid);
+					tx_tagpack_api::attachTagToElement($selectedUid, '', $id, $table, $pid, $hidden);
 					unset($selectedTagUids[$selectedUid]);
 				}
 			}
@@ -453,7 +485,8 @@ class tx_tagpack_tceforms_addtags {
 			foreach ($selectedTagUids as $tagName => $switch) {
 				$tagName = trim(stripslashes($tagName));
 				if ($switch == 'new') {
-					tx_tagpack_api::attachTagToElement(0, $tagName, $id, $table, $pid);
+					tx_tagpack_api::attachTagToElement(0, $tagName, $id, $table, $pid, $hidden);
+					unset($selectedTagUids[$selectedUid]);
 				}
 			}
 		}

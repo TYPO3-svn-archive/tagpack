@@ -20,6 +20,8 @@ plugin.tx_tagpack_pi1.searchBox =
 plugin.tx_tagpack_pi1.modeSwitch = 
 #cat = tagpack - tag cloud/enable/7; type=boolean; label=Enable calendar:Check this box, if you want to make use of start and end dates to refine the search results (requires installation rlmp_dateselectlib)
 plugin.tx_tagpack_pi1.calendar = 
+#cat = tagpack - tag cloud/enable/8; type=text; label=Order of elements:Fill in a comma separated list like searchBox, linkBox, modeSwitch, calendar
+plugin.tx_tagpack_pi1.elementOrder = searchBox, linkBox, modeSwitch, calendar
 #cat = tagpack - tag cloud/color; type=color; label=Font color:Default font color for links of the tagcloud
 plugin.tx_tagpack_pi1.fontColor = #000000
 #cat = tagpack - tag cloud/other/5; type=text; label=Search Box Label:You can even add HTML-Code if you like

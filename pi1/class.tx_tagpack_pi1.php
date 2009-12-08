@@ -2,7 +2,7 @@
 	/***************************************************************
 	*  Copyright notice
 	*
-	*  (c) 2008 JoH asenau <info@cybercraft.de>
+	*  (c) 2009 JoH asenau <info@cybercraft.de>
 	*  All rights reserved
 	*
 	*  This script is part of the TYPO3 project. The TYPO3 project is
@@ -82,9 +82,26 @@
 				$uid = 'tx_tagpack_tags_relations_mm.uid_foreign='.$this->cObj->data['uid'].' AND ';
 			}
 			if (count($conf)) {
-				if ($this->piVars['filtermode'] === 'on' && !$conf['singleItemCloud'] && $this->piVars['uid']) {
-					$selectedTags = t3lib_div::intExplode(',', $this->piVars['uid']);
-					foreach($selectedTags as $key => $selectedUid) {
+				if ($this->piVars['filtermode'] === 'on' && !$conf['singleItemCloud'] && ($this->piVars['uid'] || $this->piVars['searchWord'])) {
+					if($this->piVars['uid']) {
+					    $selectedTags = t3lib_div::intExplode(',', $this->piVars['uid']);
+					}
+					if($this->piVars['searchWord']) {
+					    $searchWordMatchTags = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+						'uid',
+						'tx_tagpack_tags',
+						'name LIKE '.$GLOBALS['TYPO3_DB']->fullQuoteStr('%'.$this->piVars['searchWord'].'%','tx_tagpack_tags').' AND NOT deleted AND NOT hidden'
+					    );
+					    if(!$GLOBALS['TYPO3_DB']->sql_error()) {
+						while($searchWordMatchTagUid = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($searchWordMatchTags)) {
+						    $selectedTags[] = $searchWordMatchTagUid['uid'];
+						}
+						$GLOBALS['TYPO3_DB']->sql_free_result($searchWordMatchTags);
+					    }					    
+					}
+					
+					if(count($selectedTags)) {
+					    foreach($selectedTags as $key => $selectedUid) {
 						if ($selectedUid != t3lib_div::_GET('tx_tagpack_pi3_removeItems')) {
 							$taggedItems = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 							'tx_tagpack_tags_relations_mm.uid_foreign,tx_tagpack_tags_relations_mm.tablenames',
@@ -100,6 +117,7 @@
 						} else {
 							unset($selectedTags[$key]);
 						}
+					    }
 					}
 					$this->piVars['uid'] = implode(',', $selectedTags);
 					if (count($itemArray)) {
@@ -187,22 +205,35 @@
 					$GLOBALS['TYPO3_DB']->sql_free_result($tagArray);
 				}
 
-				$content = $content ? $this->cObj->stdWrap($content, $conf['linkBoxStdWrap.']) :
+				$elements['linkBox'] = $content ? $this->cObj->stdWrap($content, $conf['linkBoxStdWrap.']) :
 				'';
 
-				if ($conf['modeSwitch'] && !$conf['singleItemCloud']) {
-					$content = $content.$this->makeModeSwitch($conf);
+				if ($conf['searchBox'] && !$conf['singleItemCloud']) {
+					$elements['searchBox'] = $this->makeSearchBox($conf);
 				}
 
-				if ($conf['searchBox'] && !$conf['singleItemCloud']) {
-					$content = $this->makeSearchBox($conf).$content;
+				if ($conf['modeSwitch'] && !$conf['singleItemCloud']) {
+					$elements['modeSwitch'] = $this->makeModeSwitch($conf);
 				}
 
 				if ($conf['calendar'] && !$conf['singleItemCloud']) {
-					$content .= $this->makeCalendar($conf);
+					$elements['calendar'] = $this->makeCalendar($conf);
+				}
+				
+				if(!$conf['singleItemCloud']) {
+				    if($conf['elementOrder']) {
+					$elementOrder = t3lib_div::trimExplode(',',$conf['elementOrder']);
+					foreach($elementOrder as $elementName) {
+					    $output .= $elements[$elementName];
+					}
+				    } else {
+					$output = $elements['searchBox'].$elements['linkBox'].$elements['modeSwitch'].$elements['calendar'];
+				    }
+				} else {
+				    $output = $elements['linkBox'];
 				}
 
-				return $content ? $this->cObj->stdWrap($content, $conf['generalStdWrap.']) :
+				return $output ? $this->cObj->stdWrap($output, $conf['generalStdWrap.']) :
 				'';
 			}
 		}
@@ -274,7 +305,7 @@
 				';
 			foreach($this->piVars as $key => $value) {
 				if ($key != 'searchWord') {
-					$searchBox .= '<input type="hidden" name="'.$this->prefixId.'['.$key.']" id="hidden_'.$this->prefixId.'['.$key.']" value="'.$value.'"/>';
+					$searchBox .= '<input type="hidden" name="'.$this->prefixId.'['.$key.']" id="hidden_'.$this->prefixId.'['.$key.']" value="'.$value.'""/>';
 				}
 			}
 			if (count($conf['keepGetVars.'])) {
@@ -293,7 +324,7 @@
 				}
 			}
 			$searchBox .= '<input type="hidden" name="id" value="'.$GLOBALS['TSFE']->id.'" />';
-			$searchBox .= '<label for="'.$this->prefixId.'[searchword]">'.($conf['searchWord'] ? $conf['searchWord'].'<br />' : '').'<input onchange="submit();" onfocus="this.value=\'\';" type="text" class="inputfield" name="'.$this->prefixId.'[searchWord]" id="'.$this->prefixId.'[searchWord]" value="'.$this->piVars['searchWord'].'" size="20" /></label>';
+			$searchBox .= '<label for="'.$this->prefixId.'[searchword]">'.($conf['searchWord'] ? $conf['searchWord'].'<br />' : '').'<input onBlur="submit();" onfocus="this.value=\'\';" type="text" class="inputfield" name="'.$this->prefixId.'[searchWord]" id="'.$this->prefixId.'[searchWord]" value="'.$this->piVars['searchWord'].'" size="20" /></label>';
 			$searchBox .= '</form><br />';
 			return $this->cObj->stdWrap($searchBox, $conf['searchBoxStdWrap.']);
 		}

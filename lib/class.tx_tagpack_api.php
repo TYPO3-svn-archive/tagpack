@@ -5,7 +5,7 @@
  *	(c) 2008-2009 Jo Hasenau, Benjamin Mack
  *	All rights reserved
  *
- *	This script is part of the TYPO3 project. The TYPO3 project is 
+ *	This script is part of the TYPO3 project. The TYPO3 project is
  *	free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
@@ -31,7 +31,6 @@
  * @package TYPO3
  * @subpackage tx_tagpack
  */
-
 class tx_tagpack_api {
 	/* this is a constant that matches the table where the tags are stored */
 	const tagTable		 = 'tx_tagpack_tags';
@@ -45,7 +44,7 @@ class tx_tagpack_api {
 	 * It uses a one-time mechanism to only fetch the storage PID once and then
 	 * stores it as a static variable
 	 *
-	 * @param	$pid	the integer to the page where the tsconfig is stored, needed for the backend
+	 * @param	int	$pid	the uid of the page where the tsconfig is stored, needed for the backend
 	 * @return	int		the storage PID where all tags are stored
 	 */
 	function getTagStoragePID($pid = 0) {
@@ -70,8 +69,8 @@ class tx_tagpack_api {
 	 * It uses a one-time mechanism to only fetch the Descriptor Mode once and then
 	 * stores it as a static variable
 	 *
-	 * @param	$pid	the integer to the page where the tsconfig is stored, needed for the backend
-	 * @return	boolean		the Descriptor Mode to be used
+	 * @param	int		$pid	the uid of the page where the tsconfig is stored, needed for the backend
+	 * @return	boolean			the Descriptor Mode to be used
 	 */
 	function getDescriptorMode($pid = 0) {
 		static $descriptorMode;
@@ -111,9 +110,9 @@ class tx_tagpack_api {
 	/**
 	 * Checks whether a tag already exists by creating a lookup on the tag uid
 	 * and then returns.
-	 * 
-	 * @param	$tagUid	an integer containing the uid of the tag
-	 * @return	bool	whether it exists or not
+	 *
+	 * @param	int	$tagUid		the uid of the tag
+	 * @return	bool			whether it exists or not
 	 */
 	function tagExists($tagUid) {
 		$existingTag = tx_tagpack_api::getTagDataById($tagUid);
@@ -124,21 +123,24 @@ class tx_tagpack_api {
 	/**
 	 * Checks whether a tag already exists by creating a lookup on the tag name
 	 * and then returns.
-	 * 
-	 * @param	$tagName	a string containing the name of the tag
-	 * @return	bool		whether it exists or not
+	 *
+	 * @param	string	$tagName	the name of the tag
+	 * @return	bool			whether it exists or not
 	 */
 	function tagNameExists($tagName) {
 		$existingTag = tx_tagpack_api::getTagDataByTagName($tagName);
 		return (count($existingTag) ? true : false);
 	}
-	
+
 
 
 	/**
 	 * Adds a new tag to the DB without any relationships yet.
-	 * 
-	 * @param	$tagName	a string containing the name of the tag
+	 *
+	 * @param	string	$tagName	a string containing the name of the tag
+	 * @param	int	$pid 		the uid of the current page
+	 * @param	bool	$isStoragePID 	Set this to TRUE if thae page in $pid is the storage page as well
+	 * @param	string	$elementTable	the name of the table containing the record that is currently tagged
 	 * @return	int			the uid of the newly added tag, or zero if the tagName was empty
 	 */
 	function addTag($tagName,$pid=0,$isStoragePID=FALSE,$elementTable='') {
@@ -174,10 +176,10 @@ class tx_tagpack_api {
 
 	/**
 	 * Removes a tag from the DB
-	 * 
-	 * @param	$tagUid	an Integer containing the unique identifier of the tag
-	 * @param	$removeRelations	a flag whether to remove the relations as well
-	 * @param	$replacementId		an id to fill into relations as a replacement if relations are not removed
+	 *
+	 * @param	int	$tagUid			the unique identifier of the tag
+	 * @param	bool	$removeRelations	a flag whether to remove the relations as well
+	 * @param	int	$replacementId		an id to fill into relations as a replacement if relations are not removed
 	 * @return	void
 	 */
 	function removeTag($tagUid, $removeRelations = true, $replacementId = 0) {
@@ -199,7 +201,7 @@ class tx_tagpack_api {
 					tx_tagpack_api::tagTable,
 					'uid = ' . $replacementId,
 					array('relations' => $attachedElements)
-				);				
+				);
 			}
 			$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 			    tx_tagpack_api::tagTable,
@@ -211,9 +213,9 @@ class tx_tagpack_api {
 
 	/**
 	 * Sets the deleted flag for a tag (used only when a tagged element gets deleted itself)
-	 * 
-	 * @param	$tagUid	 an Integer containing the unique identifier of the tag
-	 * @param	$deleteRelations	a flag whether set the relations to deleted as well
+	 *
+	 * @param	int	$tagUid			the unique identifier of the tag
+	 * @param	bool	$deleteRelations	a flag whether set the relations to deleted as well
 	 * @return	void
 	 */
 	function deleteTag($tagUid, $deleteRelations = true) {
@@ -242,9 +244,15 @@ class tx_tagpack_api {
 	 * Should be used while attaching tags to elements only(!)
 	 * in any other case tags should be identified by their uid,
 	 * which will always be known if a tag already has been attached to an element
-	 * 
-	 * @param	$tagName	a string containing the name of the tag
-	 * @return	array		the result row from the DB or an empty array if nothing was found
+	 *
+	 * @param	string	$tagName	a string containing the name of the tag
+	 * @param	int	$storagePID	the uid of the container page 
+	 * @param	int	$limit		the MySQL limit (don't use the CSV syntax here!)
+	 * @param	bool	$showHidden	a flag whether hidden entries should be shown as well
+	 * @param	bool	$fromDate	a flag whether the starting date of a certain time frame should be used or not
+	 * @param	bool	$toDate		a flag whether the ending date of a certain time frame should be used or not
+	 * @param	int	$pid		the uid of the current page
+	 * @return	array			the result row from the DB or an empty array if nothing was found
 	 */
 	function getTagDataByTagName($tagName, $storagePID='', $limit=1, $showHidden=FALSE, $fromDate=FALSE, $toDate=FALSE, $pid = 0) {
 		$tagName = trim($tagName);
@@ -280,14 +288,14 @@ class tx_tagpack_api {
 	/**
 	 * Returns an array full of all information about the tag
 	 * found by the tag UID
-	 * 
-	 * @param	$tagUid		the ID in the DB indentifying the tag
-	 * @return	array		the result row from the DB or an empty array if nothing was found
+	 *
+	 * @param	int	$tagUid		the ID in the DB indentifying the tag
+	 * @return	array			the result row from the DB or an empty array if nothing was found
 	 */
 	function getTagDataById($tagUid) {
 		$tagUid	 = intval($tagUid);
 		if ($tagUid > 0) {
-			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			$tagDataQuery = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'*',
 				tx_tagpack_api::tagTable,
 				'hidden = 0 AND deleted = 0 AND uid = ' . $tagUid,
@@ -295,6 +303,10 @@ class tx_tagpack_api {
 				'',
 				1 // limit to one result
 			);
+			if(!$GLOBALS['TYPO3_DB']->sql_error()) {
+			    $tagData = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tagDataQuery);
+			    $GLOBALS['TYPO3_DB']->sql_free_result($tagDataQuery);
+			}
 		}
 		return $tagData;
 	}
@@ -305,18 +317,31 @@ class tx_tagpack_api {
 	 * The two parameters are basically something like
 	 * $elementUid = 12, $elementTable = 'tt_news'. This function then returns all
 	 * tag UIDs that are attached to this element
-	 * 
-	 * @param	$elementUid		the UID of the element
-	 * @param	$elementTable	the table of the element
-	 * @return	array			an array containing all tag UIDs 
+	 *
+	 * @param	int	$elementUid	the UID of the element
+	 * @param	string	$elementTable	the table of the element
+	 * @param	bool	$uidOnly	a flag whether the returning array should contain a full dataset or just the uid
+	 * @param	bool	$showHidden	a flag whether hidden records should be shown as well
+	 * @param	bool	$showDeleted	a flag whether deleted records should be shown as well
+	 * @return	array			an array containing all tag UIDs
 	 */
-	function getAttachedTagIdsForElement($elementUid, $elementTable) {
-		$tagUids = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+	function getAttachedTagIdsForElement($elementUid, $elementTable, $uidOnly = FALSE, $showHidden = FALSE, $showDeleted = FALSE) {
+		$tagUidQuery = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'*',
 			tx_tagpack_api::relationsTable,
 			'tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
-			 . ' AND hidden = 0 AND deleted = 0 AND uid_foreign = ' . intval($elementUid)
+			 . ($showHidden ? '' : ' AND hidden = 0') . ($showDeleted ? '' : ' AND deleted = 0') . ' AND uid_foreign = ' . intval($elementUid)
 		);
+		if(!$GLOBALS['TYPO3_DB']->sql_error()) {
+		    while ($tagUid = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tagUidQuery)) {
+			if($uidOnly === TRUE) {
+			    $tagUids[] = $tagUid['uid_local'];
+			} else {
+			    $tagUids[] = $tagUid;
+			}
+		    }
+		    $GLOBALS['TYPO3_DB']->sql_free_result($tagUidQuery);
+		}
 		return $tagUids;
 	}
 
@@ -326,10 +351,10 @@ class tx_tagpack_api {
 	 * The two parameters are basically something like
 	 * $elementUid = 12, $elementTable = 'tt_news'. This function then returns all
 	 * tags in form of an array that are attached to this element
-	 * 
-	 * @param	$elementUid		the UID of the element
-	 * @param	$elementTable	the table of the element
-	 * @return	array			a multi-dimensional array containing all tagdata infos 
+	 *
+	 * @param	int	$elementUid	the UID of the element
+	 * @param	string	$elementTable	the table of the element
+	 * @return	array			a multi-dimensional array containing all tagdata infos
 	 */
 	function getAttachedTagsForElement($elementUid, $elementTable) {
 		$tags = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
@@ -337,8 +362,8 @@ class tx_tagpack_api {
 			tx_tagpack_api::relationsTable . ' AS mm, ' . tx_tagpack_api::tagTable . ' AS tg',
 			'mm.uid_local = tg.uid '
 			. ' AND mm.tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
-			. ' AND mm.hidden = 0 AND mm.deleted = 0 AND mm.uid_foreign = ' . intval($elementUid),
-			'',
+			. ' AND mm.uid_foreign = ' . intval($elementUid),
+			'mm.uid_local',
 			'tg.name ASC'
 		);
 		return $tags;
@@ -348,9 +373,10 @@ class tx_tagpack_api {
 	/**
 	 * Returns an array full of element pairs (UID / table) that are attached
 	 * to a certain tagUid
-	 * 
-	 * @param	$tagUid		an integer that uniquely identifies the tag in the DB table
-	 * @return	array		an array containing pairs of "uid" and "table"
+	 *
+	 * @param	int	$tagUid		an integer that uniquely identifies the tag in the DB table
+	 * @param	string	$limitToTable	the name of a table if tags are allowed for more than one of them
+	 * @return	array			an array containing pairs of "uid" and "table"
 	 */
 	function getAttachedElementsForTagId($tagUid, $limitToTable = '') {
 		$elements = array();
@@ -358,7 +384,7 @@ class tx_tagpack_api {
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'uid_foreign, tablenames',
 				tx_tagpack_api::relationsTable,
-				'hidden = 0 AND deleted = 0 AND uid_local = ' . intval($tagUid)
+				'AND uid_local = ' . intval($tagUid)
 				. ($limitToTable ? ' AND tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($limitToTable, tx_tagpack_api::relationsTable) : '')
 			);
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
@@ -376,10 +402,11 @@ class tx_tagpack_api {
 	/**
 	 * Returns an array full of tags that are attached to
 	 * the same element(s) as a list of known tags
-	 * 
-	 * @param	$tagUidList	a list of integers that uniquely identifie a tag in the DB table
-	 * @param	$containerId	an integer that uniquely identifies the container for the related tags
-	 * @return	array		an array with the tag data
+	 *
+	 * @param	CSV	$tagUidList	a list of integers that uniquely identifie a tag in the DB table
+	 * @param	int	$containerId	an integer that uniquely identifies the container for the related tags
+	 * @param	int	$limit		the MySQL limit (don't use the CSV syntax here!)
+	 * @return	array			an array with the tag data
 	 */
 	function getRelatedTagsForTags($tagUidList,$containerId=0,$limit=10) {
 		$elements = array();
@@ -394,17 +421,17 @@ class tx_tagpack_api {
 				'tags.*',
 				tx_tagpack_api::relationsTable.' AS t1 JOIN '.
 				tx_tagpack_api::relationsTable.' AS t2 ON (
-				    t1.uid_foreign = t2.uid_foreign AND 
+				    t1.uid_foreign = t2.uid_foreign AND
 				    t1.tablenames = t2.tablenames AND
 				    t2.hidden = 0 AND t2.deleted = 0) JOIN '.
 				tx_tagpack_api::tagTable.' AS tags ON (
-				    t2.uid_local = tags.uid AND 
+				    t2.uid_local = tags.uid AND
 				    tags.pid = '.intval($containerId).' AND
-				    tags.hidden = 0 AND 
+				    tags.hidden = 0 AND
 				    tags.deleted = 0 AND
 				    tags.uid NOT IN ('. $GLOBALS['TYPO3_DB']->quoteStr($tagUidList, tx_tagpack_api::relationsTable) .')
 				)',
-				't1.hidden = 0 AND 
+				't1.hidden = 0 AND
 				 t1.deleted = 0 AND
 				 t1.uid_local IN ('. $GLOBALS['TYPO3_DB']->quoteStr($tagUidList, tx_tagpack_api::relationsTable) .')',
 				 'tags.uid',
@@ -419,14 +446,16 @@ class tx_tagpack_api {
 	/**
 	 * Adds a tag to an existing element (a triple of uid, table and pid)
 	 * if the tag does not exist yet, it will be created.
-	 * 
-	 * @param	$tagName		a string containing the name of the tag
-	 * @param	$elementUid		the UID of the element that will be used
-	 * @param	$elementTable	the table of the element that will be used
-	 * @param	$elementPid		the PID of the element that will be used (not in use right now)
+	 *
+	 * @param	string	$tagName	a string containing the name of the tag
+	 * @param	int	$elementUid	the UID of the element that will be used
+	 * @param	string	$elementTable	the table of the element that will be used
+	 * @param	int	$elementPid	the PID of the element that will be used (not in use right now)
+	 * @param	int	$pid		the uid of the current page
+	 * @param	int	$hidden		a flag whether the tagged element is currently hidden or not
 	 * @return	void
 	 */
-	function attachTagToElement($tagUid=0, $tagName='', $elementUid, $elementTable, $pid) {
+	function attachTagToElement($tagUid=0, $tagName='', $elementUid, $elementTable, $pid, $hidden = FALSE) {
 		// create the tag if it doesn't exist yet
 		if($tagName && !$tagUid) {
 		    $tagData = tx_tagpack_api::getTagDataByTagName($tagName, '', 1, FALSE, FALSE, FALSE, $pid);
@@ -434,7 +463,7 @@ class tx_tagpack_api {
 		if (!count($tagData) && !$tagUid) {
 			$tagUid = tx_tagpack_api::addTag($tagName,$pid,FALSE,$elementTable);
 		} else if (!$tagUid) {
-			$tagUid = $tagData['uid'];
+			$tagUid = $tagData[0]['uid'];
 		}
 		$tagUid = intval($tagUid);
 
@@ -461,7 +490,7 @@ class tx_tagpack_api {
 				'cruser_id'		   => 0,
 				'sys_language_uid' => 0,
 				'deleted'		   => 0,
-				'hidden'		   => 0,
+				'hidden'		   => $hidden ? 1 : 0,
 				'tablenames'	   => $GLOBALS['TYPO3_DB']->quoteStr($elementTable, tx_tagpack_api::relationsTable),
 				'sorting'		   => 1
 			);
@@ -472,11 +501,11 @@ class tx_tagpack_api {
 
 	/**
 	 * Removes a tag from an element pair (uid, table)
-	 * 
-	 * @param	$tagUid		an integer containing the identifier of the tag
-	 * @param	$elementUid		the UID of the element that will be used
-	 * @param	$elementTable	the table of the element that will be used
-	 * @param	$elementPid		the PID of the element that will be used (not in use right now)
+	 *
+	 * @param	int	$tagUid		an integer containing the identifier of the tag
+	 * @param	int	$elementUid	the UID of the element that will be used
+	 * @param	string	$elementTable	the table of the element that will be used
+	 * @param	int	$elementPid	the PID of the element that will be used (not in use right now)
 	 * @return	void
 	 */
 	function removeTagFromElement($tagUid, $elementUid, $elementTable) {
@@ -496,7 +525,7 @@ class tx_tagpack_api {
 			);
 
 			// and write back the value to the relations field of the tag
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations[0]);	 
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations[0]);
 		}
 	}
 }

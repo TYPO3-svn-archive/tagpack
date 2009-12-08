@@ -68,10 +68,23 @@
 				AND pid>0',
 				'',
 				'name ASC' );
-			if ($conf['taggedElements.']['enabledContent'] && count($tags)) {
+				
+			$this->enableResultList = 0;
+			
+			if(count($tags)) {
+				$this->enableResultList = 1;
+			}
+
+			if (count($this->pi1Vars)) {
+				foreach($this->pi1Vars as $value) {
+					if ($value) $this->enableResultList = 1;
+				}
+			}
+
+			if ($conf['taggedElements.']['enabledContent'] && $this->enableResultList) {
 				$conf['renderObj.']['10.']['value'] .= $this->makeElementList('tt_content', $conf, $tags, $tagUid);
 			}
-			if ($conf['taggedElements.']['enabledRecords'] && count($tags)) {
+			if ($conf['taggedElements.']['enabledRecords'] && $this->enableResultList) {
 				$enabledRecords = t3lib_div::trimexplode(',', $conf['taggedElements.']['enabledRecords']);
 				foreach($enabledRecords as $table) {
 					$tables = $GLOBALS['TYPO3_DB']->admin_get_tables();
@@ -97,7 +110,7 @@
 			$sortingTime = $conf['taggedElements.']['timeFields.'][$table] ? $conf['taggedElements.']['timeFields.'][$table] : 'tstamp';
 
 			if ($tagUid) {
-				$tagsSelected = ' AND tx_tagpack_tags_relations_mm.uid_local IN('.$tagUid.')';
+				$tagsSelected = 'AND tx_tagpack_tags_relations_mm.uid_local IN('.$tagUid.')';
 			}
 
 			if ($this->pi1Vars['from'] && $conf['taggedElements.']['timeFields.'][$table]) {
@@ -116,10 +129,25 @@
 					$searchSettings .= $searchSettings ? (' OR '.$table.'.'.$searchField.' LIKE '.$GLOBALS['TYPO3_DB']->fullQuoteStr('%'.$this->pi1Vars['searchWord'].'%',$table)) :
 					($table.'.'.$searchField.' LIKE '.$GLOBALS['TYPO3_DB']->fullQuoteStr('%'.$this->pi1Vars['searchWord'].'%',$table));
 				}
-				$searchSettings = $searchSettings ? ' AND ('.$searchSettings.')' :
-				 '';
-			}
 
+				$searchTags = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+				    'uid',
+				    'tx_tagpack_tags',
+				    'name LIKE '.$GLOBALS['TYPO3_DB']->fullQuoteStr('%'.$this->pi1Vars['searchWord'].'%','tx_tagpack_tags')
+				);
+				
+				if(!$GLOBALS['TYPO3_DB']->sql_error()) {
+				    while ($searchTagUid = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($searchTags)) {
+					$tagsSearched .= $tagsSearched ? ','.$searchTagUid['uid'] : 'tx_tagpack_tags_relations_mm.uid_local IN('.$searchTagUid['uid'];
+				    }
+				}
+				
+								
+			}
+			
+			$tagsSearched .= $tagsSearched ? ')' : '';
+			$searchSettings = $searchSettings ? ' AND ('.$searchSettings.($tagsSearched ? ' OR '.$tagsSearched : '').')' : ($tagsSearched ? ' AND '.$tagsSearched : '');
+			
 			if ($conf['taggedElements.']['additionalFilters.'][$table.'.']) {
 				$filters = $conf['taggedElements.']['additionalFilters.'][$table.'.'];
 				foreach($filters as $fieldName => $filterSettings) {
@@ -133,37 +161,20 @@
 				}
 			}
 			
-			if ($tagUid) {
-				if ($conf['taggedElements.']['additionalFilters.'][$table.'.'] && count($getVars)) {
-					$limit = '';
-				} else {
-					$limit = $conf['taggedElements.']['maxItems'];
-				}
-				$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				$table.'.*,COUNT(tx_tagpack_tags_relations_mm.uid_foreign) AS counter',
-					$table.' JOIN tx_tagpack_tags_relations_mm ON (tx_tagpack_tags_relations_mm.uid_foreign='.$table.'.uid AND tx_tagpack_tags_relations_mm.tablenames=\''.$table.'\''.$tagsSelected.')',
-					$table.'.pid>0
-					'.$this->cObj->enableFields($table).'
-					'.$calendarSettings.$searchSettings,
-					'tx_tagpack_tags_relations_mm.uid_foreign',
-					'counter DESC,'.$table.'.uid,'.$table.'.'.$sortingTime.' DESC',
-					$limit );
+			if ($conf['taggedElements.']['additionalFilters.'][$table.'.'] && count($getVars)) {
+				$limit = '';
 			} else {
-				if (count($this->pi1Vars)) {
-					foreach($this->pi1Vars as $value) {
-						if ($value) $enableResultList = true;
-					}
-				}
-				if ($enableResultList || count($getVars)) {
-					$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-					'*',
-						$table,
-						$table.'.pid>0'.$this->cObj->enableFields($table).'
-						'.$calendarSettings.$searchSettings,
-						$table.'.uid',
-						$table.'.'.($conf['taggedElements.']['timeFields.'][$table] ? $conf['taggedElements.']['timeFields.'][$table] : 'tstamp' ).' DESC');
-				}
+				$limit = $conf['taggedElements.']['maxItems'];
 			}
+			$taggedElements = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			$table.'.*,COUNT(tx_tagpack_tags_relations_mm.uid_foreign) AS counter',
+				$table.' JOIN tx_tagpack_tags_relations_mm ON (tx_tagpack_tags_relations_mm.uid_foreign='.$table.'.uid AND tx_tagpack_tags_relations_mm.tablenames=\''.$table.'\')',
+				$table.'.pid>0
+				'.$this->cObj->enableFields($table).'
+				'.$calendarSettings.$searchSettings.$tagsSelected,
+				$table.'.uid',
+				'counter DESC,'.$table.'.uid,'.$table.'.'.$sortingTime.' DESC',
+				$limit );
 			if (!$GLOBALS['TYPO3_DB']->sql_error()) {
 				if (count($tags)) {
 					foreach($tags as $key => $tag) {
