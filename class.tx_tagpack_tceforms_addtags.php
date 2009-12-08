@@ -61,24 +61,35 @@ class tx_tagpack_tceforms_addtags {
 			 
 			// first lets fetch the TCA of the tag table
 			t3lib_div::loadTCA('tx_tagpack_tags');
-			 
-			// now we can append the settings from the relations field of that table
-			// to the TCA of the table which is currently rendered
-			// only two differences: the allowed table is not "*" but the tags table
-			// and the label changes
-			$TCA[$table]['columns']['tx_tagpack_tags'] = $TCA['tx_tagpack_tags']['columns']['relations'];
-			$TCA[$table]['columns']['tx_tagpack_tags']['exclude'] = 0;
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['allowed'] = 'tx_tagpack_tags';
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['prepend_tname'] = 0;
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['_VALIGN'] = 'top';
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['type'] = 'userFunc';
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['userFunc'] = 'tx_tagpack_ajaxsearch_client->renderAjaxSearch';
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['client']['startLength'] = 3;
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enableDescriptorMode'] = $enableDescriptorMode ? TRUE : FALSE;
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
-			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
-			$TCA[$table]['columns']['tx_tagpack_tags']['label'] = $TCA['tx_tagpack_tags']['ctrl']['title'];
+
+				// Add the TCA for the tagging field
+				// First check if there's a specific TCA for the current table
+			if (isset($GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config'][$table])) {
+				$TCA[$table]['columns']['tx_tagpack_tags'] = $GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config'][$table];
+
+				// Else check if there's a default alternate TCA
+			} elseif (isset($GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config']['default'])) {
+				$TCA[$table]['columns']['tx_tagpack_tags'] = $GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config']['default'];
+
+				// Else get the settings from the relations field of the tx_tagpack_tags table
+				// into the TCA of the table which is currently rendered
+				// with only two differences: the allowed table is not "*" but the tags table
+				// and the label changes
+			} else {
+				$TCA[$table]['columns']['tx_tagpack_tags'] = $TCA['tx_tagpack_tags']['columns']['relations'];
+				$TCA[$table]['columns']['tx_tagpack_tags']['exclude'] = 0;
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['allowed'] = 'tx_tagpack_tags';
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['prepend_tname'] = 0;
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['_VALIGN'] = 'top';
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['type'] = 'userFunc';
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['userFunc'] = 'tx_tagpack_ajaxsearch_client->renderAjaxSearch';
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['client']['startLength'] = 3;
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enableDescriptorMode'] = $enableDescriptorMode ? TRUE : FALSE;
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
+				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
+				$TCA[$table]['columns']['tx_tagpack_tags']['label'] = $TCA['tx_tagpack_tags']['ctrl']['title'];
+			}
 			 
 			// Make sure the new virtual field shows up for every type of this table
 			if (count($TCA[$table]['types'])) {
