@@ -1,0 +1,71 @@
+plugin {
+	tx_tagpack_pi1 = USER
+	tx_tagpack_pi1 {
+		userFunc = tx_tagpack_pi1->main
+		userFunc {
+			tagcloudElements {
+				enabledContent = {$plugin.tx_tagpack_pi1.enabledContent}
+				enabledRecords = {$plugin.tx_tagpack_pi1.enabledRecords}
+			}
+			renderObj = COA_INT
+			renderObj {
+				10 = USER
+				10 {
+					userFunc = tx_tagpack_pi1->makeTagCloud
+					tagPidList = {$plugin.tx_tagpack_pi1.tagPidList}
+					targetPid = {$plugin.tx_tagpack_pi1.targetPid}
+					minFontSize = {$plugin.tx_tagpack_pi1.minFontSize}
+					maxFontSize = {$plugin.tx_tagpack_pi1.maxFontSize}
+					maxNumberOfSizes = {$plugin.tx_tagpack_pi1.maxNumberOfSizes}
+					modeSwitch = {$plugin.tx_tagpack_pi1.modeSwitch}
+					searchBox = {$plugin.tx_tagpack_pi1.searchBox}
+					calendar = {$plugin.tx_tagpack_pi1.calendar}
+					elementOrder = {$plugin.tx_tagpack_pi1.elementOrder}
+					fontColor = {$plugin.tx_tagpack_pi1.fontColor}					
+					generalStdWrap {
+						wrap = <div class="tx-tagpack-pi1-tagcloud">|</div>
+					}
+					linkBoxStdWrap {
+						wrap = {$plugin.tx_tagpack_pi1.label.tagCloud}<div class="tx-tagpack-pi1-linkbox">|</div>
+					}
+					linkStdWrap {
+						wrap = <span>|</span>
+					}
+					linkLabel {
+						singular = {$plugin.tx_tagpack_pi1.label.taggedWith.singular} 
+						plural = {$plugin.tx_tagpack_pi1.label.taggedWith.plural}
+					}
+					modeSwitchStdWrap {
+						wrap = {$plugin.tx_tagpack_pi1.label.modeSwitch}<div class="tx-tagpack-pi1-modeswitch">|</div>
+					}
+					keepGetVars {
+					###################################
+					#	parametername {
+					#	keyname = 1
+					#	}
+					###################################
+					}
+					searchBoxStdWrap {
+						wrap = {$plugin.tx_tagpack_pi1.label.searchBox}<div class="tx-tagpack-pi1-searchbox">|</div>
+					}
+					calendarStdWrap {
+						wrap = {$plugin.tx_tagpack_pi1.label.calendar}<div class="tx-tagpack-pi1-calendar">|</div>
+					}
+					calendarFrom = {$plugin.tx_tagpack_pi1.label.calendarFrom}
+					calendarTo = {$plugin.tx_tagpack_pi1.label.calendarTo}
+				}
+			}
+		}
+	}
+}
+
+tt_content.tagpack_pi1 = COA
+tt_content.tagpack_pi1 {
+	wrap = <div class="tx-tagpack-pi1-cloudcontainer">|</div>
+	10 < plugin.tx_tagpack_pi1
+}
+
+tt_content.stdWrap.preUserFunc < plugin.tx_tagpack_pi1.userFunc
+tt_content.stdWrap.preUserFunc {
+	renderObj.10.singleItemCloud = 1
+}
