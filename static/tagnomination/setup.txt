@@ -1,3 +1,5 @@
+includeLibs.tx_tagpack_pi2 = EXT:tagpack/pi1/class.tx_tagpack_pi2.php
+
 plugin {
     tx_tagpack_pi2 = COA_INT
     tx_tagpack_pi2 {

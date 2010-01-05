@@ -1,3 +1,5 @@
+includeLibs.tx_tagpack_pi1 = EXT:tagpack/pi1/class.tx_tagpack_pi1.php
+
 plugin {
 	tx_tagpack_pi1 = USER
 	tx_tagpack_pi1 {
