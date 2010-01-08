@@ -1,0 +1,11 @@
+includeLibs.tx_tagpack_pi2 = EXT:tagpack/pi2/class.tx_tagpack_pi2.php
+
+plugin {
+    tx_tagpack_pi2 = COA_INT
+    tx_tagpack_pi2 {
+		10 = USER
+		10 {
+	    	userFunc = tx_tagpack_pi2->main
+		}
+    }
+}
