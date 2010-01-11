@@ -36,5 +36,21 @@
 			<label index="tt_content.CType_pi2">Vorschläge für Tags</label>
 			<label index="tt_content.list_type_pi3">Elemente mit Tags</label>
 		</languageKey>
+                <languageKey index="it" type="array">
+                        <label index="tx_tagpack_tags">Etichette</label>
+                        <label index="tx_tagpack_tags.tagtype">Tipo</label>
+                        <label index="tx_tagpack_tags.tagtype.1">Descriptor</label>
+                        <label index="tx_tagpack_tags.tagtype.2">Non descriptor</label>
+                        <label index="tx_tagpack_tags.category">Categoria</label>
+                        <label index="tx_tagpack_tags.name">Etichetta</label>
+                        <label index="tx_tagpack_tags.description">Descrizione</label>
+                        <label index="tx_tagpack_tags.quodvide">Vedi anche</label>
+                        <label index="tx_tagpack_tags.relations">È etichetta di</label>
+                        <label index="tx_tagpack_categories">Categorie</label>
+                        <label index="tx_tagpack_categories.name">Categoria</label>
+                        <label index="tt_content.CType_pi1">Elenco di etichette</label>
+                        <label index="tt_content.CType_pi2">Proposte di etichette</label>
+                        <label index="tt_content.list_type_pi3">Elementi con etichetta</label>
+                </languageKey>
 	</data>
 </T3locallang>

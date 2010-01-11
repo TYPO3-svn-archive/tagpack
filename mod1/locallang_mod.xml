@@ -11,5 +11,8 @@
 		<languageKey index="de" type="array">
 			<label index="mlang_tabs_tab">Tag Manager</label>
 		</languageKey>
+                <languageKey index="it" type="array">
+                        <label index="mlang_tabs_tab">Gestione delle etichette</label>
+                </languageKey>
 	</data>
 </T3locallang>

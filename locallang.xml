@@ -18,5 +18,11 @@
 			<label index="ajaxgroupsearch_error_notAllowed">Das eingegebene Tag existiert nicht! - Bitte verwenden Sie nur ein existierendes Tag aus der Liste!</label>
 			<label index="ajaxgroupsearch_error_typeUnsupported">Auswahltyp nicht unterstützt...</label>
 		</languageKey>
+                <languageKey index="it" type="array">
+                        <label index="ajaxgroupsearch_error_noTablesConfigured">Non è  stata configurata alcuna tabella</label>
+                        <label index="ajaxgroupsearch_error_noResults">L'etichetta che hai digitato non esiste ancora e verrà creata in caso di salvataggio!</label>
+                        <label index="ajaxgroupsearch_error_notAllowed">L'etichetta che hai digitato non esiste! Seleziona una delle etichette esistenti dalla lista!</label>
+                        <label index="ajaxgroupsearch_error_typeUnsupported">Tipo non supportato...</label>
+                </languageKey>
 	</data>
 </T3locallang>

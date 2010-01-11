@@ -28,5 +28,16 @@
 			<label index="ajaxgroupsearch_error_noResults">Nichts gefunden...</label>
 			<label index="ajaxgroupsearch_error_typeUnsupported">Auswahltyp nicht unterstützt...</label>
 		</languageKey>
+                <languageKey index="it" type="array">
+                        <label index="and">e</label>
+                        <label index="taggedWith">corrispondenti all'etichetta</label>
+                        <label index="taggedWith2">corrispondenti alle etichette</label>
+                        <label index="noItems">Non ci sono</label>
+                        <label index="someItems"></label>
+                        <label index="remove_item_from_list">Rimuovi questa etichetta dalla lista</label>
+                        <label index="ajaxgroupsearch_error_noTablesConfigured">Non è stata configurata alcuna tabella</label>
+                        <label index="ajaxgroupsearch_error_noResults">Nessun risultato...</label>
+                        <label index="ajaxgroupsearch_error_typeUnsupported">Tipo non supportato...</label>
+                </languageKey>
 	</data>
 </T3locallang>

@@ -97,5 +97,51 @@
 			<label index="limit2">Ergebnisse insgesamt</label>
 			<label index="limit3">Ergebnisse pro Level</label>
 		</languageKey>
+                <languageKey index="it" type="array">
+                        <label index="title">Gestione delle etichette</label>
+                        <label index="page">Pagina</label>
+                        <label index="Between">Tra</label>
+                        <label index="and">e</label>
+                        <label index="TabLabel1">Esamina</label>
+                        <label index="Tab1_Left">Cerca etichette</label>
+                        <label index="Tab1_Right">Etichette corrispondenti da approvare/bloccare/rimuovere</label>
+                        <label index="Tab1_Label1">Seleziona uno o più contenitori per approvare le etichette</label>
+                        <label index="Tab1_Label2">Cerca un'etichetta per nome</label>
+                        <label index="find">Cerca</label>
+                        <label index="approved">approvate</label>
+                        <label index="blocked">bloccate</label>
+                        <label index="tags">etichette</label>
+                        <label index="remove">Rimuovi completamente!</label>
+                        <label index="TabLabel2">Modifica</label>
+                        <label index="Tab2_Left">Cerca etichette</label>
+                        <label index="Tab2_Right">Etichette corrispondenti da modificare</label>
+                        <label index="Tab2_Label1">Seleziona uno o più contenitori per modificare le etichette</label>
+                        <label index="Tab2_Label2">Cerca un'etichetta per nome</label>
+                        <label index="Edit">Modifica</label>
+                        <label index="TabLabel3">Unisci</label>
+                        <label index="Tab3_Left">Cerca etichette</label>
+                        <label index="Tab3_Label1">Seleziona un contenitore per unire le etichette</label>
+                        <label index="Tab3_Label2">Cerca un'etichetta per nome</label>
+                        <label index="context_enabled1">incluse le etichette corrispondenti fino a </label>
+                        <label index="context_enabled2"> livelli</label>
+                        <label index="Tab3_Right">Etichette corrispondenti da unire</label>
+                        <label index="Merge">Unisci</label>
+                        <label index="merge_now">Unisci ora!</label>
+                        <label index="as_replacement">Seleziona le etichette che vuoi unire attivando le caselle. Quindi sostituisci le etichette selezionate facendo doppio clic sul nome di un'etichetta nel riquadro di selezione sotto o digitando il nome di un'altra etichetta nello spazio alla destra di esso.</label>
+                        <label index="merge_success1">etichetta sostituita con successo!</label>
+                        <label index="merge_success">etichette unite con successo!</label>
+                        <label index="select_master">Doppio clic su un'etichetta o digita qui =></label>
+                        <label index="leveltitle"> etichetta corrispondente sul livello</label>
+                        <label index="leveltitles"> etichette corrispondenti sul livello</label>
+                        <label index="TabLabel4">Traduci</label>
+                        <label index="Tab4_Left">Cerca etichette</label>
+                        <label index="Tab4_Right">Etichette corrispondenti da tradurre</label>
+                        <label index="Tab4_Label1">Seleziona uno o più contenitori per tradurre le etichette</label>
+                        <label index="Tab4_Label2">Cerca un'etichetta per nome</label>
+                        <label index="within_containers">All'interno del/i contenitore/i</label>
+                        <label index="limit1">Limitato a</label>
+                        <label index="limit2">risultati complessivi</label>
+                        <label index="limit3">risultati per livello</label>
+                </languageKey>
 	</data>
 </T3locallang>
