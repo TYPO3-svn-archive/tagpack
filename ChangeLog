@@ -1,5 +1,7 @@
 0.13.0 03-02-08 JoH asenau <info@cybercraft.de>
 	Introduced a new TSconfig parameter "tagBoxSortingMode". Currently the only possible value is "sorting" which will enable manual sorting of tags in the BE field instead of the default alphabetical sorting.
+	Fixed a bug with additional filters that where not recognized anymore
+	Fixed a bug with multiple records saved by elements containing IRRE relations getting the tags of the first record
 
 0.12.1 10-01-08 JoH asenau <info@cybercraft.de>
 	Fixed a bug caused by a missing closing bracket that caused result lists to disappear when there where jno additionalFilters set.

@@ -151,7 +151,6 @@ class tx_tagpack_tceforms_addtags {
 	 * @return [type]  Nothing since it's only performing some DB operations
 	 */
 	function processDatamap_afterDatabaseOperations($status, $table, $id, $fieldArray, $caller) {
-		$id = (strpos($id, 'NEW') === false) ? $id : $caller->substNEWwithIDs[$id];
 		 
 		// first we need to get the pid for the current record
 		$pid = $caller->checkValue_currentRecord['pid'];
@@ -162,16 +161,16 @@ class tx_tagpack_tceforms_addtags {
 			
 			$command = $caller->datamap[$table][$id]['hidden']==1 ? 'hide' : 'unhide';
 			
-			if(array_key_exists('tx_tagpack_tags',$caller->datamap[$table][key($caller->datamap[$table])])) {
+			if(array_key_exists('tx_tagpack_tags',$caller->datamap[$table][$id])) {
 				// are there any tags in the datamap?
-				$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][key($caller->datamap[$table])]['tx_tagpack_tags']);
+				$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][$id]['tx_tagpack_tags']);
 			} else {
 			    // if not, we have to get the related records that are already assigned as tags to the current record
 			    $selectedUids = tx_tagpack_api::getAttachedTagIdsForElement(intval($id),$table,TRUE,TRUE);
 			}
 		} else {
 			// Now we get the selected tags for the current record
-			$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][key($caller->datamap[$table])]['tx_tagpack_tags']);
+			$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][$id]['tx_tagpack_tags']);
 		}
 		
 		// if there are any we can create an array and hand it over to the function which is responsible for the DB actions
@@ -193,6 +192,9 @@ class tx_tagpack_tceforms_addtags {
 				$sortCounter += 256;
 			}
 		}
+
+		$id = (strpos($id, 'NEW') === false) ? $id : $caller->substNEWwithIDs[$id];
+
 		// now lets call the DB action
 		$this->delete_update_insert_relations($selectedTagUids, $table, $id, $pid, $command, $caller);
 	}
