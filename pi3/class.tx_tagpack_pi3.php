@@ -238,11 +238,9 @@
 							$taggedElement = array();
 						}
 						else if($getVar && $filterSettings['foreign_table'] && !$filterSettings['mm_table'] && !t3lib_div::inList($taggedElement[$fieldName], $getVar)) {
-							t3lib_div::debug('Step2');
 							$taggedElement = array();
 						}
 						else if($getVar && $filterSettings['foreign_table'] && $filterSettings['mm_table']) {
-							t3lib_div::debug('Step3');
 							$availableElementsSelect = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
 							$table.'.uid',
 								$table,
