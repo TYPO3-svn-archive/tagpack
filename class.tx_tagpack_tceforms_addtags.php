@@ -61,35 +61,24 @@ class tx_tagpack_tceforms_addtags {
 			 
 			// first lets fetch the TCA of the tag table
 			t3lib_div::loadTCA('tx_tagpack_tags');
-
-				// Add the TCA for the tagging field
-				// First check if there's a specific TCA for the current table
-			if (isset($GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config'][$table])) {
-				$TCA[$table]['columns']['tx_tagpack_tags'] = $GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config'][$table];
-
-				// Else check if there's a default alternate TCA
-			} elseif (isset($GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config']['default'])) {
-				$TCA[$table]['columns']['tx_tagpack_tags'] = $GLOBALS['T3_VAR']['EXT']['tagpack']['TCA']['alternate_config']['default'];
-
-				// Else get the settings from the relations field of the tx_tagpack_tags table
-				// into the TCA of the table which is currently rendered
-				// with only two differences: the allowed table is not "*" but the tags table
-				// and the label changes
-			} else {
-				$TCA[$table]['columns']['tx_tagpack_tags'] = $TCA['tx_tagpack_tags']['columns']['relations'];
-				$TCA[$table]['columns']['tx_tagpack_tags']['exclude'] = 0;
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['allowed'] = 'tx_tagpack_tags';
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['prepend_tname'] = 0;
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['_VALIGN'] = 'top';
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['type'] = 'userFunc';
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['userFunc'] = 'tx_tagpack_ajaxsearch_client->renderAjaxSearch';
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['client']['startLength'] = 3;
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enableDescriptorMode'] = $enableDescriptorMode ? TRUE : FALSE;
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
-				$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
-				$TCA[$table]['columns']['tx_tagpack_tags']['label'] = $TCA['tx_tagpack_tags']['ctrl']['title'];
-			}
+			 
+			// now we can append the settings from the relations field of that table
+			// to the TCA of the table which is currently rendered
+			// only two differences: the allowed table is not "*" but the tags table
+			// and the label changes
+			$TCA[$table]['columns']['tx_tagpack_tags'] = $TCA['tx_tagpack_tags']['columns']['relations'];
+			$TCA[$table]['columns']['tx_tagpack_tags']['exclude'] = 0;
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['allowed'] = 'tx_tagpack_tags';
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['prepend_tname'] = 0;
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['_VALIGN'] = 'top';
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['type'] = 'userFunc';
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['userFunc'] = 'tx_tagpack_ajaxsearch_client->renderAjaxSearch';
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['client']['startLength'] = 3;
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['searchFields'] = 'name';
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enableDescriptorMode'] = $enableDescriptorMode ? TRUE : FALSE;
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['enabledOnly'] = true;
+			$TCA[$table]['columns']['tx_tagpack_tags']['config']['wizards']['ajax_search']['params']['tables']['tx_tagpack_tags']['label'] = '###name###';
+			$TCA[$table]['columns']['tx_tagpack_tags']['label'] = $TCA['tx_tagpack_tags']['ctrl']['title'];
 			 
 			// Make sure the new virtual field shows up for every type of this table
 			if (count($TCA[$table]['types'])) {
@@ -132,7 +121,7 @@ class tx_tagpack_tceforms_addtags {
 		if ($field == 'tx_tagpack_tags' && strpos($row['uid'], 'NEW') === false) {
 
 			// get the related records that are already assigned as tags to the current record
-			$itemRows = tx_tagpack_api::getAttachedTagsForElement($row['uid'], $table);
+			$itemRows = tx_tagpack_api::getAttachedTagsForElement($row['uid'], $table, $row['pid']);
 			
 			if (count($itemRows)) {
 				foreach ($itemRows as $key => $val) {
@@ -187,6 +176,7 @@ class tx_tagpack_tceforms_addtags {
 		
 		// if there are any we can create an array and hand it over to the function which is responsible for the DB actions
 		if (count($selectedUids)>0) {
+			$sortCounter = 0;
 			foreach($selectedUids as $selectedUid) {
 				// if there are any prefixes, we must strip them first
 				$selectedUid = str_replace('tx_tagpack_tags_', '', $selectedUid);
@@ -195,11 +185,12 @@ class tx_tagpack_tceforms_addtags {
 				// this makes it easier to unset the keys for those uids later on
 				// which were already available in the relations table
 				if (strpos($selectedUid, 'new_') !== false) {
-					$selectedTagUids[str_replace('new_', '', $selectedUid)] = 'new';
+					$selectedTagUids[str_replace('new_', '', $selectedUid)] = array('new',$sortCounter);
 				}
 				else if (intval($selectedUid)) {
-					$selectedTagUids[$selectedUid] = 1;
+					$selectedTagUids[$selectedUid] = array(1,$sortCounter);
 				}
+				$sortCounter += 256;
 			}
 		}
 		// now lets call the DB action
@@ -242,13 +233,13 @@ class tx_tagpack_tceforms_addtags {
 							foreach ($uidArray as $oldUid => $newUid) {
 								 
 								// first we get an array of the related tags for the old uid
-								$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($oldUid, $tablename, FALSE, TRUE, TRUE);
+								$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($oldUid, $tablename);
 								if (count($current_MM_Rows)) {
 									 
 									// now we can build the selectedTagUids array just as if somebody had selected the tags in a form
 									$selectedTagUids = array();
 									foreach ($current_MM_Rows as $key => $valueArray) {
-										$selectedTagUids[$valueArray['uid_local']] = 1;
+										$selectedTagUids[$valueArray['uid_local']][0] = 1;
 									}
 									 
 									// we need the pid from the new record as well, since it might have changed
@@ -279,13 +270,13 @@ class tx_tagpack_tceforms_addtags {
 				// if the record was moved the only thing that has changed will be it's pid
 				// the rest of the relations will stay as is
 				// the new pid can be found in $value so we just have to get the related tags of the current record
-				$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($id, $table, FALSE, TRUE, TRUE);
+				$current_MM_Rows = tx_tagpack_api::getAttachedTagsForElement($id, $table);
 				 
 				// fill the selectedTagUids Array
 				if (count($current_MM_Rows)) {
 					$selectedTagUids = array();
 					foreach ($current_MM_Rows as $key => $valueArray) {
-						$selectedTagUids[$valueArray['uid_local']] = 1;
+						$selectedTagUids[$valueArray['uid_local']][0] = 1;
 					}
 				}
 				 
@@ -314,7 +305,7 @@ class tx_tagpack_tceforms_addtags {
 				// fill the selectedTagUid Array
 				if (count($current_MM_Rows)) {
 					foreach ($current_MM_Rows as $valueArray) {
-						$selectedTagUids[$valueArray['uid_local']] = 1;
+						$selectedTagUids[$valueArray['uid_local']][0] = 1;
 					}
 				}
 				 
@@ -369,16 +360,17 @@ class tx_tagpack_tceforms_addtags {
 		// or mark them as deleted, if the parent record itself has been deleted
 		if (count($current_MM_Rows)) {
 			foreach ($current_MM_Rows as $key => $valueArray) {
-				$where = 'uid = ' . intval($valueArray['uid_local']);
+				$where = 'uid=' . intval($valueArray['uid_local']);
 				
 				// are we dealing with hidden or unhidden relations?
 				$current_MM_Rows[$key]['hidden'] = ($command=='hide') ? 1 : (($command=='unhide') ? 0 : $current_MM_Rows[$key]['hidden']);
 				
-				// if there are no tags in the taglist anymore or some tags have been removed from thelist we have to make sure they are removed or marked deleted
+				// if there are no tags in the taglist anymore or some tags have been removed from the list we have to make sure they are removed or marked deleted
 				
-				if (!$selectedTagUids[$valueArray['uid_local']] || $command=='hide' || $command=='unhide') {
+				if (!$selectedTagUids[$valueArray['uid_local']][0] || $command=='hide' || $command=='unhide') {
 					// now we must get the number of relations of this tag and change it 
 					$tagData = tx_tagpack_api::getTagDataById(intval($valueArray['uid_local']));
+					
 					
 					// unhide will increase the number of visible relations
 					if($command=='unhide') {
@@ -427,8 +419,15 @@ class tx_tagpack_tceforms_addtags {
 								}
 							}
 						} 
+				// now we simply have to update all related tags with the valueArray we have built before
+					$where = 'uid_local='.intval($valueArray['uid_local']).' AND uid_foreign='.intval($valueArray['uid_foreign']).' AND tablenames=\''.$valueArray['tablenames'].'\'';
+					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					    tx_tagpack_api::relationsTable,
+					    $where,
+					    $current_MM_Rows[$key] );
+
 						// if there was no 'delete' command, this simply means that there are no tags related to this record anymore
-					} else if (!$selectedTagUids[$valueArray['uid_local']]) {
+					} else if (!$selectedTagUids[$valueArray['uid_local']][0]) {
 						// so we just unset the corresponding array key
 						unset($current_MM_Rows[$key]);
 						// and remove the relation from the table
@@ -454,19 +453,23 @@ class tx_tagpack_tceforms_addtags {
 						tx_tagpack_api::tagTable,
 							$where,
 							$tagData );
+					} else {
+						if(intval($valueArray['sorting']) != intval($selectedTagUids[$valueArray['uid_local']][1]) && tx_tagpack_api::getTagBoxSortingMode($pid)=='sorting') {
+							$current_MM_Rows[$key]['sorting'] = intval($selectedTagUids[$valueArray['uid_local']][1]);
+						}
 					}
-				}
-				
 				// now we simply have to update all related tags with the valueArray we have built before
-					$where = 'uid_local='.$valueArray['uid_local'].' AND uid_foreign='.$valueArray['uid_foreign'].' AND tablenames=\''.$valueArray['tablenames'].'\'';
+					$where = 'uid_local='.intval($valueArray['uid_local']).' AND uid_foreign='.intval($valueArray['uid_foreign']).' AND tablenames=\''.$valueArray['tablenames'].'\'';
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 					    tx_tagpack_api::relationsTable,
 					    $where,
 					    $current_MM_Rows[$key] );
+				}
+				
 				 
 				// if the uid is in the array of selected tags we have to remove it now
-				// to make sure, that it won't be inserted as a knew relation in the next step
-				if ($selectedTagUids[$valueArray['uid_local']]) {
+				// to make sure, that it won't be inserted as a new relation in the next step
+				if (isset($selectedTagUids[$valueArray['uid_local']])) {
 					unset($selectedTagUids[$valueArray['uid_local']]);
 				}
 			}
@@ -479,8 +482,9 @@ class tx_tagpack_tceforms_addtags {
 		if (count($selectedTagUids)) {
 			// for each of them we have to perform the same operations
 			foreach ($selectedTagUids as $selectedUid => $switch) {
-				if ($switch != 'new') {
-					tx_tagpack_api::attachTagToElement($selectedUid, '', $id, $table, $pid, $hidden);
+				$sorting = intval($switch[1]);
+				if ($switch[0] != 'new') {
+					tx_tagpack_api::attachTagToElement($selectedUid, '', $id, $table, $pid, $hidden, $sorting);
 					unset($selectedTagUids[$selectedUid]);
 				}
 			}
@@ -494,9 +498,10 @@ class tx_tagpack_tceforms_addtags {
 			$getTagsFromPid = ($TSconfig['tx_tagpack_tags.']['getTagsFromPid'] ? 'AND pid='.intval($TSconfig['tx_tagpack_tags.']['getTagsFromPid']) : '');
 			 
 			foreach ($selectedTagUids as $tagName => $switch) {
+				$sorting = intval($switch[1]);
 				$tagName = trim(stripslashes($tagName));
-				if ($switch == 'new') {
-					tx_tagpack_api::attachTagToElement(0, $tagName, $id, $table, $pid, $hidden);
+				if ($switch[0] == 'new') {
+					tx_tagpack_api::attachTagToElement(0, $tagName, $id, $table, $pid, $hidden, $sorting);
 					unset($selectedTagUids[$selectedUid]);
 				}
 			}

@@ -1,3 +1,12 @@
+0.13.0 03-02-08 JoH asenau <info@cybercraft.de>
+	Introduced a new TSconfig parameter "tagBoxSortingMode". Currently the only possible value is "sorting" which will enable manual sorting of tags in the BE field instead of the default alphabetical sorting.
+
+0.12.1 10-01-08 JoH asenau <info@cybercraft.de>
+	Fixed a bug caused by a missing closing bracket that caused result lists to disappear when there where jno additionalFilters set.
+
+0.12.0 10-01-05 JoH asenau <info@cybercraft.de>
+	Added includeLibs.XXX to the static templates to reactivate rendering of tagpack based elements with TYPO3 versions 4.3.+
+
 0.11.0 09-12-08 JoH asenau  <info@cybercraft.de>
 	Urgent Bugfix: Broken implementation of hide/unhide commands completely removed relations between tags and records while hiding/unhiding them via list module or click menu
 	Optimized performance by changing SQL queries to exec_SELECTquery to get rid of double while/foreach loops when using exec_SELECTgetRows and moving parts of the WHERE clause of JOIN to ON

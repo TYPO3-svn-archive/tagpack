@@ -64,6 +64,31 @@ class tx_tagpack_api {
 	}
 
 	/**
+	 * Fetches the sorting mode from the configuration, based on the sorting mode
+	 * that is set through the pages TSconfig
+	 * It uses a one-time mechanism to only fetch the sorting mode once and then
+	 * stores it as a static variable
+	 *
+	 * @param	int	$pid	the uid of the page where the tsconfig is stored, needed for the backend
+	 * @return	int		the sorting mode of the tag box
+	 */
+	function getTagBoxSortingMode($pid = 0) {
+		static $sortingMode;
+		if (!$sortingMode) {
+			if (is_object($GLOBALS['TSFE'])) {
+				// get the storage PID in the frontend
+				$GLOBALS['TSFE']->getPagesTSconfig();
+				$sortingMode = $GLOBALS['TSFE']->pagesTSconfig['tx_tagpack_tags.']['tagBoxSortingMode'];
+			} else {
+				// get storage PID in the backend
+				$TSconfig = t3lib_BEfunc::getPagesTSconfig($pid);
+				$sortingMode = $TSconfig['tx_tagpack_tags.']['tagBoxSortingMode'];
+			}
+		}
+		return trim($sortingMode);
+	}
+
+	/**
 	 * Fetches the Descriptor Mode from the configuration, based on the Descriptor Mode
 	 * that is set through the pages TSconfig
 	 * It uses a one-time mechanism to only fetch the Descriptor Mode once and then
@@ -356,7 +381,16 @@ class tx_tagpack_api {
 	 * @param	string	$elementTable	the table of the element
 	 * @return	array			a multi-dimensional array containing all tagdata infos
 	 */
-	function getAttachedTagsForElement($elementUid, $elementTable) {
+	function getAttachedTagsForElement($elementUid, $elementTable, $pid=0) {
+		$sortingMode = tx_tagpack_api::getTagBoxSortingMode(intval($pid));
+		switch($sortingMode) {
+			case 'sorting' :
+			    $sorting = 'mm.sorting ASC';
+			break;
+			default :
+			    $sorting = 'tg.name ASC';
+			break;
+		}
 		$tags = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'tg.*',
 			tx_tagpack_api::relationsTable . ' AS mm, ' . tx_tagpack_api::tagTable . ' AS tg',
@@ -364,7 +398,7 @@ class tx_tagpack_api {
 			. ' AND mm.tablenames = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementTable, tx_tagpack_api::relationsTable)
 			. ' AND mm.uid_foreign = ' . intval($elementUid),
 			'mm.uid_local',
-			'tg.name ASC'
+			$sorting
 		);
 		return $tags;
 	}
@@ -455,7 +489,7 @@ class tx_tagpack_api {
 	 * @param	int	$hidden		a flag whether the tagged element is currently hidden or not
 	 * @return	void
 	 */
-	function attachTagToElement($tagUid=0, $tagName='', $elementUid, $elementTable, $pid, $hidden = FALSE) {
+	function attachTagToElement($tagUid=0, $tagName='', $elementUid, $elementTable, $pid, $hidden = FALSE, $sorting=0) {
 		// create the tag if it doesn't exist yet
 		if($tagName && !$tagUid) {
 		    $tagData = tx_tagpack_api::getTagDataByTagName($tagName, '', 1, FALSE, FALSE, FALSE, $pid);
@@ -492,7 +526,7 @@ class tx_tagpack_api {
 				'deleted'		   => 0,
 				'hidden'		   => $hidden ? 1 : 0,
 				'tablenames'	   => $GLOBALS['TYPO3_DB']->quoteStr($elementTable, tx_tagpack_api::relationsTable),
-				'sorting'		   => 1
+				'sorting'		   => $sorting
 			);
 			$GLOBALS['TYPO3_DB']->exec_INSERTquery(tx_tagpack_api::relationsTable, $newRelationRow);
 		}

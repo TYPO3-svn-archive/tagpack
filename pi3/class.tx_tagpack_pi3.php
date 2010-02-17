@@ -235,12 +235,14 @@
 						}
 						$fieldName = str_replace('.', '', $fieldName);
 						if ((!$taggedElement[$fieldName] && $getVar) || ($taggedElement[$fieldName]!= $getVar) && $getVar) {
-							unset($taggedElements[$key]);
+							$taggedElement = array();
 						}
 						else if($getVar && $filterSettings['foreign_table'] && !$filterSettings['mm_table'] && !t3lib_div::inList($taggedElement[$fieldName], $getVar)) {
-							unset($taggedElements[$key]);
+							t3lib_div::debug('Step2');
+							$taggedElement = array();
 						}
 						else if($getVar && $filterSettings['foreign_table'] && $filterSettings['mm_table']) {
+							t3lib_div::debug('Step3');
 							$availableElementsSelect = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
 							$table.'.uid',
 								$table,
@@ -248,7 +250,7 @@
 								$filterSettings['foreign_table'],
 								' AND '.$table.'.uid='.intval($taggedElement['uid']).' AND '.$filterSettings['foreign_table'].'.uid='.intval($getVar) );
 							if (!$GLOBALS['TYPO3_DB']->sql_num_rows($availableElementsSelect)) {
-								unset($taggedElements[$key]);
+								$taggedElement=array();
 							}
 						}
 					}
