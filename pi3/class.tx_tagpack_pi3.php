@@ -68,9 +68,9 @@
 				AND pid>0',
 				'',
 				'name ASC' );
-				
+
 			$this->enableResultList = 0;
-			
+
 			if(count($tags)) {
 				$this->enableResultList = 1;
 			}
@@ -110,7 +110,7 @@
 			$sortingTime = $conf['taggedElements.']['timeFields.'][$table] ? $conf['taggedElements.']['timeFields.'][$table] : 'tstamp';
 
 			if ($tagUid) {
-				$tagsSelected = 'AND tx_tagpack_tags_relations_mm.uid_local IN('.$tagUid.')';
+				$tagsSelected = ' AND tx_tagpack_tags_relations_mm.uid_local IN('.$tagUid.')';
 			}
 
 			if ($this->pi1Vars['from'] && $conf['taggedElements.']['timeFields.'][$table]) {
@@ -135,19 +135,19 @@
 				    'tx_tagpack_tags',
 				    'name LIKE '.$GLOBALS['TYPO3_DB']->fullQuoteStr('%'.$this->pi1Vars['searchWord'].'%','tx_tagpack_tags')
 				);
-				
+
 				if(!$GLOBALS['TYPO3_DB']->sql_error()) {
 				    while ($searchTagUid = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($searchTags)) {
 					$tagsSearched .= $tagsSearched ? ','.$searchTagUid['uid'] : 'tx_tagpack_tags_relations_mm.uid_local IN('.$searchTagUid['uid'];
 				    }
 				}
-				
-								
+
+
 			}
-			
+
 			$tagsSearched .= $tagsSearched ? ')' : '';
 			$searchSettings = $searchSettings ? ' AND ('.$searchSettings.($tagsSearched ? ' OR '.$tagsSearched : '').')' : ($tagsSearched ? ' AND '.$tagsSearched : '');
-			
+
 			if ($conf['taggedElements.']['additionalFilters.'][$table.'.']) {
 				$filters = $conf['taggedElements.']['additionalFilters.'][$table.'.'];
 				foreach($filters as $fieldName => $filterSettings) {
@@ -160,7 +160,7 @@
 					}
 				}
 			}
-			
+
 			if ($conf['taggedElements.']['additionalFilters.'][$table.'.'] && count($getVars)) {
 				$limit = '';
 			} else {

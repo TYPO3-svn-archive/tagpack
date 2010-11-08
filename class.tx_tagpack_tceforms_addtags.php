@@ -163,23 +163,20 @@ class tx_tagpack_tceforms_addtags {
 			
 			if(array_key_exists('tx_tagpack_tags',$caller->datamap[$table][$id])) {
 				// are there any tags in the datamap?
-				$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][$id]['tx_tagpack_tags']);
+				$selectedUids = $this->trimExplodeValues($caller->datamap[$table][$id]['tx_tagpack_tags']);
 			} else {
 			    // if not, we have to get the related records that are already assigned as tags to the current record
 			    $selectedUids = tx_tagpack_api::getAttachedTagIdsForElement(intval($id),$table,TRUE,TRUE);
 			}
 		} else {
 			// Now we get the selected tags for the current record
-			$selectedUids = t3lib_div::trimexplode(',', $caller->datamap[$table][$id]['tx_tagpack_tags']);
+			$selectedUids = $this->trimExplodeValues($caller->datamap[$table][$id]['tx_tagpack_tags']);
 		}
 		
 		// if there are any we can create an array and hand it over to the function which is responsible for the DB actions
 		if (count($selectedUids)>0) {
 			$sortCounter = 0;
 			foreach($selectedUids as $selectedUid) {
-				// if there are any prefixes, we must strip them first
-				$selectedUid = str_replace('tx_tagpack_tags_', '', $selectedUid);
-				 
 				// if there is a real uid we will use this as an array key and set the value to 1
 				// this makes it easier to unset the keys for those uids later on
 				// which were already available in the relations table
@@ -200,6 +197,51 @@ class tx_tagpack_tceforms_addtags {
 	}
 	 
 	/**
+	 * trimExplodes the current value by comma
+	 * since values that have to be inserted may contain commas themself, t3lib_div::trimexplode does not work -
+	 * we do it our own way
+	 *
+	 * @param string $values current value in the datamap for the field tx_tagpack_tags
+	 * @return array $return array of the exploded and (where needed) recollected values
+	 */
+	function trimExplodeValues($values){
+		// if there are any prefixes, we must strip them first
+		$values = str_replace('tx_tagpack_tags_', '', $values);
+		$valuesArray = explode(',',$values);
+		$return = array();
+		$collectedValue = false;
+		foreach ($valuesArray as $value) {
+			switch(true){
+				//matching a new tag with no comma in it (thus starts with 'new_|' and ends with '|'):
+				case preg_match('/^new_\|[^\|]*\|$/',trim($value)) === 1:
+					$return[] = preg_replace('/^new_\|([^\|]*)\|$/','new_\\1',trim($value));
+				break;
+				//matching the begin of a new tag that contained a comma:
+				case preg_match('/^new_\|[^\|]*$/',$value) === 1:
+					$collectedValue = preg_replace('/^new_\|([^\|]*)$/','\\1',$value);
+				break;
+				//matching the middle part of a new tag, that contained more than one comma:
+				case $collectedValue !== false && strpos($value,'|') === false:
+					$collectedValue .= ','.$value;
+				break;
+				//matching the end of a new tag that contained a comma:
+				case $collectedValue !== false && preg_match('/\|$/',trim($value)) === 1:
+					$collectedValue .= ','.str_replace('|','',$value);
+					$return[] = 'new_'.trim($collectedValue);
+					$collectedValue = false;
+				break;
+				case trim($value) === '':
+					//skip empty values
+				break;
+				default:
+					$return[] = trim($value);
+				break;
+			}
+		}
+		return $return;
+	}
+
+		/**
 	 * After certain actions this function makes sure that the related tags are treated the same way as their parent record(s)
 	 *
 	 * @param [type]  $command: The action that happened before
