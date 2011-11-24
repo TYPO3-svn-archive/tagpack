@@ -74,9 +74,21 @@ $TCA['tt_content']['types'][$_EXTKEY.'_pi3']['showitem']='CType;;4;button;1-1-1,
 
 t3lib_extMgm::addPlugin(array('LLL:EXT:tagpack/locallang_db.xml:tt_content.list_type_pi3', $_EXTKEY.'_pi3'),'list_type');
 
+// Add sysfolder icon
+t3lib_div::loadTCA('pages');
+$TCA['pages']['columns']['module']['config']['items'][$_EXTKEY]['0'] = 'Tagpack tags';
+$TCA['pages']['columns']['module']['config']['items'][$_EXTKEY]['1'] = $_EXTKEY;
+$TCA['pages']['columns']['module']['config']['items'][$_EXTKEY]['2'] = t3lib_extMgm::extRelPath($_EXTKEY) . 'ext_icon.gif';
+
 if (TYPO3_MODE == 'BE')	{
     include_once(t3lib_extMgm::extPath('tagpack').'class.tx_tagpack_ajaxsearch_client.php');
     t3lib_extMgm::addModule('user','txtagpackM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
+	// Add icon for pagetree
+	t3lib_spriteManager::addTcaTypeIcon(
+		'pages',
+		'contains-tagpack',
+		t3lib_extMgm::extRelPath($_EXTKEY) . 'ext_icon.gif'
+	);
 }
 
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/tagcloud/', 'tagcloud');
