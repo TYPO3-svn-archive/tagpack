@@ -12,7 +12,7 @@ CREATE TABLE tx_tagpack_tags_quodvide_mm (
   sys_language_uid int(11) DEFAULT '0' NOT NULL,
   deleted tinyint(4) DEFAULT '0' NOT NULL,
   hidden tinyint(4) DEFAULT '0' NOT NULL,
-  tablenames varchar(30) DEFAULT '' NOT NULL,
+  tablenames varchar(64) DEFAULT '' NOT NULL,
   sorting int(11) DEFAULT '0' NOT NULL,
   KEY uid_foreign_tablenames (uid_foreign,tablenames),
   KEY uid_local_foreign (uid_local,uid_foreign)
@@ -32,7 +32,7 @@ CREATE TABLE tx_tagpack_tags_relations_mm (
   sys_language_uid int(11) DEFAULT '0' NOT NULL,
   deleted tinyint(4) DEFAULT '0' NOT NULL,
   hidden tinyint(4) DEFAULT '0' NOT NULL,
-  tablenames varchar(30) DEFAULT '' NOT NULL,
+  tablenames varchar(64) DEFAULT '' NOT NULL,
   sorting int(11) DEFAULT '0' NOT NULL,
   KEY uid_foreign_tablenames (uid_foreign,tablenames),
   KEY uid_local_foreign (uid_local,uid_foreign)
