@@ -58,10 +58,10 @@ class tx_tagpack_realurl {
 		    $valueList = '';
 		    foreach($valueArray as $uid) {
 			if($uid && $uid!=t3lib_div::_GP('tx_tagpack_pi3_removeItems')) {
-			    $name = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('name','tx_tagpack_tags','uid='.$uid.' AND pid IN ('.$getTagsFromPid.')');
-			    if(!$valueArray[$name[0]['name']]) {
-				$valueArray[$name[0]['name']]=1;
-				$valueList .= $valueList ? '_'.$name[0]['name'] : $name[0]['name'];
+			    $name = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('name','tx_tagpack_tags','uid='.$uid.' AND pid IN ('.$getTagsFromPid.')');
+			    if(!$valueArray[$name['name']]) {
+				$valueArray[$name['name']]=1;
+				$valueList .= $valueList ? '_'.$name['name'] : $name['name'];
 			    }
 			}
 		    }
@@ -82,8 +82,8 @@ class tx_tagpack_realurl {
 		    foreach($valueArray as $name) {
 			if($name) {
 			    $name = str_replace('--',' ',$name);
-			    $uid = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid','tx_tagpack_tags','name LIKE \''.$name.'\' AND pid IN ('.$getTagsFromPid.')');
-			    $valueList .= $valueList ? ','.$uid[0]['uid'] : $uid[0]['uid'];
+			    $uid = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid','tx_tagpack_tags','name LIKE \''.$name.'\' AND pid IN ('.$getTagsFromPid.')');
+			    $valueList .= $valueList ? ','.$uid['uid'] : $uid['uid'];
 			}
 		    }
 		}

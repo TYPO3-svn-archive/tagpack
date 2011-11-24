@@ -376,8 +376,7 @@
 		function makeResultlist($tab,$hidden=FALSE) {
 			if(count($this->tpm['container_page'][$tab])) {
 			    $tagName = trim($this->tpm['tagname'][$tab]) ? '%'.trim($this->tpm['tagname'][$tab]).'%' : '%';
-			    if(count($resultData = tx_tagpack_api::getTagDataByTagName($tagName,implode(',',$this->tpm['container_page'][$tab]),($this->tpm['taglimit'][$tab] ? $this->tpm['taglimit'][$tab] : 50),$hidden,$this->tpm['tagdatefrom'][$tab],$this->tpm['tagdateto'][$tab]))) {
-				foreach ($resultData as $tagData) {
+			    if(count($tagData = tx_tagpack_api::getTagDataByTagName($tagName,implode(',',$this->tpm['container_page'][$tab]),($this->tpm['taglimit'][$tab] ? $this->tpm['taglimit'][$tab] : 50),$hidden,$this->tpm['tagdatefrom'][$tab],$this->tpm['tagdateto'][$tab]))) {
 				    if($tagData['hidden']) {
 				        if($this->tpm['approve']['blocked'] || (!$this->tpm['approve']['blocked'] && !$this->tpm['approve']['approved']) || $tab>1) {
 						$sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
@@ -386,10 +385,9 @@
 				        $sortedData[$tagData['pid']][ucwords($tagData['name'])]=$tagData;
 					$this->firstLevelResults[$tab] .= $this->firstLevelResults[$tab] ? ','.$tagData['uid'] : $tagData['uid'];
 				    }
-				}
 			    }
 			    foreach($this->tpm['container_page'][$tab] as $selectedId) {			    
-				$resultList .= $this->makeList($sortedData,$tab,$selectedId);
+					$resultList .= $this->makeList($sortedData,$tab,$selectedId);
 			    }
 			    return $resultList;
 			}

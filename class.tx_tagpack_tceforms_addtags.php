@@ -283,11 +283,11 @@ class tx_tagpack_tceforms_addtags {
 									 
 									// we need the pid from the new record as well, since it might have changed
 									// due to a recursive copy action of a parent page of the new record
-									$newRecordData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+									$newRecordData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
 										'*',
 										$tablename,
 										'uid='.intval($newUid) );
-									$newPid = $newRecordData[0]['pid'];
+									$newPid = $newRecordData['pid'];
 									 
 									// now we can execute the DB operations
 									$this->delete_update_insert_relations(

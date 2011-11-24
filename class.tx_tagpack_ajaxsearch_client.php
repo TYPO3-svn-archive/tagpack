@@ -102,7 +102,7 @@
 		*/
 		function getJSON($jsonArray) {
 			if ($this->t3Version >= 4002000) {
-				return t3lib_div::array2json($jsonArray);
+				return json_encode($jsonArray);
 			} else {
 				if (!$GLOBALS['JSON']) {
 					require_once(PATH_typo3.'contrib/json.php');

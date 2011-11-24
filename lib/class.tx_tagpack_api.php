@@ -294,7 +294,7 @@ class tx_tagpack_api {
 		}
 		if (!empty($tagName)) {
 			$storagePID = $storagePID ? $storagePID : tx_tagpack_api::getTagStoragePID(intval($pid));
-			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			$tagData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
 				'*',
 				tx_tagpack_api::tagTable,
 				($showHidden ? '' : 'hidden = 0 AND ')
@@ -497,7 +497,7 @@ class tx_tagpack_api {
 		if (!count($tagData) && !$tagUid) {
 			$tagUid = tx_tagpack_api::addTag($tagName,$pid,FALSE,$elementTable);
 		} else if (!$tagUid) {
-			$tagUid = $tagData[0]['uid'];
+			$tagUid = $tagData['uid'];
 		}
 		$tagUid = intval($tagUid);
 
@@ -552,14 +552,14 @@ class tx_tagpack_api {
 			);
 
 			// now we can count the number of records currently related to the tag
-			$relations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			$relations = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
 				'count(*) AS relations',
 				tx_tagpack_api::relationsTable,
 				'hidden = 0 AND deleted = 0 AND uid_local = ' . $tagUid
 			);
 
 			// and write back the value to the relations field of the tag
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations[0]);
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(tx_tagpack_api::tagTable, 'uid = ' . $tagUid, $relations);
 		}
 	}
 }

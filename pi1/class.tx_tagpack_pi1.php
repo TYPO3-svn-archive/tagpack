@@ -137,30 +137,34 @@
 					$filteritems .= $filteritems ? ') AND ' : '';
 				}
 				$tagRelations = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'tx_tagpack_tags.relations',
+				'DISTINCT tx_tagpack_tags.relations',
 					'tx_tagpack_tags_relations_mm JOIN tx_tagpack_tags ON ('.$table.$uid.'tx_tagpack_tags.uid=tx_tagpack_tags_relations_mm.uid_local)',
 					$pid.$filteritems.'NOT tx_tagpack_tags.deleted AND NOT tx_tagpack_tags.hidden AND NOT tx_tagpack_tags_relations_mm.deleted AND NOT tx_tagpack_tags_relations_mm.hidden',
-					'tx_tagpack_tags.relations',
+					'',
 					'tx_tagpack_tags.relations DESC',
 					intval($conf['maxNumberOfSizes']) );
 				
 				if (!$GLOBALS['TYPO3_DB']->sql_error()) {
 					while($relations = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($tagRelations)) {
-						$max = $max ? $max : intval($relations['relations']);
+						if(!$max) {
+						  $max = intval($relations['relations']);
+						}
 						$min = intval($relations['relations']);
-						$relationRange .= $relationRange ? ','.intval($relations['relations']) :
-						intval($relations['relations']);
 					}
 					$GLOBALS['TYPO3_DB']->sql_free_result($tagRelations);
 				}
-				if(!$relationRange) {
-				    $relationRange = 0;
+				if(!$min) {
+					$min = 0;
+				} else {
+					$difference = $max-$min;
+					$difference = $difference > 1 ? $difference :
+					1;
 				}
 				
 				$tagArray = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'tx_tagpack_tags.uid,tx_tagpack_tags.name,tx_tagpack_tags.relations',
 					'tx_tagpack_tags_relations_mm JOIN tx_tagpack_tags ON ('.$table.$uid.'tx_tagpack_tags.uid=tx_tagpack_tags_relations_mm.uid_local)',
-					$pid.$filteritems.'NOT tx_tagpack_tags.deleted AND NOT tx_tagpack_tags.hidden AND tx_tagpack_tags.relations IN('.$relationRange.') AND NOT tx_tagpack_tags_relations_mm.deleted AND NOT tx_tagpack_tags_relations_mm.hidden',
+					$pid.$filteritems.'NOT tx_tagpack_tags.deleted AND NOT tx_tagpack_tags.hidden AND tx_tagpack_tags.relations>='.$min.' AND NOT tx_tagpack_tags_relations_mm.deleted AND NOT tx_tagpack_tags_relations_mm.hidden',
 					'tx_tagpack_tags.uid',
 					'tx_tagpack_tags.name ASC',
 					'' );
@@ -191,16 +195,16 @@
 						}
 						$typolink['title'] = $tagValues['relations'] > 1 ? $tagValues['relations'].' '.$conf['linkLabel.']['plural'].' '.$text :
 						$tagValues['relations'].' '.$conf['linkLabel.']['singular'].' '.$text;
-						$difference = $max-$min;
-						$difference = $difference > 1 ? $difference :
-						1;
 						$percentage = (($tagValues['relations']-$min)/($difference));
 						$size = intval(($conf['maxFontSize']-$conf['minFontSize']) * $percentage+$conf['minFontSize']);
 						$typolink['ATagParams'] = 'style="color:'.$conf['fontColor'].'; font-size:'.$size.'px; line-height:'.ceil($conf['maxFontSize'] * 0.7).'px;"';
 						$typolink['ATagParams'] .= t3lib_div::inList($this->piVars['uid'], $tagValues['uid']) ? ' class="active"' :
 						'';
-						$content .= '
-							'.$this->cObj->stdWrap($this->cObj->typolink($text, $typolink), $conf['linkStdWrap.']).' ';
+						$content .= isset($conf['linkStdWrap.'])
+							? '
+							'.$this->cObj->stdWrap($this->cObj->typolink($text, $typolink), $conf['linkStdWrap.']).' '
+							: '
+							'.$this->cObj->typolink($text, $typolink).' ';
 					}
 					$GLOBALS['TYPO3_DB']->sql_free_result($tagArray);
 				}
